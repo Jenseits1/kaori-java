@@ -51,5 +51,6 @@ public enum TokenType {
     LITERAL,
 
     // Special
+    NOT_FOUND,
     EOF
 }

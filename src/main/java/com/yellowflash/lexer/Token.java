@@ -10,4 +10,11 @@ public class Token {
         this.line = line;
         this.lexeme = lexeme;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Token {\n  type: %s,\n  line: %d,\n  lexeme: %s\n}",
+                type, line, lexeme);
+    }
 }
