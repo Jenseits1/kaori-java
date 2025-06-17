@@ -48,9 +48,11 @@ public enum TokenType {
     FLOAT,
     BOOLEAN,
     IDENTIFIER,
-    LITERAL,
+    STRING_LITERAL,
+    FLOAT_LITERAL,
+    BOOLEAN_LITERAL,
 
     // Special
-    NOT_FOUND,
+    INVALID_TOKEN,
     EOF
 }

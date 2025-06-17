@@ -2,6 +2,7 @@ package com.yellowflash.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Lexer {
     String source;
@@ -9,7 +10,7 @@ public class Lexer {
     int current;
     int line;
     char lookAhead;
-    public List<Token> tokens;
+    List<Token> tokens;
 
     public Lexer(String source) {
         this.source = source;
@@ -18,6 +19,8 @@ public class Lexer {
         this.line = 1;
         this.lookAhead = source.charAt(0);
         this.tokens = new ArrayList<>();
+
+        execute();
     }
 
     void advance() {
@@ -35,12 +38,12 @@ public class Lexer {
         }
     }
 
-    boolean fileAtcurrent() {
-        return current >= this.source.length();
+    boolean fileAtEnd() {
+        return current >= source.length();
     }
 
-    TokenType getNextNumber() {
-        while (!fileAtcurrent() && Character.isDigit(lookAhead)) {
+    void getNextNumber() {
+        while (!fileAtEnd() && Character.isDigit(lookAhead)) {
             advance();
         }
 
@@ -48,23 +51,26 @@ public class Lexer {
             advance();
         }
 
-        while (!fileAtcurrent() && Character.isDigit(lookAhead)) {
+        while (!fileAtEnd() && Character.isDigit(lookAhead)) {
             advance();
         }
 
-        return TokenType.LITERAL;
+        String lexeme = source.substring(start, current);
+        Token token = new Token(TokenType.FLOAT_LITERAL, line, lexeme);
+
+        tokens.add(token);
     }
 
-    TokenType getNextIdentifer() {
-        while (!fileAtcurrent() && Character.isAlphabetic(lookAhead)) {
+    void getNextIdentifer() {
+        while (!fileAtEnd() && Character.isAlphabetic(lookAhead)) {
             advance();
         }
 
-        while (!fileAtcurrent() && Character.isLetterOrDigit(lookAhead)) {
+        while (!fileAtEnd() && Character.isLetterOrDigit(lookAhead)) {
             advance();
         }
 
-        return switch (source.substring(start, current)) {
+        TokenType type = switch (source.substring(start, current)) {
             case "str" -> TokenType.STRING;
             case "float" -> TokenType.FLOAT;
             case "bool" -> TokenType.BOOLEAN;
@@ -77,55 +83,72 @@ public class Lexer {
             case "return" -> TokenType.RETURN;
             case "func" -> TokenType.FUNCTION;
             case "print" -> TokenType.PRINT;
-            case "true", "false" -> TokenType.LITERAL;
+            case "true", "false" -> TokenType.BOOLEAN_LITERAL;
             default -> TokenType.IDENTIFIER;
         };
 
+        String lexeme = source.substring(start, current);
+        Token token = new Token(type, line, lexeme);
+
+        tokens.add(token);
     }
 
-    TokenType getNextString() {
+    void getNextString() {
         advance();
 
-        while (!fileAtcurrent() && lookAhead != '"') {
+        while (!fileAtEnd() && lookAhead != '"') {
             advance();
         }
 
         if (lookAhead != '"') {
-            return TokenType.NOT_FOUND;
+            throw new Error("Missing closing quotation marks!");
         }
 
         advance();
 
-        return TokenType.LITERAL;
+        String lexeme = source.substring(start, current);
+        Token token = new Token(TokenType.STRING_LITERAL, line, lexeme);
+
+        tokens.add(token);
     }
 
-    TokenType getNextTwoCharSymbol() {
-
+    Optional<TokenType> getNextTwoCharSymbol() {
         if (current + 2 > source.length()) {
-            return TokenType.NOT_FOUND;
+            return Optional.empty();
         }
 
-        return switch (source.substring(current, current + 2)) {
-            case "&&" -> TokenType.AND;
-            case "||" -> TokenType.OR;
-            case "!=" -> TokenType.NOT_EQUAL;
-            case "==" -> TokenType.EQUAL;
-            case ">=" -> TokenType.GREATER_EQUAL;
-            case "<=" -> TokenType.LESS_EQUAL;
-            default -> TokenType.NOT_FOUND;
+        Optional<TokenType> type = switch (source.substring(current, current + 2)) {
+            case "&&" -> Optional.of(TokenType.AND);
+            case "||" -> Optional.of(TokenType.OR);
+            case "!=" -> Optional.of(TokenType.NOT_EQUAL);
+            case "==" -> Optional.of(TokenType.EQUAL);
+            case ">=" -> Optional.of(TokenType.GREATER_EQUAL);
+            case "<=" -> Optional.of(TokenType.LESS_EQUAL);
+            default -> Optional.empty();
         };
+
+        if (type.isEmpty()) {
+            return Optional.empty();
+        }
+
+        advance();
+        advance();
+
+        return type;
     }
 
-    TokenType getNextSymbol() {
-        TokenType type = getNextTwoCharSymbol();
+    void getNextSymbol() {
+        Optional<TokenType> twoCharTokenType = getNextTwoCharSymbol();
 
-        if (type != TokenType.NOT_FOUND) {
-            advance();
-            advance();
-            return type;
+        if (twoCharTokenType.isPresent()) {
+            String lexeme = source.substring(start, current);
+            Token token = new Token(twoCharTokenType.get(), line, lexeme);
+
+            tokens.add(token);
+            return;
         }
 
-        type = switch (lookAhead) {
+        TokenType type = switch (lookAhead) {
             case '+' -> TokenType.PLUS;
             case '-' -> TokenType.MINUS;
             case '*' -> TokenType.MULTIPLY;
@@ -141,46 +164,40 @@ public class Lexer {
             case '=' -> TokenType.ASSIGN;
             case '>' -> TokenType.GREATER;
             case '<' -> TokenType.LESS;
-            default -> TokenType.NOT_FOUND;
+            default -> TokenType.INVALID_TOKEN;
         };
 
         advance();
 
-        return type;
+        if (type == TokenType.INVALID_TOKEN) {
+            return;
+        }
+
+        String lexeme = source.substring(start, current);
+        Token token = new Token(type, line, lexeme);
+
+        tokens.add(token);
     }
 
-    public void start() {
-
-        while (!fileAtcurrent()) {
+    void execute() {
+        while (!fileAtEnd()) {
             if (Character.isWhitespace(lookAhead)) {
                 advance();
-                start = current;
-                continue;
-            }
-
-            TokenType type;
-
-            if (Character.isDigit(lookAhead)) {
-                type = getNextNumber();
+            } else if (Character.isDigit(lookAhead)) {
+                getNextNumber();
             } else if (Character.isLetterOrDigit(lookAhead)) {
-                type = getNextIdentifer();
+                getNextIdentifer();
             } else if (lookAhead == '"') {
-                type = getNextString();
+                getNextString();
             } else {
-                type = getNextSymbol();
+                getNextSymbol();
             }
-
-            if (type == TokenType.NOT_FOUND) {
-
-                start = current;
-                continue;
-            }
-
-            String lexeme = source.substring(start, current);
-            Token token = new Token(type, line, lexeme);
-            tokens.add(token);
 
             start = current;
         }
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
     }
 }
