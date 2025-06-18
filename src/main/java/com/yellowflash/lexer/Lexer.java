@@ -14,13 +14,6 @@ public class Lexer {
 
     public Lexer(String source) {
         this.source = source;
-        this.start = 0;
-        this.current = 0;
-        this.line = 1;
-        this.currentCharacter = source.charAt(0);
-        this.tokens = new ArrayList<>();
-
-        execute();
     }
 
     void advance() {
@@ -179,7 +172,17 @@ public class Lexer {
         tokens.add(token);
     }
 
-    void execute() {
+    void reset() {
+        start = 0;
+        current = 0;
+        line = 1;
+        currentCharacter = source.charAt(0);
+        tokens = new ArrayList<>();
+    }
+
+    public List<Token> scan() {
+        reset();
+
         while (!fileAtEnd()) {
             if (Character.isWhitespace(currentCharacter)) {
                 advance();
@@ -195,9 +198,8 @@ public class Lexer {
 
             start = current;
         }
-    }
 
-    public List<Token> getTokens() {
         return tokens;
     }
+
 }

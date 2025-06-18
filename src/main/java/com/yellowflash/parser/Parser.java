@@ -1,5 +1,6 @@
 package com.yellowflash.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,9 @@ import com.yellowflash.ast.expression.Expression;
 import com.yellowflash.ast.expression.FloatLiteral;
 import com.yellowflash.ast.expression.StringLiteral;
 import com.yellowflash.ast.expression.UnaryOperator;
+import com.yellowflash.ast.statement.ExpressionStatement;
+import com.yellowflash.ast.statement.PrintStatement;
+import com.yellowflash.ast.statement.Statement;
 import com.yellowflash.lexer.Token;
 import com.yellowflash.lexer.TokenType;
 
@@ -20,9 +24,6 @@ public class Parser {
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
-        this.currentIndex = 0;
-        this.currentToken = tokens.get(0);
-        this.line = 1;
     }
 
     boolean parseAtEnd() {
@@ -92,7 +93,9 @@ public class Parser {
             }
             case PLUS -> {
                 consume(currentToken.type, Optional.empty());
+
                 yield unary();
+
             }
             default -> primary();
         };
@@ -195,10 +198,58 @@ public class Parser {
     }
 
     Expression expression() {
-        return term();
+        return or();
     }
 
-    public Expression execute() {
-        return expression();
+    Statement expressionStatement() {
+        Expression expression = expression();
+        Statement statement = new ExpressionStatement(expression);
+
+        consume(TokenType.SEMICOLON, Optional.of("expected ; at the end of statement"));
+
+        return statement;
+    }
+
+    Statement printStatement() {
+        consume(TokenType.PRINT, Optional.empty());
+
+        consume(TokenType.LEFT_PAREN, Optional.of("expected ("));
+
+        Expression expression = expression();
+
+        consume(TokenType.RIGHT_PAREN, Optional.of("expected )"));
+
+        consume(TokenType.SEMICOLON, Optional.of("expected ; at the end of statement"));
+
+        Statement statement = new PrintStatement(expression);
+
+        return statement;
+    }
+
+    Statement statement() {
+        return switch (currentToken.type) {
+            case PRINT -> printStatement();
+            default -> expressionStatement();
+        };
+    }
+
+    void reset() {
+        currentIndex = 0;
+        currentToken = tokens.get(0);
+        line = 1;
+    }
+
+    public List<Statement> parse() {
+        reset();
+
+        List<Statement> statements = new ArrayList<>();
+
+        while (!parseAtEnd()) {
+            Statement statement = statement();
+
+            statements.add(statement);
+        }
+
+        return statements;
     }
 }
