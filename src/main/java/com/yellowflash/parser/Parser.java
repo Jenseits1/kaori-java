@@ -3,83 +3,112 @@ package com.yellowflash.parser;
 import java.util.List;
 import java.util.Optional;
 
-import com.yellowflash.ast.BinaryOperator;
-import com.yellowflash.ast.BooleanLiteral;
-import com.yellowflash.ast.Expression;
-import com.yellowflash.ast.FloatLiteral;
-import com.yellowflash.ast.StringLiteral;
+import com.yellowflash.ast.expression.BinaryOperator;
+import com.yellowflash.ast.expression.BooleanLiteral;
+import com.yellowflash.ast.expression.Expression;
+import com.yellowflash.ast.expression.FloatLiteral;
+import com.yellowflash.ast.expression.StringLiteral;
+import com.yellowflash.ast.expression.UnaryOperator;
 import com.yellowflash.lexer.Token;
 import com.yellowflash.lexer.TokenType;
 
 public class Parser {
     List<Token> tokens;
-    int current;
+    int currentIndex;
     int line;
+    Token currentToken;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
-        this.current = 0;
+        this.currentIndex = 0;
+        this.currentToken = tokens.get(0);
         this.line = 1;
     }
 
-    Optional<Token> lookAhead() {
-        if (current < tokens.size()) {
-            return Optional.of(tokens.get(current));
-        }
-
-        return Optional.empty();
+    boolean parseAtEnd() {
+        return currentIndex >= tokens.size();
     }
 
-    void consume(TokenType expected) {
-        this.current++;
+    void consume(TokenType expected, Optional<String> errorMessage) {
+        if (parseAtEnd() || currentToken.type != expected) {
+            throw new Error(errorMessage.get());
+        }
+
+        currentIndex++;
+
+        if (!parseAtEnd()) {
+            currentToken = tokens.get(currentIndex);
+            line = currentToken.line;
+        }
+    }
+
+    boolean match(TokenType... types) {
+        if (parseAtEnd()) {
+            return false;
+        }
+
+        for (TokenType type : types) {
+            if (currentToken.type == type) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     Expression parenthesis() {
-        consume(TokenType.LEFT_PAREN);
+        consume(TokenType.LEFT_PAREN, Optional.empty());
 
         Expression expr = expression();
 
-        consume(TokenType.RIGHT_PAREN);
+        consume(TokenType.RIGHT_PAREN, Optional.of("expected )"));
 
         return expr;
     }
 
     Expression primary() {
-        if (lookAhead().isEmpty()) {
-            throw new Error("Expected a literal value token");
+        if (parseAtEnd()) {
+            throw new Error("expected valid operand");
         }
 
-        Token token = lookAhead().get();
-
-        Expression primary = switch (token.type) {
-            case BOOLEAN_LITERAL -> new BooleanLiteral(Boolean.parseBoolean(token.lexeme));
-            case STRING_LITERAL -> new StringLiteral(token.lexeme);
-            case FLOAT_LITERAL -> new FloatLiteral(Float.parseFloat(token.lexeme));
+        Expression primary = switch (currentToken.type) {
+            case BOOLEAN_LITERAL -> new BooleanLiteral(Boolean.parseBoolean(currentToken.lexeme));
+            case STRING_LITERAL -> new StringLiteral(currentToken.lexeme);
+            case FLOAT_LITERAL -> new FloatLiteral(Float.parseFloat(currentToken.lexeme));
             case LEFT_PAREN -> parenthesis();
-            default -> throw new Error("Expected a literal value token");
+            default -> throw new Error("expected valid operand");
         };
 
-        consume(token.type);
+        consume(currentToken.type, Optional.empty());
 
         return primary;
     }
 
-    Expression factor() {
-        Expression leftOperand = primary();
-
-        while (lookAhead().isPresent()) {
-            Token token = lookAhead().get();
-
-            if (token.type != TokenType.MULTIPLY && token.type != TokenType.DIVIDE
-                    && token.type != TokenType.REMAINDER) {
-                break;
+    Expression unary() {
+        return switch (currentToken.type) {
+            case MINUS -> {
+                consume(currentToken.type, Optional.empty());
+                yield new UnaryOperator(unary(), TokenType.MINUS);
             }
+            case PLUS -> {
+                consume(currentToken.type, Optional.empty());
+                yield unary();
+            }
+            default -> primary();
+        };
+    }
 
-            consume(token.type);
+    Expression factor() {
+        Expression leftOperand = unary();
 
-            Expression rightOperand = primary();
+        while (match(TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.REMAINDER)) {
+            TokenType operator = currentToken.type;
 
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, token.type);
+            consume(operator, Optional.empty());
+
+            Expression rightOperand = unary();
+
+            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
         }
 
         return leftOperand;
@@ -88,18 +117,78 @@ public class Parser {
     Expression term() {
         Expression leftOperand = factor();
 
-        while (lookAhead().isPresent()) {
-            Token token = lookAhead().get();
+        while (match(TokenType.PLUS, TokenType.MINUS)) {
+            TokenType operator = currentToken.type;
 
-            if (token.type != TokenType.PLUS && token.type != TokenType.MINUS) {
-                break;
-            }
-
-            consume(token.type);
+            consume(operator, Optional.empty());
 
             Expression rightOperand = factor();
 
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, token.type);
+            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+        }
+
+        return leftOperand;
+    }
+
+    Expression comparison() {
+        Expression leftOperand = term();
+
+        while (match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
+            TokenType operator = currentToken.type;
+
+            consume(operator, Optional.empty());
+
+            Expression rightOperand = term();
+
+            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+        }
+
+        return leftOperand;
+    }
+
+    Expression equality() {
+        Expression leftOperand = comparison();
+
+        while (match(TokenType.EQUAL, TokenType.NOT_EQUAL)) {
+            TokenType operator = currentToken.type;
+
+            consume(operator, Optional.empty());
+
+            Expression rightOperand = comparison();
+
+            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+        }
+
+        return leftOperand;
+    }
+
+    Expression and() {
+        Expression leftOperand = equality();
+
+        while (match(TokenType.AND)) {
+            TokenType operator = currentToken.type;
+
+            consume(operator, Optional.empty());
+
+            Expression rightOperand = equality();
+
+            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+        }
+
+        return leftOperand;
+    }
+
+    Expression or() {
+        Expression leftOperand = and();
+
+        while (match(TokenType.OR)) {
+            TokenType operator = currentToken.type;
+
+            consume(operator, Optional.empty());
+
+            Expression rightOperand = and();
+
+            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
         }
 
         return leftOperand;

@@ -1,4 +1,4 @@
-package com.yellowflash.ast;
+package com.yellowflash.ast.expression;
 
 public class StringLiteral extends Expression {
     String value;

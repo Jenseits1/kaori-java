@@ -9,7 +9,7 @@ public class Lexer {
     int start;
     int current;
     int line;
-    char lookAhead;
+    char currentCharacter;
     List<Token> tokens;
 
     public Lexer(String source) {
@@ -17,7 +17,7 @@ public class Lexer {
         this.start = 0;
         this.current = 0;
         this.line = 1;
-        this.lookAhead = source.charAt(0);
+        this.currentCharacter = source.charAt(0);
         this.tokens = new ArrayList<>();
 
         execute();
@@ -27,13 +27,13 @@ public class Lexer {
         current++;
 
         if (current >= source.length()) {
-            lookAhead = '\0';
+            currentCharacter = '\0';
             return;
         }
 
-        lookAhead = source.charAt(current);
+        currentCharacter = source.charAt(current);
 
-        if (lookAhead == '\n') {
+        if (currentCharacter == '\n') {
             line++;
         }
     }
@@ -43,15 +43,15 @@ public class Lexer {
     }
 
     void getNextNumber() {
-        while (!fileAtEnd() && Character.isDigit(lookAhead)) {
+        while (!fileAtEnd() && Character.isDigit(currentCharacter)) {
             advance();
         }
 
-        if (lookAhead == '.') {
+        if (currentCharacter == '.') {
             advance();
         }
 
-        while (!fileAtEnd() && Character.isDigit(lookAhead)) {
+        while (!fileAtEnd() && Character.isDigit(currentCharacter)) {
             advance();
         }
 
@@ -62,11 +62,11 @@ public class Lexer {
     }
 
     void getNextIdentifer() {
-        while (!fileAtEnd() && Character.isAlphabetic(lookAhead)) {
+        while (!fileAtEnd() && Character.isAlphabetic(currentCharacter)) {
             advance();
         }
 
-        while (!fileAtEnd() && Character.isLetterOrDigit(lookAhead)) {
+        while (!fileAtEnd() && Character.isLetterOrDigit(currentCharacter)) {
             advance();
         }
 
@@ -96,11 +96,11 @@ public class Lexer {
     void getNextString() {
         advance();
 
-        while (!fileAtEnd() && lookAhead != '"') {
+        while (!fileAtEnd() && currentCharacter != '"') {
             advance();
         }
 
-        if (lookAhead != '"') {
+        if (currentCharacter != '"') {
             throw new Error("Missing closing quotation marks!");
         }
 
@@ -148,7 +148,7 @@ public class Lexer {
             return;
         }
 
-        TokenType type = switch (lookAhead) {
+        TokenType type = switch (currentCharacter) {
             case '+' -> TokenType.PLUS;
             case '-' -> TokenType.MINUS;
             case '*' -> TokenType.MULTIPLY;
@@ -181,13 +181,13 @@ public class Lexer {
 
     void execute() {
         while (!fileAtEnd()) {
-            if (Character.isWhitespace(lookAhead)) {
+            if (Character.isWhitespace(currentCharacter)) {
                 advance();
-            } else if (Character.isDigit(lookAhead)) {
+            } else if (Character.isDigit(currentCharacter)) {
                 getNextNumber();
-            } else if (Character.isLetterOrDigit(lookAhead)) {
+            } else if (Character.isLetterOrDigit(currentCharacter)) {
                 getNextIdentifer();
-            } else if (lookAhead == '"') {
+            } else if (currentCharacter == '"') {
                 getNextString();
             } else {
                 getNextSymbol();

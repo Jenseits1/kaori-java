@@ -1,4 +1,4 @@
-package com.yellowflash.ast;
+package com.yellowflash.ast.expression;
 
 import com.yellowflash.lexer.TokenType;
 

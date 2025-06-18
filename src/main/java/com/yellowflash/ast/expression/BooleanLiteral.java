@@ -1,4 +1,4 @@
-package com.yellowflash.ast;
+package com.yellowflash.ast.expression;
 
 public class BooleanLiteral extends Expression {
     boolean value;
