@@ -1,5 +1,7 @@
 package com.kaori.ast.expression;
 
+import com.kaori.interpreter.Interpreter;
+
 public class StringLiteral extends Expression {
     String value;
 
@@ -7,8 +9,7 @@ public class StringLiteral extends Expression {
         this.value = value;
     }
 
-    @Override
-    public String toString() {
-        return value;
+    public Object acceptVisitor(Interpreter interpreter) {
+        return 1;
     }
 }

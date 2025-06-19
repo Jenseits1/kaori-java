@@ -4,10 +4,9 @@ import com.kaori.ast.expression.Expression;
 
 public class ExpressionStatement extends Statement {
     Expression expression;
-    int line;
 
     public ExpressionStatement(Expression expression, int line) {
+        super(line);
         this.expression = expression;
-        this.line = line;
     }
 }

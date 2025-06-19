@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.kaori.ast.expression.BinaryOperator;
 import com.kaori.ast.expression.BooleanLiteral;
 import com.kaori.ast.expression.Expression;
 import com.kaori.ast.expression.FloatLiteral;
 import com.kaori.ast.expression.StringLiteral;
-import com.kaori.ast.expression.UnaryOperator;
+import com.kaori.ast.expression.operators.binary.AddOperator;
+import com.kaori.ast.expression.operators.binary.DivideOperator;
+import com.kaori.ast.expression.operators.binary.ModuloOperator;
+import com.kaori.ast.expression.operators.binary.MultiplyOperator;
+import com.kaori.ast.expression.operators.binary.SubtractOperator;
+import com.kaori.ast.expression.operators.unary.NegationOperator;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
@@ -17,7 +21,7 @@ import com.kaori.lexer.Token;
 import com.kaori.lexer.TokenType;
 
 public class Parser {
-    List<Token> tokens;
+    final List<Token> tokens;
     int currentIndex;
     int line;
     Token currentToken;
@@ -89,7 +93,8 @@ public class Parser {
         return switch (currentToken.type) {
             case MINUS -> {
                 consume(currentToken.type, Optional.empty());
-                yield new UnaryOperator(unary(), TokenType.MINUS);
+
+                yield new NegationOperator(unary());
             }
             case PLUS -> {
                 consume(currentToken.type, Optional.empty());
@@ -104,14 +109,26 @@ public class Parser {
     Expression factor() {
         Expression leftOperand = unary();
 
-        while (equal(TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.REMAINDER)) {
+        while (!parseAtEnd()) {
             TokenType operator = currentToken.type;
 
-            consume(operator, Optional.empty());
+            switch (operator) {
+                case MULTIPLY:
+                    consume(operator, Optional.empty());
+                    leftOperand = new MultiplyOperator(leftOperand, unary());
+                    break;
+                case DIVIDE:
+                    consume(operator, Optional.empty());
+                    leftOperand = new DivideOperator(leftOperand, unary());
+                    break;
+                case MODULO:
+                    consume(operator, Optional.empty());
+                    leftOperand = new ModuloOperator(leftOperand, unary());
+                    break;
+                default:
+                    return leftOperand;
+            }
 
-            Expression rightOperand = unary();
-
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
         }
 
         return leftOperand;
@@ -120,85 +137,95 @@ public class Parser {
     Expression term() {
         Expression leftOperand = factor();
 
-        while (equal(TokenType.PLUS, TokenType.MINUS)) {
+        while (!parseAtEnd()) {
             TokenType operator = currentToken.type;
 
-            consume(operator, Optional.empty());
+            switch (operator) {
+                case PLUS:
+                    consume(operator, Optional.empty());
+                    leftOperand = new AddOperator(leftOperand, factor());
+                    break;
+                case MINUS:
+                    consume(operator, Optional.empty());
+                    leftOperand = new SubtractOperator(leftOperand, factor());
+                    break;
+                default:
+                    return leftOperand;
+            }
 
-            Expression rightOperand = factor();
-
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
         }
 
         return leftOperand;
     }
-
-    Expression comparison() {
-        Expression leftOperand = term();
-
-        while (equal(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL)) {
-            TokenType operator = currentToken.type;
-
-            consume(operator, Optional.empty());
-
-            Expression rightOperand = term();
-
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
-        }
-
-        return leftOperand;
-    }
-
-    Expression equality() {
-        Expression leftOperand = comparison();
-
-        while (equal(TokenType.EQUAL, TokenType.NOT_EQUAL)) {
-            TokenType operator = currentToken.type;
-
-            consume(operator, Optional.empty());
-
-            Expression rightOperand = comparison();
-
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
-        }
-
-        return leftOperand;
-    }
-
-    Expression and() {
-        Expression leftOperand = equality();
-
-        while (equal(TokenType.AND)) {
-            TokenType operator = currentToken.type;
-
-            consume(operator, Optional.empty());
-
-            Expression rightOperand = equality();
-
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
-        }
-
-        return leftOperand;
-    }
-
-    Expression or() {
-        Expression leftOperand = and();
-
-        while (equal(TokenType.OR)) {
-            TokenType operator = currentToken.type;
-
-            consume(operator, Optional.empty());
-
-            Expression rightOperand = and();
-
-            leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
-        }
-
-        return leftOperand;
-    }
+    /*
+     * Expression comparison() {
+     * Expression leftOperand = term();
+     * 
+     * while (equal(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS,
+     * TokenType.LESS_EQUAL)) {
+     * TokenType operator = currentToken.type;
+     * 
+     * consume(operator, Optional.empty());
+     * 
+     * Expression rightOperand = term();
+     * 
+     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * }
+     * 
+     * return leftOperand;
+     * }
+     * 
+     * Expression equality() {
+     * Expression leftOperand = comparison();
+     * 
+     * while (equal(TokenType.EQUAL, TokenType.NOT_EQUAL)) {
+     * TokenType operator = currentToken.type;
+     * 
+     * consume(operator, Optional.empty());
+     * 
+     * Expression rightOperand = comparison();
+     * 
+     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * }
+     * 
+     * return leftOperand;
+     * }
+     * 
+     * Expression and() {
+     * Expression leftOperand = equality();
+     * 
+     * while (equal(TokenType.AND)) {
+     * TokenType operator = currentToken.type;
+     * 
+     * consume(operator, Optional.empty());
+     * 
+     * Expression rightOperand = equality();
+     * 
+     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * }
+     * 
+     * return leftOperand;
+     * }
+     * 
+     * Expression or() {
+     * Expression leftOperand = and();
+     * 
+     * while (equal(TokenType.OR)) {
+     * TokenType operator = currentToken.type;
+     * 
+     * consume(operator, Optional.empty());
+     * 
+     * Expression rightOperand = and();
+     * 
+     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * }
+     * 
+     * return leftOperand;
+     * }
+     */
 
     Expression expression() {
-        return or();
+        return term();
     }
 
     Statement expressionStatement() {

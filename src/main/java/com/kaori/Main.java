@@ -15,6 +15,7 @@ public class Main {
         String source = """
                 1 + 2;
                 2 + 2 * 5;
+                "a bcd 7" * 5;
                 """;
 
         Lexer lexer = new Lexer(source);
@@ -22,6 +23,7 @@ public class Main {
         List<Token> tokens = lexer.scan();
 
         Parser parser = new Parser(tokens);
+
         List<Statement> ast = parser.parse();
 
         System.out.println(gson.toJson(ast));

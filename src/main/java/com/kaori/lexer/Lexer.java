@@ -94,12 +94,12 @@ public class Lexer {
         }
 
         if (currentCharacter != '"') {
-            throw new Error("Missing closing quotation marks!");
+            throw new Error("missing closing quotation marks");
         }
 
         advance();
 
-        String lexeme = source.substring(start, current);
+        String lexeme = source.substring(start + 1, current - 1);
         Token token = new Token(TokenType.STRING_LITERAL, line, lexeme);
 
         tokens.add(token);
@@ -146,7 +146,7 @@ public class Lexer {
             case '-' -> TokenType.MINUS;
             case '*' -> TokenType.MULTIPLY;
             case '/' -> TokenType.DIVIDE;
-            case '%' -> TokenType.REMAINDER;
+            case '%' -> TokenType.MODULO;
             case '(' -> TokenType.LEFT_PAREN;
             case ')' -> TokenType.RIGHT_PAREN;
             case '{' -> TokenType.LEFT_BRACE;

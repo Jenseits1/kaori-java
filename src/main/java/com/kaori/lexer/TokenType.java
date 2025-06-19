@@ -6,7 +6,7 @@ public enum TokenType {
     MINUS,
     MULTIPLY,
     DIVIDE,
-    REMAINDER,
+    MODULO,
 
     // Logical operators
     AND,
@@ -42,11 +42,11 @@ public enum TokenType {
     ELSE,
     RETURN,
     PRINT,
-
-    // Literals and identifiers
     STRING,
     FLOAT,
     BOOLEAN,
+    // Literals and identifiers
+
     IDENTIFIER,
     STRING_LITERAL,
     FLOAT_LITERAL,
