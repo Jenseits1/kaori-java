@@ -203,7 +203,7 @@ public class Parser {
 
     Statement expressionStatement() {
         Expression expression = expression();
-        Statement statement = new ExpressionStatement(expression);
+        Statement statement = new ExpressionStatement(expression, line);
 
         consume(TokenType.SEMICOLON, Optional.of("expected ; at the end of statement"));
 
@@ -221,7 +221,7 @@ public class Parser {
 
         consume(TokenType.SEMICOLON, Optional.of("expected ; at the end of statement"));
 
-        Statement statement = new PrintStatement(expression);
+        Statement statement = new PrintStatement(expression, line);
 
         return statement;
     }
@@ -239,9 +239,7 @@ public class Parser {
         line = 1;
     }
 
-    public List<Statement> parse() {
-        reset();
-
+    List<Statement> start() {
         List<Statement> statements = new ArrayList<>();
 
         while (!parseAtEnd()) {
@@ -249,6 +247,13 @@ public class Parser {
 
             statements.add(statement);
         }
+
+        return statements;
+    }
+
+    public List<Statement> parse() {
+        reset();
+        List<Statement> statements = start();
 
         return statements;
     }

@@ -12,7 +12,10 @@ import com.kaori.parser.Parser;
 public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String source = "1 + 2; 2 + 2 * 5;";
+        String source = """
+                1 + 2;
+                2 + 2 * 5;
+                """;
 
         Lexer lexer = new Lexer(source);
 

@@ -180,9 +180,7 @@ public class Lexer {
         tokens = new ArrayList<>();
     }
 
-    public List<Token> scan() {
-        reset();
-
+    void start() {
         while (!fileAtEnd()) {
             if (Character.isWhitespace(currentCharacter)) {
                 advance();
@@ -198,6 +196,11 @@ public class Lexer {
 
             start = current;
         }
+    }
+
+    public List<Token> scan() {
+        reset();
+        start();
 
         return tokens;
     }
