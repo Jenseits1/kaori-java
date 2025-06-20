@@ -2,14 +2,13 @@ package com.kaori.interpreter;
 
 import java.util.List;
 
-import com.kaori.ast.expression.Expression;
+import com.kaori.ast.expression.literal.FloatLiteral;
+import com.kaori.ast.expression.literal.StringLiteral;
 import com.kaori.ast.expression.operators.binary.AddOperator;
 import com.kaori.ast.expression.operators.binary.DivideOperator;
 import com.kaori.ast.expression.operators.binary.ModuloOperator;
 import com.kaori.ast.expression.operators.binary.MultiplyOperator;
 import com.kaori.ast.expression.operators.binary.SubtractOperator;
-import com.kaori.ast.expression.operators.literal.FloatLiteral;
-import com.kaori.ast.expression.operators.literal.StringLiteral;
 import com.kaori.ast.expression.operators.unary.NegationOperator;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
