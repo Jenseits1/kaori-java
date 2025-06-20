@@ -2,13 +2,16 @@ package com.kaori.interpreter;
 
 import java.util.List;
 
-import com.kaori.ast.expression.FloatLiteral;
+import com.kaori.ast.expression.Expression;
 import com.kaori.ast.expression.operators.binary.AddOperator;
 import com.kaori.ast.expression.operators.binary.DivideOperator;
 import com.kaori.ast.expression.operators.binary.ModuloOperator;
 import com.kaori.ast.expression.operators.binary.MultiplyOperator;
 import com.kaori.ast.expression.operators.binary.SubtractOperator;
+import com.kaori.ast.expression.operators.literal.FloatLiteral;
+import com.kaori.ast.expression.operators.literal.StringLiteral;
 import com.kaori.ast.expression.operators.unary.NegationOperator;
+import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
 
 public class Interpreter {
@@ -19,20 +22,31 @@ public class Interpreter {
     }
 
     public void run() {
-        this.statements.get(0);
+        for (Statement statement : statements) {
+            statement.acceptVisitor(this);
+        }
+    }
+
+    public void visitPrintStatement(PrintStatement statement) {
+        Object expression = statement.expression.acceptVisitor(this);
+
+        System.out.println(expression);
+    }
+
+    public Object visitStringLiteral(StringLiteral literal) {
+        return literal.value;
     }
 
     public Object visitFloatLiteral(FloatLiteral literal) {
-
-        return 1;
+        return literal.value;
     }
 
     public Object visitAddOperator(AddOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Double && right instanceof Double) {
-            return (Double) left + (Double) right;
+        if (left instanceof Float && right instanceof Float) {
+            return (Float) left + (Float) right;
         }
 
         throw new RuntimeException("operands must be numbers for '+'");
@@ -42,8 +56,8 @@ public class Interpreter {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Double && right instanceof Double) {
-            return (Double) left - (Double) right;
+        if (left instanceof Float && right instanceof Float) {
+            return (Float) left - (Float) right;
         }
 
         throw new RuntimeException("Operands must be numbers for '-'");
@@ -53,8 +67,8 @@ public class Interpreter {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Double && right instanceof Double) {
-            return (Double) left * (Double) right;
+        if (left instanceof Float && right instanceof Float) {
+            return (Float) left * (Float) right;
         }
 
         throw new RuntimeException("Operands must be numbers for '*'");
@@ -64,11 +78,11 @@ public class Interpreter {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Double && right instanceof Double) {
-            if ((Double) right == 0.0) {
+        if (left instanceof Float && right instanceof Float) {
+            if ((Float) right == 0.0) {
                 throw new ArithmeticException("Division by zero");
             }
-            return (Double) left / (Double) right;
+            return (Float) left / (Float) right;
         }
 
         throw new RuntimeException("Operands must be numbers for '/'");
@@ -78,8 +92,8 @@ public class Interpreter {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Double && right instanceof Double) {
-            return (Double) left % (Double) right;
+        if (left instanceof Float && right instanceof Float) {
+            return (Float) left % (Float) right;
         }
 
         throw new RuntimeException("Operands must be numbers for '%'");
@@ -88,8 +102,8 @@ public class Interpreter {
     public Object visitNegationOperator(NegationOperator operator) {
         Object operand = operator.operand.acceptVisitor(this);
 
-        if (operand instanceof Double) {
-            return -(Double) operand;
+        if (operand instanceof Float) {
+            return -(Float) operand;
         }
 
         throw new RuntimeException("Operands must be numbers for '%'");

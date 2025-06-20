@@ -17,6 +17,8 @@ public class Main {
                 1 + 2;
                 2 + 2 * 5;
                 "a bcd 7" * 5;
+                print("abcdefg");
+                print(2 * (4.5 + 10));
                 """;
 
         Lexer lexer = new Lexer(source);
@@ -27,9 +29,9 @@ public class Main {
 
         List<Statement> ast = parser.parse();
 
-        System.out.println(gson.toJson(ast));
-
         Interpreter interpreter = new Interpreter(ast);
+
+        interpreter.run();
 
     }
 }

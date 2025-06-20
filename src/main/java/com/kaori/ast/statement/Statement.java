@@ -1,5 +1,7 @@
 package com.kaori.ast.statement;
 
+import com.kaori.interpreter.Interpreter;
+
 public abstract class Statement {
     final int line;
 
@@ -7,5 +9,5 @@ public abstract class Statement {
         this.line = line;
     }
 
-    
+    public abstract void acceptVisitor(Interpreter interpreter);
 }
