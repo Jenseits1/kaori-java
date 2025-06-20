@@ -8,6 +8,7 @@ public class ModuloOperator extends BinaryOperator {
         super(left, right);
     }
 
+    @Override
     public Object acceptVisitor(Interpreter interpreter) {
         return interpreter.visitModuloOperator(this);
     }

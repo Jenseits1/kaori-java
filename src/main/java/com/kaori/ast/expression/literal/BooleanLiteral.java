@@ -2,12 +2,13 @@ package com.kaori.ast.expression.operators.literal;
 
 import com.kaori.interpreter.Interpreter;
 
-public class StringLiteral extends Literal {
-    public StringLiteral(String value) {
+public class BooleanLiteral extends Literal {
+    public BooleanLiteral(boolean value) {
         super(value);
     }
 
+    @Override
     public Object acceptVisitor(Interpreter interpreter) {
-        return interpreter.visitStringLiteral(this);
+        return true;
     }
 }

@@ -7,6 +7,7 @@ public class FloatLiteral extends Literal {
         super(value);
     }
 
+    @Override
     public Object acceptVisitor(Interpreter interpreter) {
         return interpreter.visitFloatLiteral(this);
     }

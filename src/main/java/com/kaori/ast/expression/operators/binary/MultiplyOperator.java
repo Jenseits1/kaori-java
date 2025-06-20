@@ -8,6 +8,7 @@ public class MultiplyOperator extends BinaryOperator {
         super(left, right);
     }
 
+    @Override
     public Object acceptVisitor(Interpreter interpreter) {
         return interpreter.visitMultiplyOperator(this);
     }
