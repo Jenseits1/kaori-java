@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.ast.statement.Statement;
+import com.kaori.interpreter.Interpreter;
 import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;
 import com.kaori.parser.Parser;
@@ -27,6 +28,8 @@ public class Main {
         List<Statement> ast = parser.parse();
 
         System.out.println(gson.toJson(ast));
+
+        Interpreter interpreter = new Interpreter(ast);
 
     }
 }

@@ -34,11 +34,15 @@ public class Parser {
         return currentIndex >= tokens.size();
     }
 
-    void consume(TokenType expected, Optional<String> errorMessage) {
+    void consume(TokenType expected, String errorMessage) {
         if (parseAtEnd() || currentToken.type != expected) {
-            throw new Error(errorMessage.get());
+            throw new Error(errorMessage);
         }
 
+        consume();
+    }
+
+    void consume() {
         currentIndex++;
 
         if (!parseAtEnd()) {
@@ -47,26 +51,12 @@ public class Parser {
         }
     }
 
-    boolean equal(TokenType... types) {
-        if (parseAtEnd()) {
-            return false;
-        }
-
-        for (TokenType type : types) {
-            if (currentToken.type == type) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     Expression parenthesis() {
-        consume(TokenType.LEFT_PAREN, Optional.empty());
+        consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression expr = expression();
 
-        consume(TokenType.RIGHT_PAREN, Optional.of("expected )"));
+        consume(TokenType.RIGHT_PAREN, "expected )");
 
         return expr;
     }
@@ -76,29 +66,36 @@ public class Parser {
             throw new Error("expected valid operand");
         }
 
-        Expression primary = switch (currentToken.type) {
-            case BOOLEAN_LITERAL -> new BooleanLiteral(Boolean.parseBoolean(currentToken.lexeme));
-            case STRING_LITERAL -> new StringLiteral(currentToken.lexeme);
-            case FLOAT_LITERAL -> new FloatLiteral(Float.parseFloat(currentToken.lexeme));
+        return switch (currentToken.type) {
+            case BOOLEAN_LITERAL -> {
+                Expression literal = new BooleanLiteral(Boolean.parseBoolean(currentToken.lexeme));
+                consume();
+                yield literal;
+            }
+            case STRING_LITERAL -> {
+                Expression literal = new StringLiteral(currentToken.lexeme);
+                consume();
+                yield literal;
+            }
+            case FLOAT_LITERAL -> {
+                Expression literal = new FloatLiteral(Float.parseFloat(currentToken.lexeme));
+                consume();
+                yield literal;
+            }
             case LEFT_PAREN -> parenthesis();
             default -> throw new Error("expected valid operand");
         };
 
-        consume(currentToken.type, Optional.empty());
-
-        return primary;
     }
 
     Expression unary() {
         return switch (currentToken.type) {
             case MINUS -> {
-                consume(currentToken.type, Optional.empty());
-
+                consume();
                 yield new NegationOperator(unary());
             }
             case PLUS -> {
-                consume(currentToken.type, Optional.empty());
-
+                consume();
                 yield unary();
 
             }
@@ -107,59 +104,67 @@ public class Parser {
     }
 
     Expression factor() {
-        Expression leftOperand = unary();
+        Expression left = unary();
 
         while (!parseAtEnd()) {
             TokenType operator = currentToken.type;
 
             switch (operator) {
-                case MULTIPLY:
-                    consume(operator, Optional.empty());
-                    leftOperand = new MultiplyOperator(leftOperand, unary());
-                    break;
-                case DIVIDE:
-                    consume(operator, Optional.empty());
-                    leftOperand = new DivideOperator(leftOperand, unary());
-                    break;
-                case MODULO:
-                    consume(operator, Optional.empty());
-                    leftOperand = new ModuloOperator(leftOperand, unary());
-                    break;
-                default:
-                    return leftOperand;
+                case MULTIPLY -> {
+                    consume();
+                    Expression right = unary();
+                    left = new MultiplyOperator(left, right);
+                }
+                case DIVIDE -> {
+                    consume();
+                    Expression right = unary();
+                    left = new DivideOperator(left, right);
+                }
+                case MODULO -> {
+                    consume();
+                    Expression right = unary();
+                    left = new ModuloOperator(left, right);
+                }
+                default -> {
+                    return left;
+                }
+
             }
 
         }
 
-        return leftOperand;
+        return left;
     }
 
     Expression term() {
-        Expression leftOperand = factor();
+        Expression left = factor();
 
         while (!parseAtEnd()) {
             TokenType operator = currentToken.type;
 
             switch (operator) {
-                case PLUS:
-                    consume(operator, Optional.empty());
-                    leftOperand = new AddOperator(leftOperand, factor());
-                    break;
-                case MINUS:
-                    consume(operator, Optional.empty());
-                    leftOperand = new SubtractOperator(leftOperand, factor());
-                    break;
-                default:
-                    return leftOperand;
+                case PLUS -> {
+                    consume();
+                    Expression right = factor();
+                    left = new AddOperator(left, right);
+                }
+                case MINUS -> {
+                    consume();
+                    Expression right = factor();
+                    left = new SubtractOperator(left, right);
+                }
+                default -> {
+                    return left;
+                }
             }
-
         }
 
-        return leftOperand;
+        return left;
     }
+
     /*
      * Expression comparison() {
-     * Expression leftOperand = term();
+     * Expression left = term();
      * 
      * while (equal(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS,
      * TokenType.LESS_EQUAL)) {
@@ -167,60 +172,60 @@ public class Parser {
      * 
      * consume(operator, Optional.empty());
      * 
-     * Expression rightOperand = term();
+     * Expression right = term();
      * 
-     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * left = new BinaryOperator(left, right, operator);
      * }
      * 
-     * return leftOperand;
+     * return left;
      * }
      * 
      * Expression equality() {
-     * Expression leftOperand = comparison();
+     * Expression left = comparison();
      * 
      * while (equal(TokenType.EQUAL, TokenType.NOT_EQUAL)) {
      * TokenType operator = currentToken.type;
      * 
      * consume(operator, Optional.empty());
      * 
-     * Expression rightOperand = comparison();
+     * Expression right = comparison();
      * 
-     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * left = new BinaryOperator(left, right, operator);
      * }
      * 
-     * return leftOperand;
+     * return left;
      * }
      * 
      * Expression and() {
-     * Expression leftOperand = equality();
+     * Expression left = equality();
      * 
      * while (equal(TokenType.AND)) {
      * TokenType operator = currentToken.type;
      * 
      * consume(operator, Optional.empty());
      * 
-     * Expression rightOperand = equality();
+     * Expression right = equality();
      * 
-     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * left = new BinaryOperator(left, right, operator);
      * }
      * 
-     * return leftOperand;
+     * return left;
      * }
      * 
      * Expression or() {
-     * Expression leftOperand = and();
+     * Expression left = and();
      * 
      * while (equal(TokenType.OR)) {
      * TokenType operator = currentToken.type;
      * 
      * consume(operator, Optional.empty());
      * 
-     * Expression rightOperand = and();
+     * Expression right = and();
      * 
-     * leftOperand = new BinaryOperator(leftOperand, rightOperand, operator);
+     * left = new BinaryOperator(left, right, operator);
      * }
      * 
-     * return leftOperand;
+     * return left;
      * }
      */
 
@@ -232,21 +237,21 @@ public class Parser {
         Expression expression = expression();
         Statement statement = new ExpressionStatement(expression, line);
 
-        consume(TokenType.SEMICOLON, Optional.of("expected ; at the end of statement"));
+        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
         return statement;
     }
 
     Statement printStatement() {
-        consume(TokenType.PRINT, Optional.empty());
+        consume(TokenType.PRINT, "expected print keyword");
 
-        consume(TokenType.LEFT_PAREN, Optional.of("expected ("));
+        consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression expression = expression();
 
-        consume(TokenType.RIGHT_PAREN, Optional.of("expected )"));
+        consume(TokenType.RIGHT_PAREN, "expected )");
 
-        consume(TokenType.SEMICOLON, Optional.of("expected ; at the end of statement"));
+        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
         Statement statement = new PrintStatement(expression, line);
 

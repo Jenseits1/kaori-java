@@ -45,8 +45,8 @@ public enum TokenType {
     STRING,
     FLOAT,
     BOOLEAN,
-    // Literals and identifiers
 
+    // Literals and identifiers
     IDENTIFIER,
     STRING_LITERAL,
     FLOAT_LITERAL,

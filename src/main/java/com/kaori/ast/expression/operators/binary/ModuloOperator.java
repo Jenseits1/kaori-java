@@ -1,9 +1,14 @@
-package com.kaori.ast.expression.operators;
+package com.kaori.ast.expression.operators.binary;
 
 import com.kaori.ast.expression.Expression;
+import com.kaori.interpreter.Interpreter;
 
 public class ModuloOperator extends BinaryOperator {
-    public ModuloOperator(Expression leftOperand, Expression rightOperand) {
-        super(leftOperand, rightOperand);
+    public ModuloOperator(Expression left, Expression right) {
+        super(left, right);
+    }
+
+    public Object acceptVisitor(Interpreter interpreter) {
+        return interpreter.visitModuloOperator(this);
     }
 }

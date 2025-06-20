@@ -1,13 +1,13 @@
-package com.kaori.ast.expression.operators;
+package com.kaori.ast.expression.operators.binary;
 
 import com.kaori.ast.expression.Expression;
 
 public abstract class BinaryOperator extends Expression {
-    protected final Expression leftOperand;
-    protected final Expression rightOperand;
+    public final Expression left;
+    public final Expression right;
 
-    public BinaryOperator(Expression leftOperand, Expression rightOperand) {
-        this.leftOperand = leftOperand;
-        this.rightOperand = rightOperand;
+    public BinaryOperator(Expression left, Expression right) {
+        this.left = left;
+        this.right = right;
     }
 }
