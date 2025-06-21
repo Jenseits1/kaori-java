@@ -53,6 +53,5 @@ public enum TokenType {
     BOOLEAN_LITERAL,
 
     // Special
-    INVALID_TOKEN,
     EOF
 }

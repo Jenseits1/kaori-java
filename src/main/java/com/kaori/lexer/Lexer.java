@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.kaori.error.SyntaxError;
+
 public class Lexer {
     String source;
     int start;
@@ -86,7 +88,7 @@ public class Lexer {
         tokens.add(token);
     }
 
-    void getNextString() {
+    void getNextString() throws SyntaxError {
         advance();
 
         while (!fileAtEnd() && currentCharacter != '"') {
@@ -94,7 +96,7 @@ public class Lexer {
         }
 
         if (currentCharacter != '"') {
-            throw new Error("missing closing quotation marks");
+            throw new SyntaxError("expected closing quotation marks", line);
         }
 
         advance();
@@ -130,7 +132,7 @@ public class Lexer {
         return type;
     }
 
-    void getNextSymbol() {
+    void getNextSymbol() throws SyntaxError {
         Optional<TokenType> twoCharTokenType = getNextTwoCharSymbol();
 
         if (twoCharTokenType.isPresent()) {
@@ -157,14 +159,10 @@ public class Lexer {
             case '=' -> TokenType.ASSIGN;
             case '>' -> TokenType.GREATER;
             case '<' -> TokenType.LESS;
-            default -> TokenType.INVALID_TOKEN;
+            default -> throw new SyntaxError("expected valid token", line);
         };
 
         advance();
-
-        if (type == TokenType.INVALID_TOKEN) {
-            return;
-        }
 
         String lexeme = source.substring(start, current);
         Token token = new Token(type, line, lexeme);
@@ -180,7 +178,7 @@ public class Lexer {
         tokens = new ArrayList<>();
     }
 
-    void start() {
+    void start() throws SyntaxError {
         while (!fileAtEnd()) {
             if (Character.isWhitespace(currentCharacter)) {
                 advance();
@@ -198,7 +196,7 @@ public class Lexer {
         }
     }
 
-    public List<Token> scan() {
+    public List<Token> scan() throws SyntaxError {
         reset();
         start();
 
