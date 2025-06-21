@@ -1,8 +1,6 @@
 package com.kaori.interpreter;
 
-import com.kaori.ast.expression.literal.BooleanLiteral;
-import com.kaori.ast.expression.literal.FloatLiteral;
-import com.kaori.ast.expression.literal.StringLiteral;
+import com.kaori.ast.expression.Literal;
 import com.kaori.ast.expression.operators.binary.AddOperator;
 import com.kaori.ast.expression.operators.binary.DivideOperator;
 import com.kaori.ast.expression.operators.binary.ModuloOperator;
@@ -17,11 +15,7 @@ public interface Visitor {
 
     void visitPrintStatement(PrintStatement statement);
 
-    Object visitBooleanLiteral(BooleanLiteral literal);
-
-    Object visitStringLiteral(StringLiteral literal);
-
-    Object visitFloatLiteral(FloatLiteral literal);
+    Object visitLiteral(Literal literal);
 
     Object visitAddOperator(AddOperator operator);
 

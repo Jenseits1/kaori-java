@@ -2,12 +2,8 @@ package com.kaori.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import com.kaori.ast.expression.Expression;
-import com.kaori.ast.expression.literal.BooleanLiteral;
-import com.kaori.ast.expression.literal.FloatLiteral;
-import com.kaori.ast.expression.literal.StringLiteral;
+import com.kaori.ast.expression.Literal;
 import com.kaori.ast.expression.operators.binary.AddOperator;
 import com.kaori.ast.expression.operators.binary.DivideOperator;
 import com.kaori.ast.expression.operators.binary.ModuloOperator;
@@ -68,17 +64,17 @@ public class Parser {
 
         return switch (currentToken.type) {
             case BOOLEAN_LITERAL -> {
-                Expression literal = new BooleanLiteral(Boolean.parseBoolean(currentToken.lexeme));
+                Expression literal = new Literal(Boolean.parseBoolean(currentToken.lexeme));
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
-                Expression literal = new StringLiteral(currentToken.lexeme);
+                Expression literal = new Literal(currentToken.lexeme);
                 consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
-                Expression literal = new FloatLiteral(Float.parseFloat(currentToken.lexeme));
+                Expression literal = new Literal(Float.parseFloat(currentToken.lexeme));
                 consume();
                 yield literal;
             }

@@ -13,9 +13,8 @@ public enum TokenType {
     OR,
     NOT,
 
-    // Comparison and assignment
+    // Comparison
     NOT_EQUAL,
-    ASSIGN,
     EQUAL,
     GREATER,
     GREATER_EQUAL,
@@ -23,6 +22,7 @@ public enum TokenType {
     LESS_EQUAL,
 
     // Punctuation
+    ASSIGN,
     COMMA,
     SEMICOLON,
 

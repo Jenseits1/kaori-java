@@ -14,11 +14,8 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
-                1 + 2;
-                2 + 2 * 5;
-                7 + 5;
-                print(7 + 2);
-                print(2 * (4.5 + 10));
+                print("hello" + " " + "world" + 2);
+
                 """;
 
         Lexer lexer = new Lexer(source);

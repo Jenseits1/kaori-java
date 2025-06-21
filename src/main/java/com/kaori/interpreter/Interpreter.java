@@ -2,9 +2,7 @@ package com.kaori.interpreter;
 
 import java.util.List;
 
-import com.kaori.ast.expression.literal.BooleanLiteral;
-import com.kaori.ast.expression.literal.FloatLiteral;
-import com.kaori.ast.expression.literal.StringLiteral;
+import com.kaori.ast.expression.Literal;
 import com.kaori.ast.expression.operators.binary.AddOperator;
 import com.kaori.ast.expression.operators.binary.DivideOperator;
 import com.kaori.ast.expression.operators.binary.ModuloOperator;
@@ -16,7 +14,7 @@ import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
 
 public class Interpreter implements Visitor {
-    List<Statement> statements;
+    private final List<Statement> statements;
 
     public Interpreter(List<Statement> statements) {
         this.statements = statements;
@@ -28,6 +26,7 @@ public class Interpreter implements Visitor {
         }
     }
 
+    @Override
     public void visitExpressionStatement(ExpressionStatement statement) {
         statement.expression.acceptVisitor(this);
     }
@@ -38,88 +37,88 @@ public class Interpreter implements Visitor {
         System.out.println(expression);
     }
 
-    public Object visitBooleanLiteral(BooleanLiteral literal) {
+    @Override
+    public Object visitLiteral(Literal literal) {
         return literal.value;
     }
 
-    public Object visitStringLiteral(StringLiteral literal) {
-        return literal.value;
-    }
-
-    public Object visitFloatLiteral(FloatLiteral literal) {
-        return literal.value;
-    }
-
+    @Override
     public Object visitAddOperator(AddOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        typeCheck(left, right, "+");
+        if (left instanceof Float l && right instanceof Float r) {
+            return l + r;
+        }
 
-        return (Float) left + (Float) right;
+        if (left instanceof String l && right instanceof String r) {
+            return l + r;
+        }
+
+        throw new RuntimeException("Operands for '+' must be numbers");
     }
 
+    @Override
     public Object visitSubtractOperator(SubtractOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        typeCheck(left, right, "-");
+        if (left instanceof Float l && right instanceof Float r) {
+            return l - r;
+        }
 
-        return (Float) left - (Float) right;
+        throw new RuntimeException("Operands for '-' must be numbers");
     }
 
+    @Override
     public Object visitMultiplyOperator(MultiplyOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        typeCheck(left, right, "*");
+        if (left instanceof Float l && right instanceof Float r) {
+            return l * r;
+        }
 
-        return (Float) left * (Float) right;
+        throw new RuntimeException("Operands for '*' must be numbers");
     }
 
+    @Override
     public Object visitDivideOperator(DivideOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        typeCheck(left, right, "/");
+        if (left instanceof Float l && right instanceof Float r) {
+            if (r == 0.0f) {
+                throw new ArithmeticException("Division by zero");
+            }
 
-        if ((Float) right == 0.0) {
-            throw new ArithmeticException("Division by zero");
+            return l / r;
         }
 
-        return (Float) left / (Float) right;
-
+        throw new RuntimeException("Operands for '/' must be numbers");
     }
 
+    @Override
     public Object visitModuloOperator(ModuloOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        typeCheck(left, right, "%");
+        if (left instanceof Float l && right instanceof Float r) {
+            return l % r;
+        }
 
-        return (Float) left % (Float) right;
+        throw new RuntimeException("Operands for '%' must be numbers");
     }
 
+    @Override
     public Object visitNegationOperator(NegationOperator operator) {
         Object left = operator.left.acceptVisitor(this);
 
-        typeCheck(left, "-");
-        return -(Float) left;
-    }
-
-    private void typeCheck(Object left, Object right, String operator) {
-        if (left instanceof Float && right instanceof Float) {
-            return;
+        if (left instanceof Float l) {
+            return -l;
         }
 
-        throw new RuntimeException("expected number operands for " + operator);
+        throw new RuntimeException("Operand for unary '-' must be a number");
     }
 
-    private void typeCheck(Object left, String operator) {
-        if (left instanceof Float) {
-            return;
-        }
-
-        throw new RuntimeException("expected number operand for " + operator);
-    }
 }
