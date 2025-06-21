@@ -1,6 +1,6 @@
-package com.kaori.ast.expression.operators.literal;
+package com.kaori.ast.expression.literal;
 
-import com.kaori.interpreter.Interpreter;
+import com.kaori.interpreter.Visitor;
 
 public class FloatLiteral extends Literal {
     public FloatLiteral(float value) {
@@ -8,8 +8,8 @@ public class FloatLiteral extends Literal {
     }
 
     @Override
-    public Object acceptVisitor(Interpreter interpreter) {
-        return interpreter.visitFloatLiteral(this);
+    public Object acceptVisitor(Visitor visitor) {
+        return visitor.visitFloatLiteral(this);
     }
 
 }

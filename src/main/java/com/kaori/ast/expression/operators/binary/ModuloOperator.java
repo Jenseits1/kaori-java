@@ -1,7 +1,7 @@
 package com.kaori.ast.expression.operators.binary;
 
 import com.kaori.ast.expression.Expression;
-import com.kaori.interpreter.Interpreter;
+import com.kaori.interpreter.Visitor;
 
 public class ModuloOperator extends BinaryOperator {
     public ModuloOperator(Expression left, Expression right) {
@@ -9,7 +9,7 @@ public class ModuloOperator extends BinaryOperator {
     }
 
     @Override
-    public Object acceptVisitor(Interpreter interpreter) {
-        return interpreter.visitModuloOperator(this);
+    public Object acceptVisitor(Visitor visitor) {
+        return visitor.visitModuloOperator(this);
     }
 }

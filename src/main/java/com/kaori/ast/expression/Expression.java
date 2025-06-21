@@ -1,7 +1,7 @@
 package com.kaori.ast.expression;
 
-import com.kaori.interpreter.Interpreter;
+import com.kaori.interpreter.Visitor;
 
-public abstract class Expression {
-    public abstract Object acceptVisitor(Interpreter interpreter);
+public interface Expression {
+    public Object acceptVisitor(Visitor visitor);
 }

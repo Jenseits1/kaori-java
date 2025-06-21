@@ -1,7 +1,7 @@
 package com.kaori.ast.expression.operators.binary;
 
 import com.kaori.ast.expression.Expression;
-import com.kaori.interpreter.Interpreter;
+import com.kaori.interpreter.Visitor;
 
 public class DivideOperator extends BinaryOperator {
     public DivideOperator(Expression left, Expression right) {
@@ -9,7 +9,7 @@ public class DivideOperator extends BinaryOperator {
     }
 
     @Override
-    public Object acceptVisitor(Interpreter interpreter) {
-        return interpreter.visitDivideOperator(this);
+    public Object acceptVisitor(Visitor visitor) {
+        return visitor.visitDivideOperator(this);
     }
 }

@@ -1,6 +1,6 @@
-package com.kaori.ast.expression.operators.literal;
+package com.kaori.ast.expression.literal;
 
-import com.kaori.interpreter.Interpreter;
+import com.kaori.interpreter.Visitor;
 
 public class BooleanLiteral extends Literal {
     public BooleanLiteral(boolean value) {
@@ -8,7 +8,7 @@ public class BooleanLiteral extends Literal {
     }
 
     @Override
-    public Object acceptVisitor(Interpreter interpreter) {
-        return true;
+    public Object acceptVisitor(Visitor visitor) {
+        return visitor.visitBooleanLiteral(this);
     }
 }
