@@ -54,67 +54,72 @@ public class Interpreter implements Visitor {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Float && right instanceof Float) {
-            return (Float) left + (Float) right;
-        }
+        typeCheck(left, right, "+");
 
-        throw new RuntimeException("operands must be numbers for '+'");
+        return (Float) left + (Float) right;
     }
 
     public Object visitSubtractOperator(SubtractOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Float && right instanceof Float) {
-            return (Float) left - (Float) right;
-        }
+        typeCheck(left, right, "-");
 
-        throw new RuntimeException("Operands must be numbers for '-'");
+        return (Float) left - (Float) right;
     }
 
     public Object visitMultiplyOperator(MultiplyOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Float && right instanceof Float) {
-            return (Float) left * (Float) right;
-        }
+        typeCheck(left, right, "*");
 
-        throw new RuntimeException("Operands must be numbers for '*'");
+        return (Float) left * (Float) right;
     }
 
     public Object visitDivideOperator(DivideOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Float && right instanceof Float) {
-            if ((Float) right == 0.0) {
-                throw new ArithmeticException("Division by zero");
-            }
-            return (Float) left / (Float) right;
+        typeCheck(left, right, "/");
+
+        if ((Float) right == 0.0) {
+            throw new ArithmeticException("Division by zero");
         }
 
-        throw new RuntimeException("Operands must be numbers for '/'");
+        return (Float) left / (Float) right;
+
     }
 
     public Object visitModuloOperator(ModuloOperator operator) {
         Object left = operator.left.acceptVisitor(this);
         Object right = operator.right.acceptVisitor(this);
 
-        if (left instanceof Float && right instanceof Float) {
-            return (Float) left % (Float) right;
-        }
+        typeCheck(left, right, "%");
 
-        throw new RuntimeException("Operands must be numbers for '%'");
+        return (Float) left % (Float) right;
     }
 
     public Object visitNegationOperator(NegationOperator operator) {
-        Object operand = operator.operand.acceptVisitor(this);
+        Object left = operator.left.acceptVisitor(this);
 
-        if (operand instanceof Float) {
-            return -(Float) operand;
+        typeCheck(left, "-");
+        return -(Float) left;
+    }
+
+    private void typeCheck(Object left, Object right, String operator) {
+        if (left instanceof Float && right instanceof Float) {
+            return;
         }
 
-        throw new RuntimeException("Operands must be numbers for '%'");
+        throw new RuntimeException("expected number operands for " + operator);
+    }
+
+    private void typeCheck(Object left, String operator) {
+        if (left instanceof Float) {
+            return;
+        }
+
+        throw new RuntimeException("expected number operand for " + operator);
     }
 }

@@ -16,8 +16,8 @@ public class Main {
         String source = """
                 1 + 2;
                 2 + 2 * 5;
-                "a bcd 7" * 5;
-                print("abcdefg");
+                7 + 5;
+                print(7 + 2);
                 print(2 * (4.5 + 10));
                 """;
 
