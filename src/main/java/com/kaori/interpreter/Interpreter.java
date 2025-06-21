@@ -3,12 +3,21 @@ package com.kaori.interpreter;
 import java.util.List;
 
 import com.kaori.ast.expression.Literal;
-import com.kaori.ast.expression.operators.binary.AddOperator;
-import com.kaori.ast.expression.operators.binary.DivideOperator;
-import com.kaori.ast.expression.operators.binary.ModuloOperator;
-import com.kaori.ast.expression.operators.binary.MultiplyOperator;
-import com.kaori.ast.expression.operators.binary.SubtractOperator;
-import com.kaori.ast.expression.operators.unary.NegationOperator;
+import com.kaori.ast.expression.operators.binary.Add;
+import com.kaori.ast.expression.operators.binary.And;
+import com.kaori.ast.expression.operators.binary.Divide;
+import com.kaori.ast.expression.operators.binary.Equal;
+import com.kaori.ast.expression.operators.binary.Greater;
+import com.kaori.ast.expression.operators.binary.GreaterEqual;
+import com.kaori.ast.expression.operators.binary.Less;
+import com.kaori.ast.expression.operators.binary.LessEqual;
+import com.kaori.ast.expression.operators.binary.Modulo;
+import com.kaori.ast.expression.operators.binary.Multiply;
+import com.kaori.ast.expression.operators.binary.NotEqual;
+import com.kaori.ast.expression.operators.binary.Or;
+import com.kaori.ast.expression.operators.binary.Subtract;
+import com.kaori.ast.expression.operators.unary.Negation;
+import com.kaori.ast.expression.operators.unary.Not;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
@@ -43,9 +52,9 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitAddOperator(AddOperator operator) {
-        Object left = operator.left.acceptVisitor(this);
-        Object right = operator.right.acceptVisitor(this);
+    public Object visitAdd(Add node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
             return l + r;
@@ -59,9 +68,9 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitSubtractOperator(SubtractOperator operator) {
-        Object left = operator.left.acceptVisitor(this);
-        Object right = operator.right.acceptVisitor(this);
+    public Object visitSubtract(Subtract node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
             return l - r;
@@ -71,9 +80,9 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitMultiplyOperator(MultiplyOperator operator) {
-        Object left = operator.left.acceptVisitor(this);
-        Object right = operator.right.acceptVisitor(this);
+    public Object visitMultiply(Multiply node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
             return l * r;
@@ -83,9 +92,9 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitDivideOperator(DivideOperator operator) {
-        Object left = operator.left.acceptVisitor(this);
-        Object right = operator.right.acceptVisitor(this);
+    public Object visitDivide(Divide node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
             if (r == 0.0f) {
@@ -99,9 +108,9 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitModuloOperator(ModuloOperator operator) {
-        Object left = operator.left.acceptVisitor(this);
-        Object right = operator.right.acceptVisitor(this);
+    public Object visitModulo(Modulo node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
             return l % r;
@@ -111,14 +120,68 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitNegationOperator(NegationOperator operator) {
-        Object left = operator.left.acceptVisitor(this);
+    public Object visitNegation(Negation node) {
+        Object left = node.left.acceptVisitor(this);
 
         if (left instanceof Float l) {
             return -l;
         }
 
         throw new RuntimeException("Operand for unary '-' must be a number");
+    }
+
+    @Override
+    public Object visitAnd(And node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitAnd'");
+    }
+
+    @Override
+    public Object visitOr(Or node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitOr'");
+    }
+
+    @Override
+    public Object visitEqual(Equal node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitEqual'");
+    }
+
+    @Override
+    public Object visitNotEqual(NotEqual node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitNotEqual'");
+    }
+
+    @Override
+    public Object visitGreater(Greater node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitGreater'");
+    }
+
+    @Override
+    public Object visitGreaterEqual(GreaterEqual node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitGreaterEqual'");
+    }
+
+    @Override
+    public Object visitLess(Less node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitLess'");
+    }
+
+    @Override
+    public Object visitLessEqual(LessEqual node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitLessEqual'");
+    }
+
+    @Override
+    public Object visitNot(Not node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitNot'");
     }
 
 }

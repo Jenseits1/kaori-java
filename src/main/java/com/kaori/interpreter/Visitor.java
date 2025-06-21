@@ -1,31 +1,59 @@
 package com.kaori.interpreter;
 
 import com.kaori.ast.expression.Literal;
-import com.kaori.ast.expression.operators.binary.AddOperator;
-import com.kaori.ast.expression.operators.binary.DivideOperator;
-import com.kaori.ast.expression.operators.binary.ModuloOperator;
-import com.kaori.ast.expression.operators.binary.MultiplyOperator;
-import com.kaori.ast.expression.operators.binary.SubtractOperator;
-import com.kaori.ast.expression.operators.unary.NegationOperator;
+import com.kaori.ast.expression.operators.binary.Add;
+import com.kaori.ast.expression.operators.binary.And;
+import com.kaori.ast.expression.operators.binary.Divide;
+import com.kaori.ast.expression.operators.binary.Equal;
+import com.kaori.ast.expression.operators.binary.Greater;
+import com.kaori.ast.expression.operators.binary.GreaterEqual;
+import com.kaori.ast.expression.operators.binary.Less;
+import com.kaori.ast.expression.operators.binary.LessEqual;
+import com.kaori.ast.expression.operators.binary.Modulo;
+import com.kaori.ast.expression.operators.binary.Multiply;
+import com.kaori.ast.expression.operators.binary.NotEqual;
+import com.kaori.ast.expression.operators.binary.Or;
+import com.kaori.ast.expression.operators.binary.Subtract;
+import com.kaori.ast.expression.operators.unary.Negation;
+import com.kaori.ast.expression.operators.unary.Not;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 
 public interface Visitor {
-    void visitExpressionStatement(ExpressionStatement statement);
+    void visitExpressionStatement(ExpressionStatement node);
 
-    void visitPrintStatement(PrintStatement statement);
+    void visitPrintStatement(PrintStatement node);
 
-    Object visitLiteral(Literal literal);
+    Object visitLiteral(Literal node);
 
-    Object visitAddOperator(AddOperator operator);
+    Object visitAdd(Add node);
 
-    Object visitSubtractOperator(SubtractOperator operator);
+    Object visitSubtract(Subtract node);
 
-    Object visitMultiplyOperator(MultiplyOperator operator);
+    Object visitMultiply(Multiply node);
 
-    Object visitDivideOperator(DivideOperator operator);
+    Object visitDivide(Divide node);
 
-    Object visitModuloOperator(ModuloOperator operator);
+    Object visitModulo(Modulo node);
 
-    Object visitNegationOperator(NegationOperator operator);
+    Object visitAnd(And node);
+
+    Object visitOr(Or node);
+
+    Object visitEqual(Equal node);
+
+    Object visitNotEqual(NotEqual node);
+
+    Object visitGreater(Greater node);
+
+    Object visitGreaterEqual(GreaterEqual node);
+
+    Object visitLess(Less node);
+
+    Object visitLessEqual(LessEqual node);
+
+    Object visitNegation(Negation node);
+
+    Object visitNot(Not node);
+
 }
