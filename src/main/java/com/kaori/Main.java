@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.ast.statement.Statement;
 import com.kaori.error.SyntaxError;
+import com.kaori.error.TypeError;
 import com.kaori.interpreter.Interpreter;
 import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;
@@ -15,7 +16,8 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
-                print("hello world");""";
+                print((2 + 5 == 7) * 3);
+                """;
 
         try {
             Lexer lexer = new Lexer(source);
@@ -27,6 +29,8 @@ public class Main {
             interpreter.run();
 
         } catch (SyntaxError error) {
+            System.out.println(error.getMessage());
+        } catch (TypeError error) {
             System.out.println(error.getMessage());
         }
 

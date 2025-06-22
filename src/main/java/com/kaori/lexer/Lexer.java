@@ -177,7 +177,7 @@ public class Lexer {
                 advance();
             } else if (Character.isDigit(currentCharacter)) {
                 getNextNumber();
-            } else if (Character.isLetterOrDigit(currentCharacter)) {
+            } else if (Character.isLetter(currentCharacter)) {
                 identifierOrKeyword();
             } else if (currentCharacter == '"') {
                 stringLiteral();

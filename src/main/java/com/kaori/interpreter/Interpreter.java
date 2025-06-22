@@ -21,9 +21,11 @@ import com.kaori.ast.expression.operators.unary.Not;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
+import com.kaori.error.TypeError;
 
 public class Interpreter implements Visitor {
     private final List<Statement> statements;
+    private int line;
 
     public Interpreter(List<Statement> statements) {
         this.statements = statements;
@@ -31,6 +33,7 @@ public class Interpreter implements Visitor {
 
     public void run() {
         for (Statement statement : statements) {
+            line = statement.line;
             statement.acceptVisitor(this);
         }
     }
@@ -64,7 +67,7 @@ public class Interpreter implements Visitor {
             return l + r;
         }
 
-        throw new RuntimeException("Operands for '+' must be numbers");
+        throw new TypeError("expected number or string operands for '+'", line);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class Interpreter implements Visitor {
             return l - r;
         }
 
-        throw new RuntimeException("Operands for '-' must be numbers");
+        throw new TypeError("expected float operands for '-'", line);
     }
 
     @Override
@@ -88,7 +91,7 @@ public class Interpreter implements Visitor {
             return l * r;
         }
 
-        throw new RuntimeException("Operands for '*' must be numbers");
+        throw new TypeError("expected float operands for '*'", line);
     }
 
     @Override
@@ -98,13 +101,12 @@ public class Interpreter implements Visitor {
 
         if (left instanceof Float l && right instanceof Float r) {
             if (r == 0.0f) {
-                throw new ArithmeticException("Division by zero");
+                throw new TypeError("division by zero", line);
             }
-
             return l / r;
         }
 
-        throw new RuntimeException("Operands for '/' must be numbers");
+        throw new TypeError("expected float operands for '/'", line);
     }
 
     @Override
@@ -116,7 +118,114 @@ public class Interpreter implements Visitor {
             return l % r;
         }
 
-        throw new RuntimeException("Operands for '%' must be numbers");
+        throw new TypeError("expected float operands for '%'", line);
+    }
+
+    @Override
+    public Object visitAnd(And node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left instanceof Boolean l && right instanceof Boolean r) {
+            return l && r;
+        }
+
+        throw new TypeError("expected boolean operands for '&&'", line);
+    }
+
+    @Override
+    public Object visitOr(Or node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left instanceof Boolean l && right instanceof Boolean r) {
+            return l || r;
+        }
+
+        throw new TypeError("expected boolean operands for '||'", line);
+    }
+
+    @Override
+    public Object visitEqual(Equal node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left != null && left.getClass() != right.getClass()) {
+            throw new TypeError("expected operands of same type for '=='", line);
+        }
+
+        return (left == null) ? right == null : left.equals(right);
+    }
+
+    @Override
+    public Object visitNotEqual(NotEqual node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left != null && left.getClass() != right.getClass()) {
+            throw new TypeError("expected operands of same type for '!='", line);
+        }
+
+        return (left == null) ? right != null : !left.equals(right);
+    }
+
+    @Override
+    public Object visitGreater(Greater node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left instanceof Float l && right instanceof Float r) {
+            return l > r;
+        }
+
+        throw new TypeError("expected float operands for '>'", line);
+    }
+
+    @Override
+    public Object visitGreaterEqual(GreaterEqual node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left instanceof Float l && right instanceof Float r) {
+            return l >= r;
+        }
+
+        throw new TypeError("expected float operands for '>='", line);
+    }
+
+    @Override
+    public Object visitLess(Less node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left instanceof Float l && right instanceof Float r) {
+            return l < r;
+        }
+
+        throw new TypeError("expected float operands for '<'", line);
+    }
+
+    @Override
+    public Object visitLessEqual(LessEqual node) {
+        Object left = node.left.acceptVisitor(this);
+        Object right = node.right.acceptVisitor(this);
+
+        if (left instanceof Float l && right instanceof Float r) {
+            return l <= r;
+        }
+
+        throw new TypeError("expected float operands for '<='", line);
+    }
+
+    @Override
+    public Object visitNot(Not node) {
+        Object value = node.left.acceptVisitor(this);
+
+        if (value instanceof Boolean b) {
+            return !b;
+        }
+
+        throw new TypeError("expected boolean operand for '!'", line);
     }
 
     @Override
@@ -127,61 +236,7 @@ public class Interpreter implements Visitor {
             return -l;
         }
 
-        throw new RuntimeException("Operand for unary '-' must be a number");
-    }
-
-    @Override
-    public Object visitAnd(And node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitAnd'");
-    }
-
-    @Override
-    public Object visitOr(Or node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitOr'");
-    }
-
-    @Override
-    public Object visitEqual(Equal node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitEqual'");
-    }
-
-    @Override
-    public Object visitNotEqual(NotEqual node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitNotEqual'");
-    }
-
-    @Override
-    public Object visitGreater(Greater node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitGreater'");
-    }
-
-    @Override
-    public Object visitGreaterEqual(GreaterEqual node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitGreaterEqual'");
-    }
-
-    @Override
-    public Object visitLess(Less node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitLess'");
-    }
-
-    @Override
-    public Object visitLessEqual(LessEqual node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitLessEqual'");
-    }
-
-    @Override
-    public Object visitNot(Not node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitNot'");
+        throw new TypeError("expected float operand for unary '-'", line);
     }
 
 }
