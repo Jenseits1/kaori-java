@@ -18,6 +18,7 @@ import com.kaori.ast.expression.operators.binary.Or;
 import com.kaori.ast.expression.operators.binary.Subtract;
 import com.kaori.ast.expression.operators.unary.Negation;
 import com.kaori.ast.expression.operators.unary.Not;
+import com.kaori.ast.statement.BlockStatement;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
@@ -39,15 +40,22 @@ public class Interpreter implements Visitor {
         }
     }
 
-    @Override
-    public void visitExpressionStatement(ExpressionStatement statement) {
-        statement.expression.acceptVisitor(this);
-    }
-
     public void visitPrintStatement(PrintStatement statement) {
         Object expression = statement.expression.acceptVisitor(this);
 
         System.out.println(expression);
+    }
+
+    @Override
+    public void visitBlockStatement(BlockStatement node) {
+        for (Statement statement : node.statements) {
+            statement.acceptVisitor(this);
+        }
+    }
+
+    @Override
+    public void visitExpressionStatement(ExpressionStatement statement) {
+        statement.expression.acceptVisitor(this);
     }
 
     @Override
@@ -157,15 +165,15 @@ public class Interpreter implements Visitor {
         Object right = node.right.acceptVisitor(this);
 
         if (left instanceof String l && right instanceof String r) {
-            return l == r;
+            return l.equals(r);
         }
 
         if (left instanceof Float l && right instanceof Float r) {
-            return l == r;
+            return l.equals(r);
         }
 
         if (left instanceof Boolean l && right instanceof Boolean r) {
-            return l == r;
+            return l.equals(r);
         }
 
         throw new TypeError("expected operands of same type for '=='", line);
@@ -177,15 +185,15 @@ public class Interpreter implements Visitor {
         Object right = node.right.acceptVisitor(this);
 
         if (left instanceof String l && right instanceof String r) {
-            return l != r;
+            return !l.equals(r);
         }
 
         if (left instanceof Float l && right instanceof Float r) {
-            return l != r;
+            return !l.equals(r);
         }
 
         if (left instanceof Boolean l && right instanceof Boolean r) {
-            return l != r;
+            return !l.equals(r);
         }
 
         throw new TypeError("expected operands of same type for '!='", line);
@@ -260,5 +268,4 @@ public class Interpreter implements Visitor {
 
         throw new TypeError("expected float operand for unary '-'", line);
     }
-
 }

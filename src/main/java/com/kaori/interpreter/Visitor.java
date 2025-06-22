@@ -16,6 +16,7 @@ import com.kaori.ast.expression.operators.binary.Or;
 import com.kaori.ast.expression.operators.binary.Subtract;
 import com.kaori.ast.expression.operators.unary.Negation;
 import com.kaori.ast.expression.operators.unary.Not;
+import com.kaori.ast.statement.BlockStatement;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 
@@ -23,6 +24,8 @@ public interface Visitor {
     void visitExpressionStatement(ExpressionStatement node);
 
     void visitPrintStatement(PrintStatement node);
+
+    void visitBlockStatement(BlockStatement node);
 
     Object visitLiteral(Literal node);
 

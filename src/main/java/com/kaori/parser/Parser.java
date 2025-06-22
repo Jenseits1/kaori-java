@@ -18,6 +18,7 @@ import com.kaori.ast.expression.operators.binary.NotEqual;
 import com.kaori.ast.expression.operators.binary.Or;
 import com.kaori.ast.expression.operators.binary.Subtract;
 import com.kaori.ast.expression.operators.unary.Negation;
+import com.kaori.ast.statement.BlockStatement;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
@@ -73,17 +74,20 @@ public class Parser {
 
         return switch (currentToken.type) {
             case BOOLEAN_LITERAL -> {
-                Expression literal = new Literal(Boolean.parseBoolean(currentToken.lexeme));
+                boolean value = Boolean.parseBoolean(currentToken.lexeme);
+                Expression literal = new Literal(value);
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
-                Expression literal = new Literal(currentToken.lexeme);
+                String value = currentToken.lexeme.substring(1, currentToken.lexeme.length() - 1);
+                Expression literal = new Literal(value);
                 consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
-                Expression literal = new Literal(Float.parseFloat(currentToken.lexeme));
+                float value = Float.parseFloat(currentToken.lexeme);
+                Expression literal = new Literal(value);
                 consume();
                 yield literal;
             }
@@ -295,14 +299,32 @@ public class Parser {
 
         consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
-        Statement statement = new PrintStatement(expression, line);
+        return new PrintStatement(expression, line);
+    }
 
-        return statement;
+    Statement blockStatement() throws SyntaxError {
+        consume(TokenType.LEFT_BRACE, "expected {");
+
+        List<Statement> statements = new ArrayList<>();
+
+        while (!parseAtEnd()) {
+            if (currentToken.type == TokenType.RIGHT_BRACE) {
+                break;
+            }
+
+            Statement statement = statement();
+            statements.add(statement);
+        }
+
+        consume(TokenType.RIGHT_BRACE, "expected }");
+
+        return new BlockStatement(line, statements);
     }
 
     Statement statement() throws SyntaxError {
         return switch (currentToken.type) {
             case PRINT -> printStatement();
+            case LEFT_BRACE -> blockStatement();
             default -> expressionStatement();
         };
     }
