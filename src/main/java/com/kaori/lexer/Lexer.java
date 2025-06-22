@@ -37,6 +37,13 @@ public class Lexer {
         return current >= source.length();
     }
 
+    void addToken(TokenType type, int start, int end) {
+        String lexeme = source.substring(start, end);
+        Token token = new Token(type, line, lexeme);
+
+        tokens.add(token);
+    }
+
     void getNextNumber() {
         while (!fileAtEnd() && Character.isDigit(currentCharacter)) {
             advance();
@@ -50,13 +57,10 @@ public class Lexer {
             advance();
         }
 
-        String lexeme = source.substring(start, current);
-        Token token = new Token(TokenType.FLOAT_LITERAL, line, lexeme);
-
-        tokens.add(token);
+        addToken(TokenType.FLOAT_LITERAL, start, current);
     }
 
-    void getNextIdentifer() {
+    void identifierOrKeyword() {
         while (!fileAtEnd() && Character.isAlphabetic(currentCharacter)) {
             advance();
         }
@@ -82,13 +86,10 @@ public class Lexer {
             default -> TokenType.IDENTIFIER;
         };
 
-        String lexeme = source.substring(start, current);
-        Token token = new Token(type, line, lexeme);
-
-        tokens.add(token);
+        addToken(type, start, current);
     }
 
-    void getNextString() throws SyntaxError {
+    void stringLiteral() throws SyntaxError {
         advance();
 
         while (!fileAtEnd() && currentCharacter != '"') {
@@ -101,73 +102,65 @@ public class Lexer {
 
         advance();
 
-        String lexeme = source.substring(start + 1, current - 1);
-        Token token = new Token(TokenType.STRING_LITERAL, line, lexeme);
-
-        tokens.add(token);
+        addToken(TokenType.STRING_LITERAL, start, current);
     }
 
-    Optional<TokenType> getNextTwoCharSymbol() {
-        if (current + 2 > source.length()) {
-            return Optional.empty();
+    void symbol() throws SyntaxError {
+        String lookahead = source.substring(current);
+
+        if (lookahead.startsWith("&&")) {
+            advance();
+            advance();
+            addToken(TokenType.AND, start, current);
+
+        } else if (lookahead.startsWith("||")) {
+            advance();
+            advance();
+            addToken(TokenType.OR, start, current);
+
+        } else if (lookahead.startsWith("!=")) {
+            advance();
+            advance();
+            addToken(TokenType.NOT_EQUAL, start, current);
+
+        } else if (lookahead.startsWith("==")) {
+            advance();
+            advance();
+            addToken(TokenType.EQUAL, start, current);
+
+        } else if (lookahead.startsWith(">=")) {
+            advance();
+            advance();
+            addToken(TokenType.GREATER_EQUAL, start, current);
+
+        } else if (lookahead.startsWith("<=")) {
+            advance();
+            advance();
+            addToken(TokenType.LESS_EQUAL, start, current);
+
+        } else {
+            TokenType type = switch (currentCharacter) {
+                case '+' -> TokenType.PLUS;
+                case '-' -> TokenType.MINUS;
+                case '*' -> TokenType.MULTIPLY;
+                case '/' -> TokenType.DIVIDE;
+                case '%' -> TokenType.MODULO;
+                case '(' -> TokenType.LEFT_PAREN;
+                case ')' -> TokenType.RIGHT_PAREN;
+                case '{' -> TokenType.LEFT_BRACE;
+                case '}' -> TokenType.RIGHT_BRACE;
+                case ',' -> TokenType.COMMA;
+                case ';' -> TokenType.SEMICOLON;
+                case '!' -> TokenType.NOT;
+                case '=' -> TokenType.ASSIGN;
+                case '>' -> TokenType.GREATER;
+                case '<' -> TokenType.LESS;
+                default -> throw new SyntaxError("unexpected token", line);
+            };
+
+            advance();
+            addToken(type, start, current);
         }
-
-        Optional<TokenType> type = switch (source.substring(current, current + 2)) {
-            case "&&" -> Optional.of(TokenType.AND);
-            case "||" -> Optional.of(TokenType.OR);
-            case "!=" -> Optional.of(TokenType.NOT_EQUAL);
-            case "==" -> Optional.of(TokenType.EQUAL);
-            case ">=" -> Optional.of(TokenType.GREATER_EQUAL);
-            case "<=" -> Optional.of(TokenType.LESS_EQUAL);
-            default -> Optional.empty();
-        };
-
-        if (type.isEmpty()) {
-            return Optional.empty();
-        }
-
-        advance();
-        advance();
-
-        return type;
-    }
-
-    void getNextSymbol() throws SyntaxError {
-        Optional<TokenType> twoCharTokenType = getNextTwoCharSymbol();
-
-        if (twoCharTokenType.isPresent()) {
-            String lexeme = source.substring(start, current);
-            Token token = new Token(twoCharTokenType.get(), line, lexeme);
-
-            tokens.add(token);
-            return;
-        }
-
-        TokenType type = switch (currentCharacter) {
-            case '+' -> TokenType.PLUS;
-            case '-' -> TokenType.MINUS;
-            case '*' -> TokenType.MULTIPLY;
-            case '/' -> TokenType.DIVIDE;
-            case '%' -> TokenType.MODULO;
-            case '(' -> TokenType.LEFT_PAREN;
-            case ')' -> TokenType.RIGHT_PAREN;
-            case '{' -> TokenType.LEFT_BRACE;
-            case '}' -> TokenType.RIGHT_BRACE;
-            case ',' -> TokenType.COMMA;
-            case ';' -> TokenType.SEMICOLON;
-            case '!' -> TokenType.NOT;
-            case '=' -> TokenType.ASSIGN;
-            case '>' -> TokenType.GREATER;
-            case '<' -> TokenType.LESS;
-            default -> throw new SyntaxError("expected valid token", line);
-        };
-
-        advance();
-
-        String lexeme = source.substring(start, current);
-        Token token = new Token(type, line, lexeme);
-
-        tokens.add(token);
     }
 
     void reset() {
@@ -185,11 +178,11 @@ public class Lexer {
             } else if (Character.isDigit(currentCharacter)) {
                 getNextNumber();
             } else if (Character.isLetterOrDigit(currentCharacter)) {
-                getNextIdentifer();
+                identifierOrKeyword();
             } else if (currentCharacter == '"') {
-                getNextString();
+                stringLiteral();
             } else {
-                getNextSymbol();
+                symbol();
             }
 
             start = current;

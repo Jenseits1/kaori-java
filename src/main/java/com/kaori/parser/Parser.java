@@ -39,15 +39,15 @@ public class Parser {
         return currentIndex >= tokens.size();
     }
 
-    void eat(TokenType expected, String errorMessage) throws SyntaxError {
+    void consume(TokenType expected, String errorMessage) throws SyntaxError {
         if (parseAtEnd() || currentToken.type != expected) {
             throw new SyntaxError(errorMessage, line);
         }
 
-        eat();
+        consume();
     }
 
-    void eat() {
+    void consume() {
         currentIndex++;
 
         if (!parseAtEnd()) {
@@ -57,11 +57,11 @@ public class Parser {
     }
 
     Expression parenthesis() throws SyntaxError {
-        eat(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression expr = expression();
 
-        eat(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenType.RIGHT_PAREN, "expected )");
 
         return expr;
     }
@@ -74,17 +74,17 @@ public class Parser {
         return switch (currentToken.type) {
             case BOOLEAN_LITERAL -> {
                 Expression literal = new Literal(Boolean.parseBoolean(currentToken.lexeme));
-                eat();
+                consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
                 Expression literal = new Literal(currentToken.lexeme);
-                eat();
+                consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
                 Expression literal = new Literal(Float.parseFloat(currentToken.lexeme));
-                eat();
+                consume();
                 yield literal;
             }
             case LEFT_PAREN -> parenthesis();
@@ -96,11 +96,11 @@ public class Parser {
     Expression unary() throws SyntaxError {
         return switch (currentToken.type) {
             case MINUS -> {
-                eat();
+                consume();
                 yield new Negation(unary());
             }
             case PLUS -> {
-                eat();
+                consume();
                 yield unary();
 
             }
@@ -116,17 +116,17 @@ public class Parser {
 
             switch (operator) {
                 case MULTIPLY -> {
-                    eat();
+                    consume();
                     Expression right = unary();
                     left = new Multiply(left, right);
                 }
                 case DIVIDE -> {
-                    eat();
+                    consume();
                     Expression right = unary();
                     left = new Divide(left, right);
                 }
                 case MODULO -> {
-                    eat();
+                    consume();
                     Expression right = unary();
                     left = new Modulo(left, right);
                 }
@@ -149,12 +149,12 @@ public class Parser {
 
             switch (operator) {
                 case PLUS -> {
-                    eat();
+                    consume();
                     Expression right = factor();
                     left = new Add(left, right);
                 }
                 case MINUS -> {
-                    eat();
+                    consume();
                     Expression right = factor();
                     left = new Subtract(left, right);
                 }
@@ -175,22 +175,22 @@ public class Parser {
 
             switch (operator) {
                 case GREATER -> {
-                    eat();
+                    consume();
                     Expression right = term();
                     left = new Greater(left, right);
                 }
                 case GREATER_EQUAL -> {
-                    eat();
+                    consume();
                     Expression right = term();
                     left = new GreaterEqual(left, right);
                 }
                 case LESS -> {
-                    eat();
+                    consume();
                     Expression right = term();
                     left = new Less(left, right);
                 }
                 case LESS_EQUAL -> {
-                    eat();
+                    consume();
                     Expression right = term();
                     left = new LessEqual(left, right);
                 }
@@ -211,12 +211,12 @@ public class Parser {
 
             switch (operator) {
                 case EQUAL -> {
-                    eat();
+                    consume();
                     Expression right = comparison();
                     left = new Equal(left, right);
                 }
                 case NOT_EQUAL -> {
-                    eat();
+                    consume();
                     Expression right = comparison();
                     left = new NotEqual(left, right);
                 }
@@ -237,7 +237,7 @@ public class Parser {
 
             switch (operator) {
                 case AND -> {
-                    eat();
+                    consume();
                     Expression right = equality();
                     left = new And(left, right);
                 }
@@ -258,7 +258,7 @@ public class Parser {
 
             switch (operator) {
                 case OR -> {
-                    eat();
+                    consume();
                     Expression right = and();
                     left = new Or(left, right);
                 }
@@ -279,21 +279,21 @@ public class Parser {
         Expression expression = expression();
         Statement statement = new ExpressionStatement(expression, line);
 
-        eat(TokenType.SEMICOLON, "expected ; at the end of statement");
+        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
         return statement;
     }
 
     Statement printStatement() throws SyntaxError {
-        eat(TokenType.PRINT, "expected print keyword");
+        consume(TokenType.PRINT, "expected print keyword");
 
-        eat(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression expression = expression();
 
-        eat(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenType.RIGHT_PAREN, "expected )");
 
-        eat(TokenType.SEMICOLON, "expected ; at the end of statement");
+        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
         Statement statement = new PrintStatement(expression, line);
 
@@ -319,6 +319,7 @@ public class Parser {
         while (!parseAtEnd()) {
             Statement statement = statement();
             statements.add(statement);
+
         }
 
         return statements;

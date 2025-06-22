@@ -52,6 +52,4 @@ public enum TokenType {
     FLOAT_LITERAL,
     BOOLEAN_LITERAL,
 
-    // Special
-    EOF
 }

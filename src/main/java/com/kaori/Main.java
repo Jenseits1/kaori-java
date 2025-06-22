@@ -15,13 +15,12 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
-                2 8;
-
-                """;
+                print("hello world");""";
 
         try {
             Lexer lexer = new Lexer(source);
             List<Token> tokens = lexer.scan();
+
             Parser parser = new Parser(tokens);
             List<Statement> ast = parser.parse();
             Interpreter interpreter = new Interpreter(ast);
