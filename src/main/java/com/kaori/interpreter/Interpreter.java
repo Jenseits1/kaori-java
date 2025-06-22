@@ -21,6 +21,7 @@ import com.kaori.ast.expression.operators.unary.Not;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
 import com.kaori.ast.statement.Statement;
+import com.kaori.error.DivisionByZero;
 import com.kaori.error.TypeError;
 
 public class Interpreter implements Visitor {
@@ -101,8 +102,9 @@ public class Interpreter implements Visitor {
 
         if (left instanceof Float l && right instanceof Float r) {
             if (r == 0.0f) {
-                throw new TypeError("division by zero", line);
+                throw new DivisionByZero("can not do division by zero", line);
             }
+
             return l / r;
         }
 
@@ -115,6 +117,10 @@ public class Interpreter implements Visitor {
         Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
+            if (r == 0.0f) {
+                throw new DivisionByZero("can not do division by zero", line);
+            }
+
             return l % r;
         }
 
@@ -150,11 +156,19 @@ public class Interpreter implements Visitor {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left != null && left.getClass() != right.getClass()) {
-            throw new TypeError("expected operands of same type for '=='", line);
+        if (left instanceof String l && right instanceof String r) {
+            return l == r;
         }
 
-        return (left == null) ? right == null : left.equals(right);
+        if (left instanceof Float l && right instanceof Float r) {
+            return l == r;
+        }
+
+        if (left instanceof Boolean l && right instanceof Boolean r) {
+            return l == r;
+        }
+
+        throw new TypeError("expected operands of same type for '=='", line);
     }
 
     @Override
@@ -162,11 +176,19 @@ public class Interpreter implements Visitor {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left != null && left.getClass() != right.getClass()) {
-            throw new TypeError("expected operands of same type for '!='", line);
+        if (left instanceof String l && right instanceof String r) {
+            return l != r;
         }
 
-        return (left == null) ? right != null : !left.equals(right);
+        if (left instanceof Float l && right instanceof Float r) {
+            return l != r;
+        }
+
+        if (left instanceof Boolean l && right instanceof Boolean r) {
+            return l != r;
+        }
+
+        throw new TypeError("expected operands of same type for '!='", line);
     }
 
     @Override
