@@ -283,8 +283,6 @@ public class Parser {
         Expression expression = assign();
         Statement statement = new Statement.Expr(line, expression);
 
-        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
-
         return statement;
     }
 
@@ -296,8 +294,6 @@ public class Parser {
         Expression expression = expression();
 
         consume(TokenType.RIGHT_PAREN, "expected )");
-
-        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
         return new Statement.Print(line, expression);
     }
@@ -332,8 +328,6 @@ public class Parser {
 
         Expression expression = expression();
 
-        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
-
         return switch (type) {
             case STRING_VARIABLE -> new Statement.StringVariable(line, identifier, expression);
             case BOOLEAN_VARIABLE -> new Statement.BooleanVariable(line, identifier, expression);
@@ -344,12 +338,20 @@ public class Parser {
     }
 
     Statement statement() {
-        return switch (currentToken.type) {
+        Statement statement = switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
             case STRING_VARIABLE, BOOLEAN_VARIABLE, FLOAT_VARIABLE -> variableStatement();
             default -> expressionStatement();
         };
+
+        if (statement instanceof Statement.Block) {
+            return statement;
+        }
+
+        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
+
+        return statement;
     }
 
     void reset() {

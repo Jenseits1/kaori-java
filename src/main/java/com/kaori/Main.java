@@ -17,9 +17,15 @@ public class Main {
         String source = """
                 float number = 2;
                 print(number);
-                number = true;
+                number = 7;
+                {
+                    print(number);
+                    float number = 11;
+                    print(number);
+                    number = 9;
+                    print(number);
+                }
                 print(number);
-
                 """;
 
         try {
