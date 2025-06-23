@@ -95,7 +95,7 @@ public class Lexer {
         }
 
         if (currentCharacter != '"') {
-            throw new KaoriError.SyntaxError("expected closing quotation marks", line);
+            throw KaoriError.SyntaxError("expected closing quotation marks", line);
         }
 
         advance();
@@ -153,7 +153,7 @@ public class Lexer {
                 case '=' -> TokenType.ASSIGN;
                 case '>' -> TokenType.GREATER;
                 case '<' -> TokenType.LESS;
-                default -> throw new KaoriError.SyntaxError("unexpected token", line);
+                default -> throw KaoriError.SyntaxError("unexpected token", line);
             };
 
             advance();

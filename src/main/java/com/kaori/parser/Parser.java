@@ -24,7 +24,7 @@ public class Parser {
 
     void consume(TokenType expected, String errorMessage) {
         if (parseAtEnd() || currentToken.type != expected) {
-            throw new KaoriError.SyntaxError(errorMessage, line);
+            throw KaoriError.SyntaxError(errorMessage, line);
         }
 
         consume();
@@ -51,7 +51,7 @@ public class Parser {
 
     Expression primary() {
         if (parseAtEnd()) {
-            throw new KaoriError.SyntaxError("expected valid operand", line);
+            throw KaoriError.SyntaxError("expected valid operand", line);
         }
 
         return switch (currentToken.type) {
@@ -74,7 +74,7 @@ public class Parser {
                 yield literal;
             }
             case LEFT_PAREN -> parenthesis();
-            default -> throw new KaoriError.SyntaxError("expected valid operand", line);
+            default -> throw KaoriError.SyntaxError("expected valid operand", line);
         };
 
     }
@@ -304,7 +304,7 @@ public class Parser {
     }
 
     Statement variableStatement() {
-        throw new KaoriError.SyntaxError("expected valid operand", line);
+        throw KaoriError.SyntaxError("expected valid operand", line);
     }
 
     Statement statement() {

@@ -56,7 +56,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l + r;
         }
 
-        throw new KaoriError.TypeError("expected number or string operands for '+'", line);
+        throw KaoriError.TypeError("expected number or string operands for '+'", line);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l - r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '-'", line);
+        throw KaoriError.TypeError("expected float operands for '-'", line);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l * r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '*'", line);
+        throw KaoriError.TypeError("expected float operands for '*'", line);
     }
 
     @Override
@@ -90,13 +90,13 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
 
         if (left instanceof Float l && right instanceof Float r) {
             if (r == 0.0f) {
-                throw new KaoriError.DivisionByZero("can not do division by zero", line);
+                throw KaoriError.DivisionByZero("can not do division by zero", line);
             }
 
             return l / r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '/'", line);
+        throw KaoriError.TypeError("expected float operands for '/'", line);
     }
 
     @Override
@@ -106,13 +106,13 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
 
         if (left instanceof Float l && right instanceof Float r) {
             if (r == 0.0f) {
-                throw new KaoriError.DivisionByZero("can not do division by zero", line);
+                throw KaoriError.DivisionByZero("can not do division by zero", line);
             }
 
             return l % r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '%'", line);
+        throw KaoriError.TypeError("expected float operands for '%'", line);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l && r;
         }
 
-        throw new KaoriError.TypeError("expected boolean operands for '&&'", line);
+        throw KaoriError.TypeError("expected boolean operands for '&&'", line);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l || r;
         }
 
-        throw new KaoriError.TypeError("expected boolean operands for '||'", line);
+        throw KaoriError.TypeError("expected boolean operands for '||'", line);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l.equals(r);
         }
 
-        throw new KaoriError.TypeError("expected operands of same type for '=='", line);
+        throw KaoriError.TypeError("expected operands of same type for '=='", line);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return !l.equals(r);
         }
 
-        throw new KaoriError.TypeError("expected operands of same type for '!='", line);
+        throw KaoriError.TypeError("expected operands of same type for '!='", line);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l > r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '>'", line);
+        throw KaoriError.TypeError("expected float operands for '>'", line);
     }
 
     @Override
@@ -200,7 +200,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l >= r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '>='", line);
+        throw KaoriError.TypeError("expected float operands for '>='", line);
     }
 
     @Override
@@ -212,7 +212,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l < r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '<'", line);
+        throw KaoriError.TypeError("expected float operands for '<'", line);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return l <= r;
         }
 
-        throw new KaoriError.TypeError("expected float operands for '<='", line);
+        throw KaoriError.TypeError("expected float operands for '<='", line);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return !b;
         }
 
-        throw new KaoriError.TypeError("expected boolean operand for '!'", line);
+        throw KaoriError.TypeError("expected boolean operand for '!'", line);
     }
 
     @Override
@@ -246,6 +246,6 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return -l;
         }
 
-        throw new KaoriError.TypeError("expected float operand for unary '-'", line);
+        throw KaoriError.TypeError("expected float operand for unary '-'", line);
     }
 }

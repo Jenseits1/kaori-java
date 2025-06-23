@@ -21,7 +21,7 @@ public class Main {
                     print(1.5);
 
                 }
-                print("hello world");
+                print("hello world")
                 """;
 
         try {
@@ -33,10 +33,8 @@ public class Main {
             Interpreter interpreter = new Interpreter(ast);
             interpreter.run();
 
-        } catch (KaoriError.SyntaxError error) {
-            System.out.println(error.getMessage());
         } catch (KaoriError error) {
-            System.out.println(error.getMessage());
+            System.out.println(error);
         }
 
     }
