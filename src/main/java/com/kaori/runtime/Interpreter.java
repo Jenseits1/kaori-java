@@ -217,15 +217,14 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
 
     @Override
     public Object visitAssign(Assign assign) {
-        Expression.Identifier identifier = (Expression.Identifier) assign.left;
-        Object currentValue = identifier.acceptVisitor(this);
+        Object currentValue = assign.left.acceptVisitor(this);
         Object value = assign.right.acceptVisitor(this);
 
         if (currentValue != null && value != null && currentValue.getClass() != value.getClass()) {
             throw KaoriError.TypeError("expected different value type in variable assignment", line);
         }
 
-        scope.declare(identifier.value, value);
+        scope.declare(assign.left.value, value);
 
         return value;
     }
@@ -287,34 +286,41 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
 
     @Override
     public void visitFloatVariableStatement(Statement.FloatVariable floatVariable) {
-        Object value = floatVariable.value.acceptVisitor(this);
+        String identifier = floatVariable.left.value;
+        Object value = floatVariable.right.acceptVisitor(this);
 
-        if (!(value instanceof Float)) {
-            throw KaoriError.TypeError("expected float value for type float", line);
+        if (value instanceof Float) {
+            scope.declare(identifier, value);
+            return;
         }
 
-        scope.declare(floatVariable.identifier, value);
+        throw KaoriError.TypeError("expected float value for type float", line);
     }
 
     @Override
     public void visitBooleanVariableStatement(Statement.BooleanVariable booleanVariable) {
-        Object value = booleanVariable.value.acceptVisitor(this);
+        String identifier = booleanVariable.left.value;
+        Object value = booleanVariable.right.acceptVisitor(this);
 
-        if (!(value instanceof Boolean)) {
-            throw KaoriError.TypeError("expected boolean value for type boolean", line);
+        if (value instanceof Boolean) {
+            scope.declare(identifier, value);
+            return;
         }
 
-        scope.declare(booleanVariable.identifier, value);
+        throw KaoriError.TypeError("expected boolean value for type boolean", line);
     }
 
     @Override
     public void visitStringVariableStatement(Statement.StringVariable stringVariable) {
-        Object value = stringVariable.value.acceptVisitor(this);
+        String identifier = stringVariable.left.value;
+        Object value = stringVariable.right.acceptVisitor(this);
 
-        if (!(value instanceof String)) {
-            throw KaoriError.TypeError("expected string value for type string", line);
+        if (value instanceof String) {
+            scope.declare(identifier, value);
+            return;
+
         }
 
-        scope.declare(stringVariable.identifier, value);
+        throw KaoriError.TypeError("expected string value for type string", line);
     }
 }

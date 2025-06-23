@@ -69,13 +69,13 @@ public abstract class Statement {
     }
 
     public static class StringVariable extends Statement {
-        public final String identifier;
-        public final Expression value;
+        public final Expression.Identifier left;
+        public final Expression right;
 
-        public StringVariable(int line, String identifier, Expression value) {
+        public StringVariable(int line, Expression.Identifier left, Expression right) {
             super(line);
-            this.identifier = identifier;
-            this.value = value;
+            this.left = left;
+            this.right = right;
         }
 
         @Override
@@ -85,13 +85,13 @@ public abstract class Statement {
     }
 
     public static class BooleanVariable extends Statement {
-        public final String identifier;
-        public final Expression value;
+        public final Expression.Identifier left;
+        public final Expression right;
 
-        public BooleanVariable(int line, String identifier, Expression value) {
+        public BooleanVariable(int line, Expression.Identifier left, Expression right) {
             super(line);
-            this.identifier = identifier;
-            this.value = value;
+            this.left = left;
+            this.right = right;
         }
 
         @Override
@@ -101,13 +101,13 @@ public abstract class Statement {
     }
 
     public static class FloatVariable extends Statement {
-        public final String identifier;
-        public final Expression value;
+        public final Expression.Identifier left;
+        public final Expression right;
 
-        public FloatVariable(int line, String identifier, Expression value) {
+        public FloatVariable(int line, Expression.Identifier left, Expression right) {
             super(line);
-            this.identifier = identifier;
-            this.value = value;
+            this.left = left;
+            this.right = right;
         }
 
         @Override
@@ -116,4 +116,5 @@ public abstract class Statement {
         }
 
     }
+
 }

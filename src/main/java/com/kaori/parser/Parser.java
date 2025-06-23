@@ -267,16 +267,16 @@ public class Parser {
     }
 
     Expression assign() {
-        Expression left = expression();
+        Expression expression = expression();
 
-        if (left instanceof Expression.Identifier) {
+        if (expression instanceof Expression.Identifier left) {
             consume(TokenType.ASSIGN, "expected =");
             Expression right = expression();
 
             return new Expression.Assign(left, right);
         }
 
-        return left;
+        return expression;
     }
 
     Statement expressionStatement() {
@@ -321,17 +321,17 @@ public class Parser {
         TokenType type = currentToken.type;
         consume();
 
-        String identifier = currentToken.lexeme;
+        Expression.Identifier left = new Expression.Identifier(currentToken.lexeme);
 
         consume(TokenType.IDENTIFIER, "expected an identifier");
         consume(TokenType.ASSIGN, "expected =");
 
-        Expression expression = expression();
+        Expression right = expression();
 
         return switch (type) {
-            case STRING_VARIABLE -> new Statement.StringVariable(line, identifier, expression);
-            case BOOLEAN_VARIABLE -> new Statement.BooleanVariable(line, identifier, expression);
-            case FLOAT_VARIABLE -> new Statement.FloatVariable(line, identifier, expression);
+            case STRING_VARIABLE -> new Statement.StringVariable(line, left, right);
+            case BOOLEAN_VARIABLE -> new Statement.BooleanVariable(line, left, right);
+            case FLOAT_VARIABLE -> new Statement.FloatVariable(line, left, right);
             default -> throw KaoriError.SyntaxError("expected valid variable declaration token", line);
         };
 
