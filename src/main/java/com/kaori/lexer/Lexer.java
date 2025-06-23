@@ -2,9 +2,7 @@ package com.kaori.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import com.kaori.error.SyntaxError;
+import com.kaori.error.KaoriError;
 
 public class Lexer {
     String source;
@@ -89,7 +87,7 @@ public class Lexer {
         addToken(type, start, current);
     }
 
-    void stringLiteral() throws SyntaxError {
+    void stringLiteral() {
         advance();
 
         while (!fileAtEnd() && currentCharacter != '"') {
@@ -97,7 +95,7 @@ public class Lexer {
         }
 
         if (currentCharacter != '"') {
-            throw new SyntaxError("expected closing quotation marks", line);
+            throw new KaoriError.SyntaxError("expected closing quotation marks", line);
         }
 
         advance();
@@ -105,7 +103,7 @@ public class Lexer {
         addToken(TokenType.STRING_LITERAL, start, current);
     }
 
-    void symbol() throws SyntaxError {
+    void symbol() {
         String lookahead = source.substring(current);
 
         if (lookahead.startsWith("&&")) {
@@ -155,7 +153,7 @@ public class Lexer {
                 case '=' -> TokenType.ASSIGN;
                 case '>' -> TokenType.GREATER;
                 case '<' -> TokenType.LESS;
-                default -> throw new SyntaxError("unexpected token", line);
+                default -> throw new KaoriError.SyntaxError("unexpected token", line);
             };
 
             advance();
@@ -171,7 +169,7 @@ public class Lexer {
         tokens = new ArrayList<>();
     }
 
-    void start() throws SyntaxError {
+    void start() {
         while (!fileAtEnd()) {
             if (Character.isWhitespace(currentCharacter)) {
                 advance();
@@ -189,7 +187,7 @@ public class Lexer {
         }
     }
 
-    public List<Token> scan() throws SyntaxError {
+    public List<Token> scan() {
         reset();
         start();
 

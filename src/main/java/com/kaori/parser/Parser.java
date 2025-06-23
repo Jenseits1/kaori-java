@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.kaori.ast.Expression;
 import com.kaori.ast.Statement;
-import com.kaori.error.SyntaxError;
+import com.kaori.error.KaoriError;
 import com.kaori.lexer.Token;
 import com.kaori.lexer.TokenType;
 
@@ -22,9 +22,9 @@ public class Parser {
         return currentIndex >= tokens.size();
     }
 
-    void consume(TokenType expected, String errorMessage) throws SyntaxError {
+    void consume(TokenType expected, String errorMessage) {
         if (parseAtEnd() || currentToken.type != expected) {
-            throw new SyntaxError(errorMessage, line);
+            throw new KaoriError.SyntaxError(errorMessage, line);
         }
 
         consume();
@@ -39,7 +39,7 @@ public class Parser {
         }
     }
 
-    Expression parenthesis() throws SyntaxError {
+    Expression parenthesis() {
         consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression expr = expression();
@@ -49,9 +49,9 @@ public class Parser {
         return expr;
     }
 
-    Expression primary() throws SyntaxError {
+    Expression primary() {
         if (parseAtEnd()) {
-            throw new SyntaxError("expected valid operand", line);
+            throw new KaoriError.SyntaxError("expected valid operand", line);
         }
 
         return switch (currentToken.type) {
@@ -74,12 +74,12 @@ public class Parser {
                 yield literal;
             }
             case LEFT_PAREN -> parenthesis();
-            default -> throw new SyntaxError("expected valid operand", line);
+            default -> throw new KaoriError.SyntaxError("expected valid operand", line);
         };
 
     }
 
-    Expression unary() throws SyntaxError {
+    Expression unary() {
         return switch (currentToken.type) {
             case MINUS -> {
                 consume();
@@ -94,7 +94,7 @@ public class Parser {
         };
     }
 
-    Expression factor() throws SyntaxError {
+    Expression factor() {
         Expression left = unary();
 
         while (!parseAtEnd()) {
@@ -127,7 +127,7 @@ public class Parser {
         return left;
     }
 
-    Expression term() throws SyntaxError {
+    Expression term() {
         Expression left = factor();
 
         while (!parseAtEnd()) {
@@ -153,7 +153,7 @@ public class Parser {
         return left;
     }
 
-    Expression comparison() throws SyntaxError {
+    Expression comparison() {
         Expression left = term();
 
         while (!parseAtEnd()) {
@@ -189,7 +189,7 @@ public class Parser {
         return left;
     }
 
-    Expression equality() throws SyntaxError {
+    Expression equality() {
         Expression left = comparison();
 
         while (!parseAtEnd()) {
@@ -215,7 +215,7 @@ public class Parser {
         return left;
     }
 
-    Expression and() throws SyntaxError {
+    Expression and() {
         Expression left = equality();
 
         while (!parseAtEnd()) {
@@ -236,7 +236,7 @@ public class Parser {
         return left;
     }
 
-    Expression or() throws SyntaxError {
+    Expression or() {
         Expression left = and();
 
         while (!parseAtEnd()) {
@@ -257,11 +257,11 @@ public class Parser {
         return left;
     }
 
-    Expression expression() throws SyntaxError {
+    Expression expression() {
         return or();
     }
 
-    Statement expressionStatement() throws SyntaxError {
+    Statement expressionStatement() {
         Expression expression = expression();
         Statement statement = new Statement.Expr(line, expression);
 
@@ -270,7 +270,7 @@ public class Parser {
         return statement;
     }
 
-    Statement printStatement() throws SyntaxError {
+    Statement printStatement() {
         consume(TokenType.PRINT, "expected print keyword");
 
         consume(TokenType.LEFT_PAREN, "expected (");
@@ -284,7 +284,7 @@ public class Parser {
         return new Statement.Print(line, expression);
     }
 
-    Statement blockStatement() throws SyntaxError {
+    Statement blockStatement() {
         consume(TokenType.LEFT_BRACE, "expected {");
 
         List<Statement> statements = new ArrayList<>();
@@ -303,11 +303,11 @@ public class Parser {
         return new Statement.Block(line, statements);
     }
 
-    Statement variableStatement() throws SyntaxError {
-        throw new SyntaxError("expected valid operand", line);
+    Statement variableStatement() {
+        throw new KaoriError.SyntaxError("expected valid operand", line);
     }
 
-    Statement statement() throws SyntaxError {
+    Statement statement() {
         return switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
@@ -321,7 +321,7 @@ public class Parser {
         line = 1;
     }
 
-    List<Statement> start() throws SyntaxError {
+    List<Statement> start() {
         List<Statement> statements = new ArrayList<>();
 
         while (!parseAtEnd()) {
@@ -333,7 +333,7 @@ public class Parser {
         return statements;
     }
 
-    public List<Statement> parse() throws SyntaxError {
+    public List<Statement> parse() {
         reset();
         List<Statement> statements = start();
 

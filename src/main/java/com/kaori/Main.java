@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.ast.Statement;
-import com.kaori.error.SyntaxError;
+import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;
 import com.kaori.parser.Parser;
@@ -33,9 +33,9 @@ public class Main {
             Interpreter interpreter = new Interpreter(ast);
             interpreter.run();
 
-        } catch (SyntaxError error) {
+        } catch (KaoriError.SyntaxError error) {
             System.out.println(error.getMessage());
-        } catch (RuntimeException error) {
+        } catch (KaoriError error) {
             System.out.println(error.getMessage());
         }
 
