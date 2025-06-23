@@ -18,7 +18,11 @@ public abstract class Statement {
 
         void visitBlockStatement(Block node);
 
-        void visitVariableStatement(Variable variable);
+        void visitFloatVariableStatement(FloatVariable floatVariable);
+
+        void visitBooleanVariableStatement(BooleanVariable booleanVariable);
+
+        void visitStringVariableStatement(StringVariable stringVariable);
     }
 
     public static class Print extends Statement {
@@ -62,14 +66,13 @@ public abstract class Statement {
         public void acceptVisitor(Visitor visitor) {
             visitor.visitBlockStatement(this);
         }
-
     }
 
-    public static class Variable extends Statement {
+    public static class StringVariable extends Statement {
         public final String identifier;
         public final Expression value;
 
-        public Variable(int line, String identifier, Expression value) {
+        public StringVariable(int line, String identifier, Expression value) {
             super(line);
             this.identifier = identifier;
             this.value = value;
@@ -77,9 +80,40 @@ public abstract class Statement {
 
         @Override
         public void acceptVisitor(Visitor visitor) {
-            visitor.visitVariableStatement(this);
+            visitor.visitStringVariableStatement(this);
+        }
+    }
+
+    public static class BooleanVariable extends Statement {
+        public final String identifier;
+        public final Expression value;
+
+        public BooleanVariable(int line, String identifier, Expression value) {
+            super(line);
+            this.identifier = identifier;
+            this.value = value;
+        }
+
+        @Override
+        public void acceptVisitor(Visitor visitor) {
+            visitor.visitBooleanVariableStatement(this);
+        }
+    }
+
+    public static class FloatVariable extends Statement {
+        public final String identifier;
+        public final Expression value;
+
+        public FloatVariable(int line, String identifier, Expression value) {
+            super(line);
+            this.identifier = identifier;
+            this.value = value;
+        }
+
+        @Override
+        public void acceptVisitor(Visitor visitor) {
+            visitor.visitFloatVariableStatement(this);
         }
 
     }
-
 }

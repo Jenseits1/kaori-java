@@ -42,8 +42,9 @@ public enum TokenType {
     ELSE,
     RETURN,
     PRINT,
-    VARIABLE,
-
+    STRING_VARIABLE,
+    FLOAT_VARIABLE,
+    BOOLEAN_VARIABLE,
     // Literals and identifiers
     IDENTIFIER,
     STRING_LITERAL,

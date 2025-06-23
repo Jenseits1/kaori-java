@@ -19,9 +19,9 @@ public class Main {
                 {
                     print(3 + 5);
                     print(1.5);
-
+                    bool hello = true;
+                    str hi = 123;
                 }
-                print("hello world")
                 """;
 
         try {
@@ -32,7 +32,6 @@ public class Main {
             List<Statement> ast = parser.parse();
             Interpreter interpreter = new Interpreter(ast);
             interpreter.run();
-
         } catch (KaoriError error) {
             System.out.println(error);
         }

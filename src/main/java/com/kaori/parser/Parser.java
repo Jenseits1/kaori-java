@@ -304,7 +304,8 @@ public class Parser {
     }
 
     Statement variableStatement() {
-        consume(TokenType.VARIABLE, "expected variable declaration token");
+        TokenType type = currentToken.type;
+        consume();
 
         String identifier = currentToken.lexeme;
 
@@ -315,13 +316,20 @@ public class Parser {
 
         consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
-        return new Statement.Variable(line, identifier, expression);
+        return switch (type) {
+            case STRING_VARIABLE -> new Statement.StringVariable(line, identifier, expression);
+            case BOOLEAN_VARIABLE -> new Statement.BooleanVariable(line, identifier, expression);
+            case FLOAT_VARIABLE -> new Statement.FloatVariable(line, identifier, expression);
+            default -> throw KaoriError.SyntaxError("expected valid variable declaration token", line);
+        };
+
     }
 
     Statement statement() {
         return switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
+            case STRING_VARIABLE, BOOLEAN_VARIABLE, FLOAT_VARIABLE -> variableStatement();
             default -> expressionStatement();
         };
     }
