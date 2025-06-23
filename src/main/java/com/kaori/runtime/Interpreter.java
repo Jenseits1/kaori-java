@@ -3,11 +3,12 @@ package com.kaori.runtime;
 import java.util.List;
 
 import com.kaori.ast.Expression;
+import com.kaori.ast.Expression.Identifier;
 import com.kaori.ast.Statement;
 
 import com.kaori.error.KaoriError;
 
-public class Interpreter implements Expression.Visitor<Object>, Statement.Visitor {
+public class Interpreter implements Expression.Visitor, Statement.Visitor {
     private int line;
     private Scope scope;
     private final List<Statement> statements;
@@ -288,5 +289,16 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
         }
 
         scope.declare(stringVariable.identifier, value);
+    }
+
+    @Override
+    public Object visitIdentifier(Identifier identifier) {
+        Object value = scope.get(identifier.value);
+
+        if (value == null) {
+            throw KaoriError.UndefinedVariable(identifier.value, line);
+        }
+
+        return value;
     }
 }

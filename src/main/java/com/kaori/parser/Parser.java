@@ -73,6 +73,11 @@ public class Parser {
                 consume();
                 yield literal;
             }
+            case IDENTIFIER -> {
+                Expression identifier = new Expression.Identifier(currentToken.lexeme);
+                consume();
+                yield identifier;
+            }
             case LEFT_PAREN -> parenthesis();
             default -> throw KaoriError.SyntaxError("expected valid operand", line);
         };
