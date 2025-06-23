@@ -2,7 +2,7 @@ package com.kaori.ast.statement;
 
 import java.util.List;
 
-import com.kaori.interpreter.Visitor;
+import com.kaori.runtime.Visitor;
 
 public class BlockStatement extends Statement {
     public final List<Statement> statements;

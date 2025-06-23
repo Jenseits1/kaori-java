@@ -6,10 +6,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.ast.statement.Statement;
 import com.kaori.error.SyntaxError;
-import com.kaori.interpreter.Interpreter;
 import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;
 import com.kaori.parser.Parser;
+import com.kaori.runtime.Interpreter;
 
 public class Main {
     public static void main(String[] args) {

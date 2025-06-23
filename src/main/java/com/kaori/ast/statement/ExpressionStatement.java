@@ -1,7 +1,7 @@
 package com.kaori.ast.statement;
 
 import com.kaori.ast.expression.Expression;
-import com.kaori.interpreter.Visitor;
+import com.kaori.runtime.Visitor;
 
 public class ExpressionStatement extends Statement {
     public final Expression expression;

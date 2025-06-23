@@ -1,6 +1,6 @@
 package com.kaori.ast.statement;
 
-import com.kaori.interpreter.Visitor;
+import com.kaori.runtime.Visitor;
 
 public abstract class Statement {
     public final int line;

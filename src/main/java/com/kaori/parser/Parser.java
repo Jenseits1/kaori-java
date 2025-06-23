@@ -3,21 +3,6 @@ package com.kaori.parser;
 import java.util.ArrayList;
 import java.util.List;
 import com.kaori.ast.expression.Expression;
-import com.kaori.ast.expression.Literal;
-import com.kaori.ast.expression.operators.binary.Add;
-import com.kaori.ast.expression.operators.binary.And;
-import com.kaori.ast.expression.operators.binary.Divide;
-import com.kaori.ast.expression.operators.binary.Equal;
-import com.kaori.ast.expression.operators.binary.Greater;
-import com.kaori.ast.expression.operators.binary.GreaterEqual;
-import com.kaori.ast.expression.operators.binary.Less;
-import com.kaori.ast.expression.operators.binary.LessEqual;
-import com.kaori.ast.expression.operators.binary.Modulo;
-import com.kaori.ast.expression.operators.binary.Multiply;
-import com.kaori.ast.expression.operators.binary.NotEqual;
-import com.kaori.ast.expression.operators.binary.Or;
-import com.kaori.ast.expression.operators.binary.Subtract;
-import com.kaori.ast.expression.operators.unary.Negation;
 import com.kaori.ast.statement.BlockStatement;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
@@ -75,19 +60,19 @@ public class Parser {
         return switch (currentToken.type) {
             case BOOLEAN_LITERAL -> {
                 boolean value = Boolean.parseBoolean(currentToken.lexeme);
-                Expression literal = new Literal(value);
+                Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
                 String value = currentToken.lexeme.substring(1, currentToken.lexeme.length() - 1);
-                Expression literal = new Literal(value);
+                Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
                 float value = Float.parseFloat(currentToken.lexeme);
-                Expression literal = new Literal(value);
+                Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
@@ -101,7 +86,7 @@ public class Parser {
         return switch (currentToken.type) {
             case MINUS -> {
                 consume();
-                yield new Negation(unary());
+                yield new Expression.Negation(unary());
             }
             case PLUS -> {
                 consume();
@@ -122,17 +107,17 @@ public class Parser {
                 case MULTIPLY -> {
                     consume();
                     Expression right = unary();
-                    left = new Multiply(left, right);
+                    left = new Expression.Multiply(left, right);
                 }
                 case DIVIDE -> {
                     consume();
                     Expression right = unary();
-                    left = new Divide(left, right);
+                    left = new Expression.Divide(left, right);
                 }
                 case MODULO -> {
                     consume();
                     Expression right = unary();
-                    left = new Modulo(left, right);
+                    left = new Expression.Modulo(left, right);
                 }
                 default -> {
                     return left;
@@ -155,12 +140,12 @@ public class Parser {
                 case PLUS -> {
                     consume();
                     Expression right = factor();
-                    left = new Add(left, right);
+                    left = new Expression.Add(left, right);
                 }
                 case MINUS -> {
                     consume();
                     Expression right = factor();
-                    left = new Subtract(left, right);
+                    left = new Expression.Subtract(left, right);
                 }
                 default -> {
                     return left;
@@ -181,22 +166,22 @@ public class Parser {
                 case GREATER -> {
                     consume();
                     Expression right = term();
-                    left = new Greater(left, right);
+                    left = new Expression.Greater(left, right);
                 }
                 case GREATER_EQUAL -> {
                     consume();
                     Expression right = term();
-                    left = new GreaterEqual(left, right);
+                    left = new Expression.GreaterEqual(left, right);
                 }
                 case LESS -> {
                     consume();
                     Expression right = term();
-                    left = new Less(left, right);
+                    left = new Expression.Less(left, right);
                 }
                 case LESS_EQUAL -> {
                     consume();
                     Expression right = term();
-                    left = new LessEqual(left, right);
+                    left = new Expression.LessEqual(left, right);
                 }
                 default -> {
                     return left;
@@ -217,12 +202,12 @@ public class Parser {
                 case EQUAL -> {
                     consume();
                     Expression right = comparison();
-                    left = new Equal(left, right);
+                    left = new Expression.Equal(left, right);
                 }
                 case NOT_EQUAL -> {
                     consume();
                     Expression right = comparison();
-                    left = new NotEqual(left, right);
+                    left = new Expression.NotEqual(left, right);
                 }
                 default -> {
                     return left;
@@ -243,7 +228,7 @@ public class Parser {
                 case AND -> {
                     consume();
                     Expression right = equality();
-                    left = new And(left, right);
+                    left = new Expression.And(left, right);
                 }
                 default -> {
                     return left;
@@ -264,7 +249,7 @@ public class Parser {
                 case OR -> {
                     consume();
                     Expression right = and();
-                    left = new Or(left, right);
+                    left = new Expression.Or(left, right);
                 }
                 default -> {
                     return left;
@@ -319,6 +304,10 @@ public class Parser {
         consume(TokenType.RIGHT_BRACE, "expected }");
 
         return new BlockStatement(line, statements);
+    }
+
+    Statement variableStatement() throws SyntaxError {
+        throw new SyntaxError("expected valid operand", line);
     }
 
     Statement statement() throws SyntaxError {

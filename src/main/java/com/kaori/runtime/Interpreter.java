@@ -1,23 +1,8 @@
-package com.kaori.interpreter;
+package com.kaori.runtime;
 
 import java.util.List;
 
-import com.kaori.ast.expression.Literal;
-import com.kaori.ast.expression.operators.binary.Add;
-import com.kaori.ast.expression.operators.binary.And;
-import com.kaori.ast.expression.operators.binary.Divide;
-import com.kaori.ast.expression.operators.binary.Equal;
-import com.kaori.ast.expression.operators.binary.Greater;
-import com.kaori.ast.expression.operators.binary.GreaterEqual;
-import com.kaori.ast.expression.operators.binary.Less;
-import com.kaori.ast.expression.operators.binary.LessEqual;
-import com.kaori.ast.expression.operators.binary.Modulo;
-import com.kaori.ast.expression.operators.binary.Multiply;
-import com.kaori.ast.expression.operators.binary.NotEqual;
-import com.kaori.ast.expression.operators.binary.Or;
-import com.kaori.ast.expression.operators.binary.Subtract;
-import com.kaori.ast.expression.operators.unary.Negation;
-import com.kaori.ast.expression.operators.unary.Not;
+import com.kaori.ast.expression.Expression;
 import com.kaori.ast.statement.BlockStatement;
 import com.kaori.ast.statement.ExpressionStatement;
 import com.kaori.ast.statement.PrintStatement;
@@ -59,12 +44,12 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitLiteral(Literal literal) {
+    public Object visitLiteral(Expression.Literal literal) {
         return literal.value;
     }
 
     @Override
-    public Object visitAdd(Add node) {
+    public Object visitAdd(Expression.Add node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -80,7 +65,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitSubtract(Subtract node) {
+    public Object visitSubtract(Expression.Subtract node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -92,7 +77,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitMultiply(Multiply node) {
+    public Object visitMultiply(Expression.Multiply node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -104,7 +89,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitDivide(Divide node) {
+    public Object visitDivide(Expression.Divide node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -120,7 +105,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitModulo(Modulo node) {
+    public Object visitModulo(Expression.Modulo node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -136,7 +121,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitAnd(And node) {
+    public Object visitAnd(Expression.And node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -148,7 +133,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitOr(Or node) {
+    public Object visitOr(Expression.Or node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -160,7 +145,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitEqual(Equal node) {
+    public Object visitEqual(Expression.Equal node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -180,7 +165,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitNotEqual(NotEqual node) {
+    public Object visitNotEqual(Expression.NotEqual node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -200,7 +185,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitGreater(Greater node) {
+    public Object visitGreater(Expression.Greater node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -212,7 +197,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitGreaterEqual(GreaterEqual node) {
+    public Object visitGreaterEqual(Expression.GreaterEqual node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -224,7 +209,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitLess(Less node) {
+    public Object visitLess(Expression.Less node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -236,7 +221,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitLessEqual(LessEqual node) {
+    public Object visitLessEqual(Expression.LessEqual node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
@@ -248,7 +233,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitNot(Not node) {
+    public Object visitNot(Expression.Not node) {
         Object value = node.left.acceptVisitor(this);
 
         if (value instanceof Boolean b) {
@@ -259,7 +244,7 @@ public class Interpreter implements Visitor {
     }
 
     @Override
-    public Object visitNegation(Negation node) {
+    public Object visitNegation(Expression.Negation node) {
         Object left = node.left.acceptVisitor(this);
 
         if (left instanceof Float l) {
