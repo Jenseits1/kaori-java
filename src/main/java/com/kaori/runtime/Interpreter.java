@@ -2,11 +2,8 @@ package com.kaori.runtime;
 
 import java.util.List;
 
-import com.kaori.ast.expression.Expression;
-import com.kaori.ast.statement.BlockStatement;
-import com.kaori.ast.statement.ExpressionStatement;
-import com.kaori.ast.statement.PrintStatement;
-import com.kaori.ast.statement.Statement;
+import com.kaori.ast.Expression;
+import com.kaori.ast.Statement;
 import com.kaori.error.DivisionByZero;
 import com.kaori.error.TypeError;
 
@@ -20,26 +17,25 @@ public class Interpreter implements Visitor {
 
     public void run() {
         for (Statement statement : statements) {
-            line = statement.line;
             statement.acceptVisitor(this);
         }
     }
 
-    public void visitPrintStatement(PrintStatement statement) {
+    public void visitPrintStatement(Statement.Print statement) {
         Object expression = statement.expression.acceptVisitor(this);
 
         System.out.println(expression);
     }
 
     @Override
-    public void visitBlockStatement(BlockStatement node) {
+    public void visitBlockStatement(Statement.Block node) {
         for (Statement statement : node.statements) {
             statement.acceptVisitor(this);
         }
     }
 
     @Override
-    public void visitExpressionStatement(ExpressionStatement statement) {
+    public void visitExpressionStatement(Statement.Expr statement) {
         statement.expression.acceptVisitor(this);
     }
 

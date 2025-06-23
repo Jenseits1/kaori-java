@@ -2,11 +2,8 @@ package com.kaori.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.kaori.ast.expression.Expression;
-import com.kaori.ast.statement.BlockStatement;
-import com.kaori.ast.statement.ExpressionStatement;
-import com.kaori.ast.statement.PrintStatement;
-import com.kaori.ast.statement.Statement;
+import com.kaori.ast.Expression;
+import com.kaori.ast.Statement;
 import com.kaori.error.SyntaxError;
 import com.kaori.lexer.Token;
 import com.kaori.lexer.TokenType;
@@ -266,7 +263,7 @@ public class Parser {
 
     Statement expressionStatement() throws SyntaxError {
         Expression expression = expression();
-        Statement statement = new ExpressionStatement(expression, line);
+        Statement statement = new Statement.Expr(line, expression);
 
         consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
@@ -284,7 +281,7 @@ public class Parser {
 
         consume(TokenType.SEMICOLON, "expected ; at the end of statement");
 
-        return new PrintStatement(expression, line);
+        return new Statement.Print(line, expression);
     }
 
     Statement blockStatement() throws SyntaxError {
@@ -303,7 +300,7 @@ public class Parser {
 
         consume(TokenType.RIGHT_BRACE, "expected }");
 
-        return new BlockStatement(line, statements);
+        return new Statement.Block(line, statements);
     }
 
     Statement variableStatement() throws SyntaxError {

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kaori.ast.statement.Statement;
+import com.kaori.ast.Statement;
 import com.kaori.error.SyntaxError;
 import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;

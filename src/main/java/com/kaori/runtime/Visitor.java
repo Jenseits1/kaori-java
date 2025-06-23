@@ -1,16 +1,14 @@
 package com.kaori.runtime;
 
-import com.kaori.ast.expression.Expression;
-import com.kaori.ast.statement.BlockStatement;
-import com.kaori.ast.statement.ExpressionStatement;
-import com.kaori.ast.statement.PrintStatement;
+import com.kaori.ast.Expression;
+import com.kaori.ast.Statement;
 
 public interface Visitor {
-    void visitExpressionStatement(ExpressionStatement node);
+    void visitExpressionStatement(Statement.Expr node);
 
-    void visitPrintStatement(PrintStatement node);
+    void visitPrintStatement(Statement.Print node);
 
-    void visitBlockStatement(BlockStatement node);
+    void visitBlockStatement(Statement.Block node);
 
     Object visitLiteral(Expression.Literal node);
 
