@@ -68,9 +68,7 @@ public class Lexer {
         }
 
         TokenType type = switch (source.substring(start, current)) {
-            case "str" -> TokenType.STRING;
-            case "float" -> TokenType.FLOAT;
-            case "bool" -> TokenType.BOOLEAN;
+            case "make" -> TokenType.VARIABLE;
             case "if" -> TokenType.IF;
             case "else" -> TokenType.ELSE;
             case "while" -> TokenType.WHILE;

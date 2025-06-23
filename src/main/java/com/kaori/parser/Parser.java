@@ -304,7 +304,18 @@ public class Parser {
     }
 
     Statement variableStatement() {
-        throw KaoriError.SyntaxError("expected valid operand", line);
+        consume(TokenType.VARIABLE, "expected variable declaration token");
+
+        String identifier = currentToken.lexeme;
+
+        consume(TokenType.IDENTIFIER, "expected an identifier");
+        consume(TokenType.ASSIGN, "expected =");
+
+        Expression expression = expression();
+
+        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
+
+        return new Statement.Variable(line, identifier, expression);
     }
 
     Statement statement() {

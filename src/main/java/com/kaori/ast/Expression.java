@@ -4,37 +4,37 @@ public abstract class Expression {
     public abstract Object acceptVisitor(Visitor visitor);
 
     public interface Visitor {
-        Object visitLiteral(Expression.Literal node);
+        Object visitLiteral(Literal node);
 
-        Object visitAdd(Expression.Add node);
+        Object visitAdd(Add node);
 
-        Object visitSubtract(Expression.Subtract node);
+        Object visitSubtract(Subtract node);
 
-        Object visitMultiply(Expression.Multiply node);
+        Object visitMultiply(Multiply node);
 
-        Object visitDivide(Expression.Divide node);
+        Object visitDivide(Divide node);
 
-        Object visitModulo(Expression.Modulo node);
+        Object visitModulo(Modulo node);
 
-        Object visitAnd(Expression.And node);
+        Object visitAnd(And node);
 
-        Object visitOr(Expression.Or node);
+        Object visitOr(Or node);
 
-        Object visitEqual(Expression.Equal node);
+        Object visitEqual(Equal node);
 
-        Object visitNotEqual(Expression.NotEqual node);
+        Object visitNotEqual(NotEqual node);
 
-        Object visitGreater(Expression.Greater node);
+        Object visitGreater(Greater node);
 
-        Object visitGreaterEqual(Expression.GreaterEqual node);
+        Object visitGreaterEqual(GreaterEqual node);
 
-        Object visitLess(Expression.Less node);
+        Object visitLess(Less node);
 
-        Object visitLessEqual(Expression.LessEqual node);
+        Object visitLessEqual(LessEqual node);
 
-        Object visitNegation(Expression.Negation node);
+        Object visitNegation(Negation node);
 
-        Object visitNot(Expression.Not node);
+        Object visitNot(Not node);
     }
 
     public static class Literal extends Expression {

@@ -42,9 +42,7 @@ public enum TokenType {
     ELSE,
     RETURN,
     PRINT,
-    STRING,
-    FLOAT,
-    BOOLEAN,
+    VARIABLE,
 
     // Literals and identifiers
     IDENTIFIER,

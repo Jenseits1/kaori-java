@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kaori.ast.Expression;
 import com.kaori.ast.Statement;
+import com.kaori.ast.Statement.Variable;
 import com.kaori.error.KaoriError;
 
 public class Interpreter implements Expression.Visitor, Statement.Visitor {
@@ -18,24 +19,6 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         for (Statement statement : statements) {
             statement.acceptVisitor(this);
         }
-    }
-
-    public void visitPrintStatement(Statement.Print statement) {
-        Object expression = statement.expression.acceptVisitor(this);
-
-        System.out.println(expression);
-    }
-
-    @Override
-    public void visitBlockStatement(Statement.Block node) {
-        for (Statement statement : node.statements) {
-            statement.acceptVisitor(this);
-        }
-    }
-
-    @Override
-    public void visitExpressionStatement(Statement.Expr statement) {
-        statement.expression.acceptVisitor(this);
     }
 
     @Override
@@ -247,5 +230,29 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         }
 
         throw KaoriError.TypeError("expected float operand for unary '-'", line);
+    }
+
+    public void visitPrintStatement(Statement.Print statement) {
+        Object expression = statement.expression.acceptVisitor(this);
+
+        System.out.println(expression);
+    }
+
+    @Override
+    public void visitBlockStatement(Statement.Block node) {
+        for (Statement statement : node.statements) {
+            statement.acceptVisitor(this);
+        }
+    }
+
+    @Override
+    public void visitExpressionStatement(Statement.Expr statement) {
+        statement.expression.acceptVisitor(this);
+    }
+
+    @Override
+    public void visitVariableStatement(Variable variable) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitVariableStatement'");
     }
 }

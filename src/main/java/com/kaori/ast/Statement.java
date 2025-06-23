@@ -5,18 +5,20 @@ import java.util.List;
 public abstract class Statement {
     public final int line;
 
-    public Statement(int line) {
+    private Statement(int line) {
         this.line = line;
     }
 
     public abstract void acceptVisitor(Visitor visitor);
 
     public interface Visitor {
-        void visitExpressionStatement(Statement.Expr node);
+        void visitExpressionStatement(Expr node);
 
-        void visitPrintStatement(Statement.Print node);
+        void visitPrintStatement(Print node);
 
-        void visitBlockStatement(Statement.Block node);
+        void visitBlockStatement(Block node);
+
+        void visitVariableStatement(Variable variable);
     }
 
     public static class Print extends Statement {
@@ -59,6 +61,23 @@ public abstract class Statement {
         @Override
         public void acceptVisitor(Visitor visitor) {
             visitor.visitBlockStatement(this);
+        }
+
+    }
+
+    public static class Variable extends Statement {
+        public final String identifier;
+        public final Expression value;
+
+        public Variable(int line, String identifier, Expression value) {
+            super(line);
+            this.identifier = identifier;
+            this.value = value;
+        }
+
+        @Override
+        public void acceptVisitor(Visitor visitor) {
+            visitor.visitVariableStatement(this);
         }
 
     }
