@@ -269,14 +269,14 @@ public class Parser {
     Expression assign() {
         Expression left = expression();
 
-        if (!(left instanceof Expression.Identifier)) {
-            return left;
+        if (left instanceof Expression.Identifier) {
+            consume(TokenType.ASSIGN, "expected =");
+            Expression right = expression();
+
+            return new Expression.Assign(left, right);
         }
 
-        consume(TokenType.ASSIGN, "expected =");
-        Expression right = expression();
-
-        return new Expression.Assign(left, right);
+        return left;
     }
 
     Statement expressionStatement() {

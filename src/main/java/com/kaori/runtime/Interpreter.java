@@ -218,11 +218,25 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     @Override
     public Object visitAssign(Assign assign) {
         Expression.Identifier identifier = (Expression.Identifier) assign.left;
-        identifier.acceptVisitor(this);
-
+        Object currentValue = identifier.acceptVisitor(this);
         Object value = assign.right.acceptVisitor(this);
 
+        if (currentValue != null && value != null && currentValue.getClass() != value.getClass()) {
+            throw KaoriError.TypeError("expected different value type in variable assignment", line);
+        }
+
         scope.declare(identifier.value, value);
+
+        return value;
+    }
+
+    @Override
+    public Object visitIdentifier(Identifier identifier) {
+        Object value = scope.get(identifier.value);
+
+        if (value == null) {
+            throw KaoriError.UndefinedVariable(identifier.value, line);
+        }
 
         return value;
     }
@@ -302,16 +316,5 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         }
 
         scope.declare(stringVariable.identifier, value);
-    }
-
-    @Override
-    public Object visitIdentifier(Identifier identifier) {
-        Object value = scope.get(identifier.value);
-
-        if (value == null) {
-            throw KaoriError.UndefinedVariable(identifier.value, line);
-        }
-
-        return value;
     }
 }

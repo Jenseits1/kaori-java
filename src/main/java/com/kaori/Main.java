@@ -17,9 +17,9 @@ public class Main {
         String source = """
                 float number = 2;
                 print(number);
-                number = 5;
+                number = true;
                 print(number);
-                print(n);
+
                 """;
 
         try {
