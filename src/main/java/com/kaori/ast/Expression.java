@@ -1,11 +1,43 @@
 package com.kaori.ast;
 
-import com.kaori.runtime.Visitor;
+public abstract class Expression {
+    public abstract Object acceptVisitor(Visitor visitor);
 
-public interface Expression {
-    public Object acceptVisitor(Visitor visitor);
+    public interface Visitor {
+        Object visitLiteral(Expression.Literal node);
 
-    public static class Literal implements Expression {
+        Object visitAdd(Expression.Add node);
+
+        Object visitSubtract(Expression.Subtract node);
+
+        Object visitMultiply(Expression.Multiply node);
+
+        Object visitDivide(Expression.Divide node);
+
+        Object visitModulo(Expression.Modulo node);
+
+        Object visitAnd(Expression.And node);
+
+        Object visitOr(Expression.Or node);
+
+        Object visitEqual(Expression.Equal node);
+
+        Object visitNotEqual(Expression.NotEqual node);
+
+        Object visitGreater(Expression.Greater node);
+
+        Object visitGreaterEqual(Expression.GreaterEqual node);
+
+        Object visitLess(Expression.Less node);
+
+        Object visitLessEqual(Expression.LessEqual node);
+
+        Object visitNegation(Expression.Negation node);
+
+        Object visitNot(Expression.Not node);
+    }
+
+    public static class Literal extends Expression {
         public final Object value;
 
         public Literal(Object value) {
@@ -18,7 +50,7 @@ public interface Expression {
         }
     }
 
-    public static class Add implements Expression {
+    public static class Add extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -33,7 +65,7 @@ public interface Expression {
         }
     }
 
-    public static class Subtract implements Expression {
+    public static class Subtract extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -48,7 +80,7 @@ public interface Expression {
         }
     }
 
-    public static class Multiply implements Expression {
+    public static class Multiply extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -63,7 +95,7 @@ public interface Expression {
         }
     }
 
-    public static class Divide implements Expression {
+    public static class Divide extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -78,7 +110,7 @@ public interface Expression {
         }
     }
 
-    public static class Modulo implements Expression {
+    public static class Modulo extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -93,7 +125,7 @@ public interface Expression {
         }
     }
 
-    public static class And implements Expression {
+    public static class And extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -108,7 +140,7 @@ public interface Expression {
         }
     }
 
-    public static class Or implements Expression {
+    public static class Or extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -123,7 +155,7 @@ public interface Expression {
         }
     }
 
-    public static class Equal implements Expression {
+    public static class Equal extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -138,7 +170,7 @@ public interface Expression {
         }
     }
 
-    public static class NotEqual implements Expression {
+    public static class NotEqual extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -153,7 +185,7 @@ public interface Expression {
         }
     }
 
-    public static class Greater implements Expression {
+    public static class Greater extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -168,7 +200,7 @@ public interface Expression {
         }
     }
 
-    public static class GreaterEqual implements Expression {
+    public static class GreaterEqual extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -183,7 +215,7 @@ public interface Expression {
         }
     }
 
-    public static class Less implements Expression {
+    public static class Less extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -198,7 +230,7 @@ public interface Expression {
         }
     }
 
-    public static class LessEqual implements Expression {
+    public static class LessEqual extends Expression {
         public final Expression left;
         public final Expression right;
 
@@ -213,7 +245,7 @@ public interface Expression {
         }
     }
 
-    public static class Not implements Expression {
+    public static class Not extends Expression {
         public final Expression left;
 
         public Not(Expression left) {
@@ -226,7 +258,7 @@ public interface Expression {
         }
     }
 
-    public static class Negation implements Expression {
+    public static class Negation extends Expression {
         public final Expression left;
 
         public Negation(Expression left) {

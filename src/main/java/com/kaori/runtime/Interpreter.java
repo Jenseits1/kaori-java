@@ -7,7 +7,7 @@ import com.kaori.ast.Statement;
 import com.kaori.error.DivisionByZero;
 import com.kaori.error.TypeError;
 
-public class Interpreter implements Visitor {
+public class Interpreter implements Expression.Visitor, Statement.Visitor {
     private final List<Statement> statements;
     private int line;
 

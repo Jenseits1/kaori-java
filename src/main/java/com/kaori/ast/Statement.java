@@ -2,8 +2,6 @@ package com.kaori.ast;
 
 import java.util.List;
 
-import com.kaori.runtime.Visitor;
-
 public abstract class Statement {
     public final int line;
 
@@ -12,6 +10,14 @@ public abstract class Statement {
     }
 
     public abstract void acceptVisitor(Visitor visitor);
+
+    public interface Visitor {
+        void visitExpressionStatement(Statement.Expr node);
+
+        void visitPrintStatement(Statement.Print node);
+
+        void visitBlockStatement(Statement.Block node);
+    }
 
     public static class Print extends Statement {
 
