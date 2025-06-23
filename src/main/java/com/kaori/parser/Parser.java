@@ -42,11 +42,11 @@ public class Parser {
     Expression parenthesis() {
         consume(TokenType.LEFT_PAREN, "expected (");
 
-        Expression expr = expression();
+        Expression expression = expression();
 
         consume(TokenType.RIGHT_PAREN, "expected )");
 
-        return expr;
+        return expression;
     }
 
     Expression primary() {
@@ -337,11 +337,36 @@ public class Parser {
 
     }
 
+    Statement ifStatement() {
+        consume(TokenType.IF, "expected if");
+        consume(TokenType.LEFT_PAREN, "expected (");
+
+        Expression condition = expression();
+
+        consume(TokenType.RIGHT_PAREN, "expected )");
+
+        Statement ifBranch = blockStatement();
+
+        if (currentToken.type != TokenType.ELSE) {
+            return new Statement.If(line, condition, ifBranch, null);
+        }
+
+        consume(TokenType.ELSE, "expected else");
+
+        Statement elseBranch = switch (currentToken.type) {
+            case IF -> ifStatement();
+            default -> blockStatement();
+        };
+
+        return new Statement.If(line, condition, ifBranch, elseBranch);
+    }
+
     Statement statement() {
         Statement statement = switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
             case STRING_VARIABLE, BOOLEAN_VARIABLE, FLOAT_VARIABLE -> variableStatement();
+            case IF -> ifStatement();
             default -> expressionStatement();
         };
 

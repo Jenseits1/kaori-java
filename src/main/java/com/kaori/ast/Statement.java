@@ -23,6 +23,8 @@ public abstract class Statement {
         void visitBooleanVariableStatement(BooleanVariable booleanVariable);
 
         void visitStringVariableStatement(StringVariable stringVariable);
+
+        void visitIfStatement(If if1);
     }
 
     public static class Print extends Statement {
@@ -117,4 +119,23 @@ public abstract class Statement {
 
     }
 
+    public static class If extends Statement {
+        public final Expression condition;
+        public final Statement ifBranch;
+        public final Statement elseBranch;
+
+        public If(int line, Expression condition, Statement ifBranch, Statement elseBranch) {
+            super(line);
+            this.condition = condition;
+            this.ifBranch = ifBranch;
+            this.elseBranch = elseBranch;
+        }
+
+        @Override
+        public void acceptVisitor(Visitor visitor) {
+            // TODO Auto-generated method stub
+            visitor.visitIfStatement(this);
+        }
+
+    }
 }

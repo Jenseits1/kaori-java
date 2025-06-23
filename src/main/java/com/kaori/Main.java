@@ -15,17 +15,16 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
-                float number = 2;
-                print(number);
-                number = 7;
-                {
-                    print(number);
-                    float number = 11;
-                    print(number);
-                    number = 9;
-                    print(number);
-                }
-                print(number);
+                float a = 7;
+                float b = 5;
+
+                if (a > b) {
+                    print("bigger");
+                } else if (a == b) {
+                    print("equal");
+                } else {
+                    print("smaller");
+                };
                 """;
 
         try {

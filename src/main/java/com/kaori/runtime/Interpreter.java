@@ -6,7 +6,6 @@ import com.kaori.ast.Expression;
 import com.kaori.ast.Expression.Assign;
 import com.kaori.ast.Expression.Identifier;
 import com.kaori.ast.Statement;
-
 import com.kaori.error.KaoriError;
 
 public class Interpreter implements Expression.Visitor, Statement.Visitor {
@@ -27,8 +26,8 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public Object visitLiteral(Expression.Literal literal) {
-        return literal.value;
+    public Object visitLiteral(Expression.Literal node) {
+        return node.value;
     }
 
     @Override
@@ -216,25 +215,25 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public Object visitAssign(Assign assign) {
-        Object currentValue = assign.left.acceptVisitor(this);
-        Object value = assign.right.acceptVisitor(this);
+    public Object visitAssign(Assign node) {
+        Object currentValue = node.left.acceptVisitor(this);
+        Object value = node.right.acceptVisitor(this);
 
         if (currentValue != null && value != null && currentValue.getClass() != value.getClass()) {
             throw KaoriError.TypeError("expected different value type in variable assignment", line);
         }
 
-        scope.declare(assign.left.value, value);
+        scope.declare(node.left.value, value);
 
         return value;
     }
 
     @Override
-    public Object visitIdentifier(Identifier identifier) {
-        Object value = scope.get(identifier.value);
+    public Object visitIdentifier(Identifier node) {
+        Object value = scope.get(node.value);
 
         if (value == null) {
-            throw KaoriError.UndefinedVariable(identifier.value, line);
+            throw KaoriError.UndefinedVariable(node.value, line);
         }
 
         return value;
@@ -269,11 +268,11 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitBlockStatement(Statement.Block node) {
+    public void visitBlockStatement(Statement.Block statement) {
         scope = new Scope(scope);
 
-        for (Statement statement : node.statements) {
-            statement.acceptVisitor(this);
+        for (Statement stmt : statement.statements) {
+            stmt.acceptVisitor(this);
         }
 
         scope = scope.getOuterScope();
@@ -285,9 +284,9 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitFloatVariableStatement(Statement.FloatVariable floatVariable) {
-        String identifier = floatVariable.left.value;
-        Object value = floatVariable.right.acceptVisitor(this);
+    public void visitFloatVariableStatement(Statement.FloatVariable statement) {
+        String identifier = statement.left.value;
+        Object value = statement.right.acceptVisitor(this);
 
         if (value instanceof Float) {
             scope.declare(identifier, value);
@@ -298,9 +297,9 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitBooleanVariableStatement(Statement.BooleanVariable booleanVariable) {
-        String identifier = booleanVariable.left.value;
-        Object value = booleanVariable.right.acceptVisitor(this);
+    public void visitBooleanVariableStatement(Statement.BooleanVariable statement) {
+        String identifier = statement.left.value;
+        Object value = statement.right.acceptVisitor(this);
 
         if (value instanceof Boolean) {
             scope.declare(identifier, value);
@@ -311,9 +310,9 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitStringVariableStatement(Statement.StringVariable stringVariable) {
-        String identifier = stringVariable.left.value;
-        Object value = stringVariable.right.acceptVisitor(this);
+    public void visitStringVariableStatement(Statement.StringVariable statement) {
+        String identifier = statement.left.value;
+        Object value = statement.right.acceptVisitor(this);
 
         if (value instanceof String) {
             scope.declare(identifier, value);
@@ -322,5 +321,23 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         }
 
         throw KaoriError.TypeError("expected string value for type string", line);
+    }
+
+    @Override
+    public void visitIfStatement(Statement.If statement) {
+        Object condition = statement.condition.acceptVisitor(this);
+
+        if (condition instanceof Boolean c) {
+            if (c) {
+                statement.ifBranch.acceptVisitor(this);
+            } else if (statement.elseBranch != null) {
+                statement.elseBranch.acceptVisitor(this);
+            }
+
+            return;
+        }
+
+        throw KaoriError.TypeError("expected boolean value for type if condition", line);
+
     }
 }
