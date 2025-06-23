@@ -15,15 +15,11 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
-                str hello = "hello world";
-                {
-                    str hi = "hi world";
-                    print(hello);
-                    print(hi);
-                }
-
-                print(hello);
-                print(hi);
+                float number = 2;
+                print(number);
+                number = 5;
+                print(number);
+                print(n);
                 """;
 
         try {

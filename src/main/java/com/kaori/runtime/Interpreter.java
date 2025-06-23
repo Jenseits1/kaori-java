@@ -3,6 +3,7 @@ package com.kaori.runtime;
 import java.util.List;
 
 import com.kaori.ast.Expression;
+import com.kaori.ast.Expression.Assign;
 import com.kaori.ast.Expression.Identifier;
 import com.kaori.ast.Statement;
 
@@ -20,7 +21,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
 
     public void run() {
         for (Statement statement : statements) {
-            this.line = statement.line;
+            line = statement.line;
             statement.acceptVisitor(this);
         }
     }
@@ -212,6 +213,18 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         }
 
         throw KaoriError.TypeError("expected float operands for '<='", line);
+    }
+
+    @Override
+    public Object visitAssign(Assign assign) {
+        Expression.Identifier identifier = (Expression.Identifier) assign.left;
+        identifier.acceptVisitor(this);
+
+        Object value = assign.right.acceptVisitor(this);
+
+        scope.declare(identifier.value, value);
+
+        return value;
     }
 
     @Override

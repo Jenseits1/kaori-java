@@ -266,8 +266,21 @@ public class Parser {
         return or();
     }
 
+    Expression assign() {
+        Expression left = expression();
+
+        if (!(left instanceof Expression.Identifier)) {
+            return left;
+        }
+
+        consume(TokenType.ASSIGN, "expected =");
+        Expression right = expression();
+
+        return new Expression.Assign(left, right);
+    }
+
     Statement expressionStatement() {
-        Expression expression = expression();
+        Expression expression = assign();
         Statement statement = new Statement.Expr(line, expression);
 
         consume(TokenType.SEMICOLON, "expected ; at the end of statement");

@@ -30,6 +30,8 @@ public abstract class Expression {
 
         Object visitLessEqual(LessEqual node);
 
+        Object visitAssign(Assign assign);
+
         Object visitNegation(Negation node);
 
         Object visitNot(Not node);
@@ -37,6 +39,7 @@ public abstract class Expression {
         Object visitLiteral(Literal node);
 
         Object visitIdentifier(Identifier identifier);
+
     }
 
     public static class Literal extends Expression {
@@ -257,6 +260,21 @@ public abstract class Expression {
         @Override
         public Object acceptVisitor(Visitor visitor) {
             return visitor.visitLessEqual(this);
+        }
+    }
+
+    public static class Assign extends Expression {
+        public final Expression left;
+        public final Expression right;
+
+        public Assign(Expression left, Expression right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        public Object acceptVisitor(Visitor visitor) {
+            return visitor.visitAssign(this);
         }
     }
 
