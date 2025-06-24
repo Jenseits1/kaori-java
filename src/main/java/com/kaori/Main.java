@@ -15,13 +15,13 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
-                float number = 0;
+                make number = 0;
 
-                for (float number = 0; number < 10; number = number + 1) {
+                for (make number = 0; number < 10; number = number + 1) {
                     print(number);
                 };
 
-                print(2 +8*8);
+                make number = 7;
                 """;
 
         try {

@@ -13,7 +13,7 @@ public class Token {
         this.end = end;
     }
 
-    public String getSubstring(String source) {
+    public String lexeme(String source) {
         return source.substring(start, end);
     }
 

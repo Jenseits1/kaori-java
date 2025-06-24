@@ -58,25 +58,25 @@ public class Parser {
 
         return switch (currentToken.type) {
             case BOOLEAN_LITERAL -> {
-                boolean value = Boolean.parseBoolean(currentToken.getSubstring(source));
+                boolean value = Boolean.parseBoolean(currentToken.lexeme(source));
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
-                String value = currentToken.getSubstring(source);
+                String value = currentToken.lexeme(source);
                 Expression literal = new Expression.Literal(value.substring(1, value.length() - 1));
                 consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
-                float value = Float.parseFloat(currentToken.getSubstring(source));
+                float value = Float.parseFloat(currentToken.lexeme(source));
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case IDENTIFIER -> {
-                Expression identifier = new Expression.Identifier(currentToken.getSubstring(source));
+                Expression identifier = new Expression.Identifier(currentToken.lexeme(source));
                 consume();
                 yield identifier;
             }
@@ -320,22 +320,16 @@ public class Parser {
     }
 
     private Statement variableStatement() {
-        TokenKind type = currentToken.type;
-        consume();
+        consume(TokenKind.VARIABLE, "expected variable declaration keyword");
 
-        Expression.Identifier left = new Expression.Identifier(currentToken.getSubstring(source));
+        Expression.Identifier left = new Expression.Identifier(currentToken.lexeme(source));
 
         consume(TokenKind.IDENTIFIER, "expected an identifier");
         consume(TokenKind.ASSIGN, "expected =");
 
         Expression right = expression();
 
-        return switch (type) {
-            case STRING_VARIABLE -> new Statement.StringVariable(line, left, right);
-            case BOOLEAN_VARIABLE -> new Statement.BooleanVariable(line, left, right);
-            case FLOAT_VARIABLE -> new Statement.FloatVariable(line, left, right);
-            default -> throw KaoriError.SyntaxError("expected valid variable declaration token", line);
-        };
+        return new Statement.Variable(line, left, right);
 
     }
 
@@ -402,7 +396,7 @@ public class Parser {
         Statement statement = switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
-            case STRING_VARIABLE, BOOLEAN_VARIABLE, FLOAT_VARIABLE -> variableStatement();
+            case VARIABLE -> variableStatement();
             case IF -> ifStatement();
             case WHILE -> whileLoopStatement();
             case FOR -> forLoopStatement();

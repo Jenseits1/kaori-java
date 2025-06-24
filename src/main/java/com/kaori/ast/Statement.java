@@ -18,11 +18,7 @@ public abstract class Statement {
 
         void visitBlockStatement(Block statement);
 
-        void visitFloatVariableStatement(FloatVariable statement);
-
-        void visitBooleanVariableStatement(BooleanVariable statement);
-
-        void visitStringVariableStatement(StringVariable statement);
+        void visitVariableStatement(Variable statement);
 
         void visitIfStatement(If statement);
 
@@ -74,11 +70,11 @@ public abstract class Statement {
         }
     }
 
-    public static class StringVariable extends Statement {
+    public static class Variable extends Statement {
         public final Expression.Identifier left;
         public final Expression right;
 
-        public StringVariable(int line, Expression.Identifier left, Expression right) {
+        public Variable(int line, Expression.Identifier left, Expression right) {
             super(line);
             this.left = left;
             this.right = right;
@@ -86,39 +82,7 @@ public abstract class Statement {
 
         @Override
         public void acceptVisitor(Visitor visitor) {
-            visitor.visitStringVariableStatement(this);
-        }
-    }
-
-    public static class BooleanVariable extends Statement {
-        public final Expression.Identifier left;
-        public final Expression right;
-
-        public BooleanVariable(int line, Expression.Identifier left, Expression right) {
-            super(line);
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public void acceptVisitor(Visitor visitor) {
-            visitor.visitBooleanVariableStatement(this);
-        }
-    }
-
-    public static class FloatVariable extends Statement {
-        public final Expression.Identifier left;
-        public final Expression right;
-
-        public FloatVariable(int line, Expression.Identifier left, Expression right) {
-            super(line);
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public void acceptVisitor(Visitor visitor) {
-            visitor.visitFloatVariableStatement(this);
+            visitor.visitVariableStatement(this);
         }
 
     }

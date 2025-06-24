@@ -33,7 +33,6 @@ public enum TokenKind {
     RIGHT_BRACE,
 
     // Keywords
-    FUNCTION,
     FOR,
     WHILE,
     BREAK,
@@ -42,13 +41,12 @@ public enum TokenKind {
     ELSE,
     RETURN,
     PRINT,
-    STRING_VARIABLE,
-    FLOAT_VARIABLE,
-    BOOLEAN_VARIABLE,
+    VARIABLE,
+
     // Literals and identifiers
     IDENTIFIER,
     STRING_LITERAL,
     FLOAT_LITERAL,
     BOOLEAN_LITERAL,
-
+    FUNCTION_LITERAL,
 }

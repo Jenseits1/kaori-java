@@ -285,43 +285,11 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitFloatVariableStatement(Statement.FloatVariable statement) {
+    public void visitVariableStatement(Statement.Variable statement) {
         String identifier = statement.left.value;
         Object value = statement.right.acceptVisitor(this);
 
-        if (value instanceof Float) {
-            scope.declare(identifier, value);
-            return;
-        }
-
-        throw KaoriError.TypeError("expected float value for type float", line);
-    }
-
-    @Override
-    public void visitBooleanVariableStatement(Statement.BooleanVariable statement) {
-        String identifier = statement.left.value;
-        Object value = statement.right.acceptVisitor(this);
-
-        if (value instanceof Boolean) {
-            scope.declare(identifier, value);
-            return;
-        }
-
-        throw KaoriError.TypeError("expected boolean value for type boolean", line);
-    }
-
-    @Override
-    public void visitStringVariableStatement(Statement.StringVariable statement) {
-        String identifier = statement.left.value;
-        Object value = statement.right.acceptVisitor(this);
-
-        if (value instanceof String) {
-            scope.declare(identifier, value);
-            return;
-
-        }
-
-        throw KaoriError.TypeError("expected string value for type string", line);
+        scope.declare(identifier, value);
     }
 
     @Override
@@ -335,10 +303,9 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
                 statement.elseBranch.acceptVisitor(this);
             }
 
-            return;
+        } else {
+            throw KaoriError.TypeError("expected boolean value for condition", line);
         }
-
-        throw KaoriError.TypeError("expected boolean value for condition", line);
 
     }
 
