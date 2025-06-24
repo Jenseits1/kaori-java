@@ -12,19 +12,21 @@ public abstract class Statement {
     public abstract void acceptVisitor(Visitor visitor);
 
     public interface Visitor {
-        void visitExpressionStatement(Expr node);
+        void visitExpressionStatement(Expr statement);
 
-        void visitPrintStatement(Print node);
+        void visitPrintStatement(Print statement);
 
-        void visitBlockStatement(Block node);
+        void visitBlockStatement(Block statement);
 
-        void visitFloatVariableStatement(FloatVariable floatVariable);
+        void visitFloatVariableStatement(FloatVariable statement);
 
-        void visitBooleanVariableStatement(BooleanVariable booleanVariable);
+        void visitBooleanVariableStatement(BooleanVariable statement);
 
-        void visitStringVariableStatement(StringVariable stringVariable);
+        void visitStringVariableStatement(StringVariable statement);
 
-        void visitIfStatement(If if1);
+        void visitIfStatement(If statement);
+
+        void visitWhileStatement(While statement);
     }
 
     public static class Print extends Statement {
@@ -133,8 +135,20 @@ public abstract class Statement {
 
         @Override
         public void acceptVisitor(Visitor visitor) {
-            // TODO Auto-generated method stub
             visitor.visitIfStatement(this);
+        }
+
+    }
+
+    public static class While extends Statement {
+        public While(int line, Expression condition, Block block) {
+            super(line);
+        }
+
+        @Override
+        public void acceptVisitor(Visitor visitor) {
+
+            visitor.visitWhileStatement(this);
         }
 
     }

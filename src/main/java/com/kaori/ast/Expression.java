@@ -38,7 +38,7 @@ public abstract class Expression {
 
         Object visitLiteral(Literal node);
 
-        Object visitIdentifier(Identifier identifier);
+        Object visitIdentifier(Identifier node);
 
     }
 
