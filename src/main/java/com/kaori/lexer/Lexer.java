@@ -5,18 +5,18 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 
 public class Lexer {
-    String source;
-    int start;
-    int current;
-    int line;
-    char currentCharacter;
-    List<Token> tokens;
+    private final String source;
+    private int start;
+    private int current;
+    private int line;
+    private char currentCharacter;
+    private List<Token> tokens;
 
     public Lexer(String source) {
         this.source = source;
     }
 
-    void advance() {
+    private void advance() {
         current++;
 
         if (current >= source.length()) {
@@ -31,17 +31,17 @@ public class Lexer {
         }
     }
 
-    boolean fileAtEnd() {
+    private boolean fileAtEnd() {
         return current >= source.length();
     }
 
-    void addToken(TokenKind type, int start, int end) {
+    private void addToken(TokenKind type, int start, int end) {
         Token token = new Token(type, line, start, end);
 
         tokens.add(token);
     }
 
-    void getNextNumber() {
+    private void getNextNumber() {
         while (!fileAtEnd() && Character.isDigit(currentCharacter)) {
             advance();
         }
@@ -57,7 +57,7 @@ public class Lexer {
         addToken(TokenKind.FLOAT_LITERAL, start, current);
     }
 
-    void identifierOrKeyword() {
+    private void identifierOrKeyword() {
         while (!fileAtEnd() && Character.isAlphabetic(currentCharacter)) {
             advance();
         }
@@ -86,7 +86,7 @@ public class Lexer {
         addToken(type, start, current);
     }
 
-    void stringLiteral() {
+    private void stringLiteral() {
         advance();
 
         while (!fileAtEnd() && currentCharacter != '"') {
@@ -102,7 +102,7 @@ public class Lexer {
         addToken(TokenKind.STRING_LITERAL, start + 1, current - 1);
     }
 
-    void symbol() {
+    private void symbol() {
         String lookahead = source.substring(current);
 
         if (lookahead.startsWith("&&")) {
@@ -160,7 +160,7 @@ public class Lexer {
         }
     }
 
-    void reset() {
+    private void reset() {
         start = 0;
         current = 0;
         line = 1;
@@ -168,7 +168,7 @@ public class Lexer {
         tokens = new ArrayList<>();
     }
 
-    void start() {
+    private void start() {
         while (!fileAtEnd()) {
             if (Character.isWhitespace(currentCharacter)) {
                 advance();

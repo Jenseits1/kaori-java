@@ -261,6 +261,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         throw KaoriError.TypeError("expected float operand for unary '-'", line);
     }
 
+    @Override
     public void visitPrintStatement(Statement.Print statement) {
         Object expression = statement.expression.acceptVisitor(this);
 

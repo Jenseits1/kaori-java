@@ -20,11 +20,11 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    boolean parseAtEnd() {
+    private boolean parseAtEnd() {
         return currentIndex >= tokens.size();
     }
 
-    void consume(TokenKind expected, String errorMessage) {
+    private void consume(TokenKind expected, String errorMessage) {
         if (parseAtEnd() || currentToken.type != expected) {
             throw KaoriError.SyntaxError(errorMessage, line);
         }
@@ -32,16 +32,16 @@ public class Parser {
         consume();
     }
 
-    void consume() {
+    private void consume() {
         currentIndex++;
 
         if (!parseAtEnd()) {
             currentToken = tokens.get(currentIndex);
-            line = currentToken.line;
+            line = currentToken.getLine();
         }
     }
 
-    Expression parenthesis() {
+    private Expression parenthesis() {
         consume(TokenKind.LEFT_PAREN, "expected (");
 
         Expression expression = expression();
@@ -51,7 +51,7 @@ public class Parser {
         return expression;
     }
 
-    Expression primary() {
+    private Expression primary() {
         if (parseAtEnd()) {
             throw KaoriError.SyntaxError("expected valid operand", line);
         }
@@ -86,7 +86,7 @@ public class Parser {
 
     }
 
-    Expression unary() {
+    private Expression unary() {
         return switch (currentToken.type) {
             case MINUS -> {
                 consume();
@@ -101,7 +101,7 @@ public class Parser {
         };
     }
 
-    Expression factor() {
+    private Expression factor() {
         Expression left = unary();
 
         while (!parseAtEnd()) {
@@ -134,7 +134,7 @@ public class Parser {
         return left;
     }
 
-    Expression term() {
+    private Expression term() {
         Expression left = factor();
 
         while (!parseAtEnd()) {
@@ -160,7 +160,7 @@ public class Parser {
         return left;
     }
 
-    Expression comparison() {
+    private Expression comparison() {
         Expression left = term();
 
         while (!parseAtEnd()) {
@@ -196,7 +196,7 @@ public class Parser {
         return left;
     }
 
-    Expression equality() {
+    private Expression equality() {
         Expression left = comparison();
 
         while (!parseAtEnd()) {
@@ -222,7 +222,7 @@ public class Parser {
         return left;
     }
 
-    Expression and() {
+    private Expression and() {
         Expression left = equality();
 
         while (!parseAtEnd()) {
@@ -243,7 +243,7 @@ public class Parser {
         return left;
     }
 
-    Expression or() {
+    private Expression or() {
         Expression left = and();
 
         while (!parseAtEnd()) {
@@ -264,7 +264,7 @@ public class Parser {
         return left;
     }
 
-    Expression assign() {
+    private Expression assign() {
         Expression expression = expression();
 
         if (expression instanceof Expression.Identifier left) {
@@ -277,18 +277,18 @@ public class Parser {
         return expression;
     }
 
-    Expression expression() {
+    private Expression expression() {
         return or();
     }
 
-    Statement expressionStatement() {
+    private Statement expressionStatement() {
         Expression expression = assign();
         Statement statement = new Statement.Expr(line, expression);
 
         return statement;
     }
 
-    Statement printStatement() {
+    private Statement printStatement() {
         consume(TokenKind.PRINT, "expected print keyword");
 
         consume(TokenKind.LEFT_PAREN, "expected (");
@@ -300,7 +300,7 @@ public class Parser {
         return new Statement.Print(line, expression);
     }
 
-    Statement blockStatement() {
+    private Statement blockStatement() {
         consume(TokenKind.LEFT_BRACE, "expected {");
 
         List<Statement> statements = new ArrayList<>();
@@ -319,7 +319,7 @@ public class Parser {
         return new Statement.Block(line, statements);
     }
 
-    Statement variableStatement() {
+    private Statement variableStatement() {
         TokenKind type = currentToken.type;
         consume();
 
@@ -339,7 +339,7 @@ public class Parser {
 
     }
 
-    Statement ifStatement() {
+    private Statement ifStatement() {
         consume(TokenKind.IF, "expected if keyword");
         consume(TokenKind.LEFT_PAREN, "expected (");
 
@@ -363,7 +363,7 @@ public class Parser {
         return new Statement.If(line, condition, ifBranch, elseBranch);
     }
 
-    Statement whileLoopStatement() {
+    private Statement whileLoopStatement() {
         consume(TokenKind.WHILE, "expected while keyword");
         consume(TokenKind.LEFT_PAREN, "expected (");
 
@@ -376,7 +376,7 @@ public class Parser {
         return new Statement.WhileLoop(line, condition, block);
     }
 
-    Statement forLoopStatement() {
+    private Statement forLoopStatement() {
         consume(TokenKind.FOR, "expected for keyword");
 
         consume(TokenKind.LEFT_PAREN, "expected (");
@@ -398,7 +398,7 @@ public class Parser {
         return new Statement.ForLoop(line, variable, condition, increment, block);
     }
 
-    Statement statement() {
+    private Statement statement() {
         Statement statement = switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
@@ -418,13 +418,13 @@ public class Parser {
         return statement;
     }
 
-    void reset() {
+    private void reset() {
         currentIndex = 0;
         currentToken = tokens.get(0);
         line = 1;
     }
 
-    List<Statement> start() {
+    private List<Statement> start() {
         List<Statement> statements = new ArrayList<>();
 
         while (!parseAtEnd()) {
