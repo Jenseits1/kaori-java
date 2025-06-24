@@ -17,18 +17,18 @@ public class Main {
         String source = """
                 float number = 0;
 
-                for (float number = 0; number < 10; number = number + 10) {
+                for (float number = 0; number < 10; number = number + 1) {
                     print(number);
                 };
 
-                print("end");
+                print("hello world");
                 """;
 
         try {
             Lexer lexer = new Lexer(source);
             List<Token> tokens = lexer.scan();
 
-            Parser parser = new Parser(tokens);
+            Parser parser = new Parser(source, tokens);
             List<Statement> ast = parser.parse();
             Interpreter interpreter = new Interpreter(ast);
             interpreter.run();

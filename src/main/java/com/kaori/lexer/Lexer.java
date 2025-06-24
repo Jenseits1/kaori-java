@@ -35,9 +35,8 @@ public class Lexer {
         return current >= source.length();
     }
 
-    void addToken(TokenType type, int start, int end) {
-        String lexeme = source.substring(start, end);
-        Token token = new Token(type, line, lexeme);
+    void addToken(TokenKind type, int start, int end) {
+        Token token = new Token(type, line, start, end);
 
         tokens.add(token);
     }
@@ -55,7 +54,7 @@ public class Lexer {
             advance();
         }
 
-        addToken(TokenType.FLOAT_LITERAL, start, current);
+        addToken(TokenKind.FLOAT_LITERAL, start, current);
     }
 
     void identifierOrKeyword() {
@@ -67,21 +66,21 @@ public class Lexer {
             advance();
         }
 
-        TokenType type = switch (source.substring(start, current)) {
-            case "str" -> TokenType.STRING_VARIABLE;
-            case "bool" -> TokenType.BOOLEAN_VARIABLE;
-            case "float" -> TokenType.FLOAT_VARIABLE;
-            case "if" -> TokenType.IF;
-            case "else" -> TokenType.ELSE;
-            case "while" -> TokenType.WHILE;
-            case "for" -> TokenType.FOR;
-            case "break" -> TokenType.BREAK;
-            case "continue" -> TokenType.CONTINUE;
-            case "return" -> TokenType.RETURN;
-            case "func" -> TokenType.FUNCTION;
-            case "print" -> TokenType.PRINT;
-            case "true", "false" -> TokenType.BOOLEAN_LITERAL;
-            default -> TokenType.IDENTIFIER;
+        TokenKind type = switch (source.substring(start, current)) {
+            case "str" -> TokenKind.STRING_VARIABLE;
+            case "bool" -> TokenKind.BOOLEAN_VARIABLE;
+            case "float" -> TokenKind.FLOAT_VARIABLE;
+            case "if" -> TokenKind.IF;
+            case "else" -> TokenKind.ELSE;
+            case "while" -> TokenKind.WHILE;
+            case "for" -> TokenKind.FOR;
+            case "break" -> TokenKind.BREAK;
+            case "continue" -> TokenKind.CONTINUE;
+            case "return" -> TokenKind.RETURN;
+            case "func" -> TokenKind.FUNCTION;
+            case "print" -> TokenKind.PRINT;
+            case "true", "false" -> TokenKind.BOOLEAN_LITERAL;
+            default -> TokenKind.IDENTIFIER;
         };
 
         addToken(type, start, current);
@@ -100,7 +99,7 @@ public class Lexer {
 
         advance();
 
-        addToken(TokenType.STRING_LITERAL, start, current);
+        addToken(TokenKind.STRING_LITERAL, start + 1, current - 1);
     }
 
     void symbol() {
@@ -109,50 +108,50 @@ public class Lexer {
         if (lookahead.startsWith("&&")) {
             advance();
             advance();
-            addToken(TokenType.AND, start, current);
+            addToken(TokenKind.AND, start, current);
 
         } else if (lookahead.startsWith("||")) {
             advance();
             advance();
-            addToken(TokenType.OR, start, current);
+            addToken(TokenKind.OR, start, current);
 
         } else if (lookahead.startsWith("!=")) {
             advance();
             advance();
-            addToken(TokenType.NOT_EQUAL, start, current);
+            addToken(TokenKind.NOT_EQUAL, start, current);
 
         } else if (lookahead.startsWith("==")) {
             advance();
             advance();
-            addToken(TokenType.EQUAL, start, current);
+            addToken(TokenKind.EQUAL, start, current);
 
         } else if (lookahead.startsWith(">=")) {
             advance();
             advance();
-            addToken(TokenType.GREATER_EQUAL, start, current);
+            addToken(TokenKind.GREATER_EQUAL, start, current);
 
         } else if (lookahead.startsWith("<=")) {
             advance();
             advance();
-            addToken(TokenType.LESS_EQUAL, start, current);
+            addToken(TokenKind.LESS_EQUAL, start, current);
 
         } else {
-            TokenType type = switch (currentCharacter) {
-                case '+' -> TokenType.PLUS;
-                case '-' -> TokenType.MINUS;
-                case '*' -> TokenType.MULTIPLY;
-                case '/' -> TokenType.DIVIDE;
-                case '%' -> TokenType.MODULO;
-                case '(' -> TokenType.LEFT_PAREN;
-                case ')' -> TokenType.RIGHT_PAREN;
-                case '{' -> TokenType.LEFT_BRACE;
-                case '}' -> TokenType.RIGHT_BRACE;
-                case ',' -> TokenType.COMMA;
-                case ';' -> TokenType.SEMICOLON;
-                case '!' -> TokenType.NOT;
-                case '=' -> TokenType.ASSIGN;
-                case '>' -> TokenType.GREATER;
-                case '<' -> TokenType.LESS;
+            TokenKind type = switch (currentCharacter) {
+                case '+' -> TokenKind.PLUS;
+                case '-' -> TokenKind.MINUS;
+                case '*' -> TokenKind.MULTIPLY;
+                case '/' -> TokenKind.DIVIDE;
+                case '%' -> TokenKind.MODULO;
+                case '(' -> TokenKind.LEFT_PAREN;
+                case ')' -> TokenKind.RIGHT_PAREN;
+                case '{' -> TokenKind.LEFT_BRACE;
+                case '}' -> TokenKind.RIGHT_BRACE;
+                case ',' -> TokenKind.COMMA;
+                case ';' -> TokenKind.SEMICOLON;
+                case '!' -> TokenKind.NOT;
+                case '=' -> TokenKind.ASSIGN;
+                case '>' -> TokenKind.GREATER;
+                case '<' -> TokenKind.LESS;
                 default -> throw KaoriError.SyntaxError("unexpected token", line);
             };
 

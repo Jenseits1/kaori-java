@@ -1,6 +1,6 @@
 package com.kaori.lexer;
 
-public enum TokenType {
+public enum TokenKind {
     // Arithmetic operators
     PLUS,
     MINUS,

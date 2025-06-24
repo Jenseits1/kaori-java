@@ -6,15 +6,17 @@ import com.kaori.ast.Expression;
 import com.kaori.ast.Statement;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Token;
-import com.kaori.lexer.TokenType;
+import com.kaori.lexer.TokenKind;
 
 public class Parser {
+    final String source;
     final List<Token> tokens;
     int currentIndex;
     int line;
     Token currentToken;
 
-    public Parser(List<Token> tokens) {
+    public Parser(String source, List<Token> tokens) {
+        this.source = source;
         this.tokens = tokens;
     }
 
@@ -22,7 +24,7 @@ public class Parser {
         return currentIndex >= tokens.size();
     }
 
-    void consume(TokenType expected, String errorMessage) {
+    void consume(TokenKind expected, String errorMessage) {
         if (parseAtEnd() || currentToken.type != expected) {
             throw KaoriError.SyntaxError(errorMessage, line);
         }
@@ -40,11 +42,11 @@ public class Parser {
     }
 
     Expression parenthesis() {
-        consume(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenKind.LEFT_PAREN, "expected (");
 
         Expression expression = expression();
 
-        consume(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenKind.RIGHT_PAREN, "expected )");
 
         return expression;
     }
@@ -56,25 +58,25 @@ public class Parser {
 
         return switch (currentToken.type) {
             case BOOLEAN_LITERAL -> {
-                boolean value = Boolean.parseBoolean(currentToken.lexeme);
+                boolean value = Boolean.parseBoolean(currentToken.getSubstring(source));
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
-                String value = currentToken.lexeme.substring(1, currentToken.lexeme.length() - 1);
+                String value = currentToken.getSubstring(source);
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
-                float value = Float.parseFloat(currentToken.lexeme);
+                float value = Float.parseFloat(currentToken.getSubstring(source));
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case IDENTIFIER -> {
-                Expression identifier = new Expression.Identifier(currentToken.lexeme);
+                Expression identifier = new Expression.Identifier(currentToken.getSubstring(source));
                 consume();
                 yield identifier;
             }
@@ -103,7 +105,7 @@ public class Parser {
         Expression left = unary();
 
         while (!parseAtEnd()) {
-            TokenType operator = currentToken.type;
+            TokenKind operator = currentToken.type;
 
             switch (operator) {
                 case MULTIPLY -> {
@@ -136,7 +138,7 @@ public class Parser {
         Expression left = factor();
 
         while (!parseAtEnd()) {
-            TokenType operator = currentToken.type;
+            TokenKind operator = currentToken.type;
 
             switch (operator) {
                 case PLUS -> {
@@ -162,7 +164,7 @@ public class Parser {
         Expression left = term();
 
         while (!parseAtEnd()) {
-            TokenType operator = currentToken.type;
+            TokenKind operator = currentToken.type;
 
             switch (operator) {
                 case GREATER -> {
@@ -198,7 +200,7 @@ public class Parser {
         Expression left = comparison();
 
         while (!parseAtEnd()) {
-            TokenType operator = currentToken.type;
+            TokenKind operator = currentToken.type;
 
             switch (operator) {
                 case EQUAL -> {
@@ -224,7 +226,7 @@ public class Parser {
         Expression left = equality();
 
         while (!parseAtEnd()) {
-            TokenType operator = currentToken.type;
+            TokenKind operator = currentToken.type;
 
             switch (operator) {
                 case AND -> {
@@ -245,7 +247,7 @@ public class Parser {
         Expression left = and();
 
         while (!parseAtEnd()) {
-            TokenType operator = currentToken.type;
+            TokenKind operator = currentToken.type;
 
             switch (operator) {
                 case OR -> {
@@ -266,7 +268,7 @@ public class Parser {
         Expression expression = expression();
 
         if (expression instanceof Expression.Identifier left) {
-            consume(TokenType.ASSIGN, "expected =");
+            consume(TokenKind.ASSIGN, "expected =");
             Expression right = expression();
 
             return new Expression.Assign(left, right);
@@ -287,24 +289,24 @@ public class Parser {
     }
 
     Statement printStatement() {
-        consume(TokenType.PRINT, "expected print keyword");
+        consume(TokenKind.PRINT, "expected print keyword");
 
-        consume(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenKind.LEFT_PAREN, "expected (");
 
         Expression expression = expression();
 
-        consume(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenKind.RIGHT_PAREN, "expected )");
 
         return new Statement.Print(line, expression);
     }
 
     Statement blockStatement() {
-        consume(TokenType.LEFT_BRACE, "expected {");
+        consume(TokenKind.LEFT_BRACE, "expected {");
 
         List<Statement> statements = new ArrayList<>();
 
         while (!parseAtEnd()) {
-            if (currentToken.type == TokenType.RIGHT_BRACE) {
+            if (currentToken.type == TokenKind.RIGHT_BRACE) {
                 break;
             }
 
@@ -312,19 +314,19 @@ public class Parser {
             statements.add(statement);
         }
 
-        consume(TokenType.RIGHT_BRACE, "expected }");
+        consume(TokenKind.RIGHT_BRACE, "expected }");
 
         return new Statement.Block(line, statements);
     }
 
     Statement variableStatement() {
-        TokenType type = currentToken.type;
+        TokenKind type = currentToken.type;
         consume();
 
-        Expression.Identifier left = new Expression.Identifier(currentToken.lexeme);
+        Expression.Identifier left = new Expression.Identifier(currentToken.getSubstring(source));
 
-        consume(TokenType.IDENTIFIER, "expected an identifier");
-        consume(TokenType.ASSIGN, "expected =");
+        consume(TokenKind.IDENTIFIER, "expected an identifier");
+        consume(TokenKind.ASSIGN, "expected =");
 
         Expression right = expression();
 
@@ -338,20 +340,20 @@ public class Parser {
     }
 
     Statement ifStatement() {
-        consume(TokenType.IF, "expected if keyword");
-        consume(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenKind.IF, "expected if keyword");
+        consume(TokenKind.LEFT_PAREN, "expected (");
 
         Expression condition = expression();
 
-        consume(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenKind.RIGHT_PAREN, "expected )");
 
         Statement ifBranch = blockStatement();
 
-        if (currentToken.type != TokenType.ELSE) {
+        if (currentToken.type != TokenKind.ELSE) {
             return new Statement.If(line, condition, ifBranch, null);
         }
 
-        consume(TokenType.ELSE, "expected else keyword");
+        consume(TokenKind.ELSE, "expected else keyword");
 
         Statement elseBranch = switch (currentToken.type) {
             case IF -> ifStatement();
@@ -362,12 +364,12 @@ public class Parser {
     }
 
     Statement whileLoopStatement() {
-        consume(TokenType.WHILE, "expected while keyword");
-        consume(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenKind.WHILE, "expected while keyword");
+        consume(TokenKind.LEFT_PAREN, "expected (");
 
         Expression condition = expression();
 
-        consume(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenKind.RIGHT_PAREN, "expected )");
 
         Statement block = blockStatement();
 
@@ -375,21 +377,21 @@ public class Parser {
     }
 
     Statement forLoopStatement() {
-        consume(TokenType.FOR, "expected for keyword");
+        consume(TokenKind.FOR, "expected for keyword");
 
-        consume(TokenType.LEFT_PAREN, "expected (");
+        consume(TokenKind.LEFT_PAREN, "expected (");
 
         Statement variable = variableStatement();
 
-        consume(TokenType.SEMICOLON, "expected semicolon after variable declaration");
+        consume(TokenKind.SEMICOLON, "expected semicolon after variable declaration");
 
         Expression condition = expression();
 
-        consume(TokenType.SEMICOLON, "expected semicolon after condition");
+        consume(TokenKind.SEMICOLON, "expected semicolon after condition");
 
         Statement increment = expressionStatement();
 
-        consume(TokenType.RIGHT_PAREN, "expected )");
+        consume(TokenKind.RIGHT_PAREN, "expected )");
 
         Statement block = blockStatement();
 
@@ -411,7 +413,7 @@ public class Parser {
             return statement;
         }
 
-        consume(TokenType.SEMICOLON, "expected ; at the end of statement");
+        consume(TokenKind.SEMICOLON, "expected ; at the end of statement");
 
         return statement;
     }

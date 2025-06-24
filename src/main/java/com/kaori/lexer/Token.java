@@ -1,13 +1,19 @@
 package com.kaori.lexer;
 
 public class Token {
-    public final TokenType type;
+    public final TokenKind type;
     public final int line;
-    public final String lexeme;
+    public final int start;
+    public final int end;
 
-    public Token(TokenType type, int line, String lexeme) {
+    public Token(TokenKind type, int line, int start, int end) {
         this.type = type;
         this.line = line;
-        this.lexeme = lexeme;
+        this.start = start;
+        this.end = end;
+    }
+
+    public String getSubstring(String source) {
+        return source.substring(start, end);
     }
 }
