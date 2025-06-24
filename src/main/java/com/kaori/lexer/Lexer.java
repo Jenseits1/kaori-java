@@ -35,13 +35,13 @@ public class Lexer {
         return current >= source.length();
     }
 
-    private void addToken(TokenKind type, int start, int end) {
-        Token token = new Token(type, line, start, end);
+    private void addToken(TokenKind type) {
+        Token token = new Token(type, line, start, current);
 
         tokens.add(token);
     }
 
-    private void getNextNumber() {
+    private TokenKind number() {
         while (!fileAtEnd() && Character.isDigit(currentCharacter)) {
             advance();
         }
@@ -54,10 +54,10 @@ public class Lexer {
             advance();
         }
 
-        addToken(TokenKind.FLOAT_LITERAL, start, current);
+        return TokenKind.FLOAT_LITERAL;
     }
 
-    private void identifierOrKeyword() {
+    private TokenKind identifierOrKeyword() {
         while (!fileAtEnd() && Character.isAlphabetic(currentCharacter)) {
             advance();
         }
@@ -66,7 +66,7 @@ public class Lexer {
             advance();
         }
 
-        TokenKind type = switch (source.substring(start, current)) {
+        return switch (source.substring(start, current)) {
             case "str" -> TokenKind.STRING_VARIABLE;
             case "bool" -> TokenKind.BOOLEAN_VARIABLE;
             case "float" -> TokenKind.FLOAT_VARIABLE;
@@ -82,11 +82,9 @@ public class Lexer {
             case "true", "false" -> TokenKind.BOOLEAN_LITERAL;
             default -> TokenKind.IDENTIFIER;
         };
-
-        addToken(type, start, current);
     }
 
-    private void stringLiteral() {
+    private TokenKind stringLiteral() {
         advance();
 
         while (!fileAtEnd() && currentCharacter != '"') {
@@ -99,65 +97,65 @@ public class Lexer {
 
         advance();
 
-        addToken(TokenKind.STRING_LITERAL, start + 1, current - 1);
+        return TokenKind.STRING_LITERAL;
     }
 
-    private void symbol() {
+    private TokenKind symbol() {
         String lookahead = source.substring(current);
 
         if (lookahead.startsWith("&&")) {
             advance();
             advance();
-            addToken(TokenKind.AND, start, current);
-
-        } else if (lookahead.startsWith("||")) {
-            advance();
-            advance();
-            addToken(TokenKind.OR, start, current);
-
-        } else if (lookahead.startsWith("!=")) {
-            advance();
-            advance();
-            addToken(TokenKind.NOT_EQUAL, start, current);
-
-        } else if (lookahead.startsWith("==")) {
-            advance();
-            advance();
-            addToken(TokenKind.EQUAL, start, current);
-
-        } else if (lookahead.startsWith(">=")) {
-            advance();
-            advance();
-            addToken(TokenKind.GREATER_EQUAL, start, current);
-
-        } else if (lookahead.startsWith("<=")) {
-            advance();
-            advance();
-            addToken(TokenKind.LESS_EQUAL, start, current);
-
-        } else {
-            TokenKind type = switch (currentCharacter) {
-                case '+' -> TokenKind.PLUS;
-                case '-' -> TokenKind.MINUS;
-                case '*' -> TokenKind.MULTIPLY;
-                case '/' -> TokenKind.DIVIDE;
-                case '%' -> TokenKind.MODULO;
-                case '(' -> TokenKind.LEFT_PAREN;
-                case ')' -> TokenKind.RIGHT_PAREN;
-                case '{' -> TokenKind.LEFT_BRACE;
-                case '}' -> TokenKind.RIGHT_BRACE;
-                case ',' -> TokenKind.COMMA;
-                case ';' -> TokenKind.SEMICOLON;
-                case '!' -> TokenKind.NOT;
-                case '=' -> TokenKind.ASSIGN;
-                case '>' -> TokenKind.GREATER;
-                case '<' -> TokenKind.LESS;
-                default -> throw KaoriError.SyntaxError("unexpected token", line);
-            };
-
-            advance();
-            addToken(type, start, current);
+            return TokenKind.AND;
         }
+        if (lookahead.startsWith("||")) {
+            advance();
+            advance();
+            return TokenKind.OR;
+        }
+        if (lookahead.startsWith("!=")) {
+            advance();
+            advance();
+            return TokenKind.NOT_EQUAL;
+        }
+        if (lookahead.startsWith("==")) {
+            advance();
+            advance();
+            return TokenKind.EQUAL;
+        }
+        if (lookahead.startsWith(">=")) {
+            advance();
+            advance();
+            return TokenKind.GREATER_EQUAL;
+        }
+        if (lookahead.startsWith("<=")) {
+            advance();
+            advance();
+            return TokenKind.LESS_EQUAL;
+        }
+
+        TokenKind type = switch (currentCharacter) {
+            case '+' -> TokenKind.PLUS;
+            case '-' -> TokenKind.MINUS;
+            case '*' -> TokenKind.MULTIPLY;
+            case '/' -> TokenKind.DIVIDE;
+            case '%' -> TokenKind.MODULO;
+            case '(' -> TokenKind.LEFT_PAREN;
+            case ')' -> TokenKind.RIGHT_PAREN;
+            case '{' -> TokenKind.LEFT_BRACE;
+            case '}' -> TokenKind.RIGHT_BRACE;
+            case ',' -> TokenKind.COMMA;
+            case ';' -> TokenKind.SEMICOLON;
+            case '!' -> TokenKind.NOT;
+            case '=' -> TokenKind.ASSIGN;
+            case '>' -> TokenKind.GREATER;
+            case '<' -> TokenKind.LESS;
+            default -> throw KaoriError.SyntaxError("unexpected token", line);
+        };
+
+        advance();
+
+        return type;
     }
 
     private void reset() {
@@ -173,13 +171,17 @@ public class Lexer {
             if (Character.isWhitespace(currentCharacter)) {
                 advance();
             } else if (Character.isDigit(currentCharacter)) {
-                getNextNumber();
+                TokenKind token = number();
+                addToken(token);
             } else if (Character.isLetter(currentCharacter)) {
-                identifierOrKeyword();
+                TokenKind token = identifierOrKeyword();
+                addToken(token);
             } else if (currentCharacter == '"') {
-                stringLiteral();
+                TokenKind token = stringLiteral();
+                addToken(token);
             } else {
-                symbol();
+                TokenKind token = symbol();
+                addToken(token);
             }
 
             start = current;

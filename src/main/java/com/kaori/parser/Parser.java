@@ -65,7 +65,7 @@ public class Parser {
             }
             case STRING_LITERAL -> {
                 String value = currentToken.getSubstring(source);
-                Expression literal = new Expression.Literal(value);
+                Expression literal = new Expression.Literal(value.substring(1, value.length() - 1));
                 consume();
                 yield literal;
             }

@@ -21,7 +21,7 @@ public class Main {
                     print(number);
                 };
 
-                print("hello world");
+                print(2 +8*8);
                 """;
 
         try {
