@@ -262,10 +262,6 @@ public class Parser {
         return left;
     }
 
-    Expression expression() {
-        return or();
-    }
-
     Expression assign() {
         Expression expression = expression();
 
@@ -277,6 +273,10 @@ public class Parser {
         }
 
         return expression;
+    }
+
+    Expression expression() {
+        return or();
     }
 
     Statement expressionStatement() {
@@ -338,7 +338,7 @@ public class Parser {
     }
 
     Statement ifStatement() {
-        consume(TokenType.IF, "expected if");
+        consume(TokenType.IF, "expected if keyword");
         consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression condition = expression();
@@ -351,7 +351,7 @@ public class Parser {
             return new Statement.If(line, condition, ifBranch, null);
         }
 
-        consume(TokenType.ELSE, "expected else");
+        consume(TokenType.ELSE, "expected else keyword");
 
         Statement elseBranch = switch (currentToken.type) {
             case IF -> ifStatement();
@@ -361,8 +361,8 @@ public class Parser {
         return new Statement.If(line, condition, ifBranch, elseBranch);
     }
 
-    Statement whileStatement() {
-        consume(TokenType.WHILE, "expected while");
+    Statement whileLoopStatement() {
+        consume(TokenType.WHILE, "expected while keyword");
         consume(TokenType.LEFT_PAREN, "expected (");
 
         Expression condition = expression();
@@ -371,7 +371,29 @@ public class Parser {
 
         Statement block = blockStatement();
 
-        return new Statement.While(line, condition, block);
+        return new Statement.WhileLoop(line, condition, block);
+    }
+
+    Statement forLoopStatement() {
+        consume(TokenType.FOR, "expected for keyword");
+
+        consume(TokenType.LEFT_PAREN, "expected (");
+
+        Statement variable = variableStatement();
+
+        consume(TokenType.SEMICOLON, "expected semicolon after variable declaration");
+
+        Expression condition = expression();
+
+        consume(TokenType.SEMICOLON, "expected semicolon after condition");
+
+        Statement increment = expressionStatement();
+
+        consume(TokenType.RIGHT_PAREN, "expected )");
+
+        Statement block = blockStatement();
+
+        return new Statement.ForLoop(line, variable, condition, increment, block);
     }
 
     Statement statement() {
@@ -380,7 +402,8 @@ public class Parser {
             case LEFT_BRACE -> blockStatement();
             case STRING_VARIABLE, BOOLEAN_VARIABLE, FLOAT_VARIABLE -> variableStatement();
             case IF -> ifStatement();
-            case WHILE -> whileStatement();
+            case WHILE -> whileLoopStatement();
+            case FOR -> forLoopStatement();
             default -> expressionStatement();
         };
 

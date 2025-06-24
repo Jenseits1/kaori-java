@@ -17,8 +17,7 @@ public class Main {
         String source = """
                 float number = 0;
 
-                while (number < 10) {
-                    number = number + 1;
+                for (float number = 0; number < 10; number = number + 10) {
                     print(number);
                 };
 

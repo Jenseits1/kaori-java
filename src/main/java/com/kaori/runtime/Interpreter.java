@@ -1,14 +1,11 @@
 package com.kaori.runtime;
 
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.kaori.ast.Expression;
 import com.kaori.ast.Expression.Assign;
 import com.kaori.ast.Expression.Identifier;
 import com.kaori.ast.Statement;
-import com.kaori.ast.Statement.While;
+import com.kaori.ast.Statement.ForLoop;
 import com.kaori.error.KaoriError;
 
 public class Interpreter implements Expression.Visitor, Statement.Visitor {
@@ -345,7 +342,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitWhileStatement(While statement) {
+    public void visitWhileLoopStatement(Statement.WhileLoop statement) {
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
 
@@ -358,6 +355,27 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             } else {
                 throw KaoriError.TypeError("expected boolean value for condition", line);
             }
+        }
+    }
+
+    @Override
+    public void visitForLoopStatement(ForLoop statement) {
+        statement.variable.acceptVisitor(this);
+
+        while (true) {
+            Object condition = statement.condition.acceptVisitor(this);
+
+            if (condition instanceof Boolean truthy) {
+                if (!truthy) {
+                    break;
+                }
+
+                statement.block.acceptVisitor(this);
+            } else {
+                throw KaoriError.TypeError("expected boolean value for condition", line);
+            }
+
+            statement.increment.acceptVisitor(this);
         }
     }
 }

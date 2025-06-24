@@ -26,7 +26,9 @@ public abstract class Statement {
 
         void visitIfStatement(If statement);
 
-        void visitWhileStatement(While statement);
+        void visitWhileLoopStatement(WhileLoop statement);
+
+        void visitForLoopStatement(ForLoop statement);
     }
 
     public static class Print extends Statement {
@@ -140,11 +142,11 @@ public abstract class Statement {
 
     }
 
-    public static class While extends Statement {
+    public static class WhileLoop extends Statement {
         public final Expression condition;
         public final Statement block;
 
-        public While(int line, Expression condition, Statement block) {
+        public WhileLoop(int line, Expression condition, Statement block) {
             super(line);
             this.condition = condition;
             this.block = block;
@@ -152,8 +154,27 @@ public abstract class Statement {
 
         @Override
         public void acceptVisitor(Visitor visitor) {
+            visitor.visitWhileLoopStatement(this);
+        }
+    }
 
-            visitor.visitWhileStatement(this);
+    public static class ForLoop extends Statement {
+        public final Statement variable;
+        public final Expression condition;
+        public final Statement increment;
+        public final Statement block;
+
+        public ForLoop(int line, Statement variable, Expression condition, Statement increment, Statement block) {
+            super(line);
+            this.variable = variable;
+            this.condition = condition;
+            this.increment = increment;
+            this.block = block;
+        }
+
+        @Override
+        public void acceptVisitor(Visitor visitor) {
+            visitor.visitForLoopStatement(this);
         }
 
     }
