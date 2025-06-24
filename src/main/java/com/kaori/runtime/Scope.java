@@ -36,4 +36,12 @@ public class Scope {
     public void declare(String identifier, Object value) {
         values.put(identifier, value);
     }
+
+    public void assign(String identifier, Object value) {
+        if (values.containsKey(identifier)) {
+            values.put(identifier, value);
+        } else if (outerScope != null) {
+            outerScope.assign(identifier, value);
+        }
+    }
 }

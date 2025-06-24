@@ -2,10 +2,13 @@ package com.kaori.runtime;
 
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kaori.ast.Expression;
 import com.kaori.ast.Expression.Assign;
 import com.kaori.ast.Expression.Identifier;
 import com.kaori.ast.Statement;
+import com.kaori.ast.Statement.While;
 import com.kaori.error.KaoriError;
 
 public class Interpreter implements Expression.Visitor, Statement.Visitor {
@@ -223,7 +226,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             throw KaoriError.TypeError("expected different value type in variable assignment", line);
         }
 
-        scope.declare(node.left.value, value);
+        scope.assign(node.left.value, value);
 
         return value;
     }
@@ -327,8 +330,8 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     public void visitIfStatement(Statement.If statement) {
         Object condition = statement.condition.acceptVisitor(this);
 
-        if (condition instanceof Boolean c) {
-            if (c) {
+        if (condition instanceof Boolean truthy) {
+            if (truthy) {
                 statement.ifBranch.acceptVisitor(this);
             } else if (statement.elseBranch != null) {
                 statement.elseBranch.acceptVisitor(this);
@@ -337,7 +340,24 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             return;
         }
 
-        throw KaoriError.TypeError("expected boolean value for type if condition", line);
+        throw KaoriError.TypeError("expected boolean value for condition", line);
 
+    }
+
+    @Override
+    public void visitWhileStatement(While statement) {
+        while (true) {
+            Object condition = statement.condition.acceptVisitor(this);
+
+            if (condition instanceof Boolean truthy) {
+                if (!truthy) {
+                    break;
+                }
+
+                statement.block.acceptVisitor(this);
+            } else {
+                throw KaoriError.TypeError("expected boolean value for condition", line);
+            }
+        }
     }
 }

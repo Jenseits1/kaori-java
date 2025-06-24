@@ -141,8 +141,13 @@ public abstract class Statement {
     }
 
     public static class While extends Statement {
-        public While(int line, Expression condition, Block block) {
+        public final Expression condition;
+        public final Statement block;
+
+        public While(int line, Expression condition, Statement block) {
             super(line);
+            this.condition = condition;
+            this.block = block;
         }
 
         @Override

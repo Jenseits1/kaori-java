@@ -361,12 +361,26 @@ public class Parser {
         return new Statement.If(line, condition, ifBranch, elseBranch);
     }
 
+    Statement whileStatement() {
+        consume(TokenType.WHILE, "expected while");
+        consume(TokenType.LEFT_PAREN, "expected (");
+
+        Expression condition = expression();
+
+        consume(TokenType.RIGHT_PAREN, "expected )");
+
+        Statement block = blockStatement();
+
+        return new Statement.While(line, condition, block);
+    }
+
     Statement statement() {
         Statement statement = switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
             case STRING_VARIABLE, BOOLEAN_VARIABLE, FLOAT_VARIABLE -> variableStatement();
             case IF -> ifStatement();
+            case WHILE -> whileStatement();
             default -> expressionStatement();
         };
 
