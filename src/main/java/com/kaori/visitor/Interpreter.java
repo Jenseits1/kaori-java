@@ -23,15 +23,12 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return l + r;
+        if (left instanceof Float) {
+            return (Float) left + (Float) right;
+        } else {
+            return (String) left + (String) right;
         }
 
-        if (left instanceof String l && right instanceof String r) {
-            return l + r;
-        }
-
-        throw KaoriError.TypeError("expected number or string operands for '+'", line);
     }
 
     @Override
@@ -39,11 +36,8 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return (Float) l - (Float) r;
-        }
+        return (Float) left - (Float) right;
 
-        throw KaoriError.TypeError("expected float operands for '-'", line);
     }
 
     @Override
@@ -51,11 +45,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return l * r;
-        }
-
-        throw KaoriError.TypeError("expected float operands for '*'", line);
+        return (Float) left * (Float) right;
     }
 
     @Override
@@ -63,15 +53,11 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            if (r == 0.0f) {
-                throw KaoriError.DivisionByZero("can not do division by zero", line);
-            }
-
-            return l / r;
+        if ((Float) right == 0.0f) {
+            throw KaoriError.DivisionByZero("can not do division by zero", line);
         }
 
-        throw KaoriError.TypeError("expected float operands for '/'", line);
+        return (Float) left / (Float) right;
     }
 
     @Override
@@ -79,15 +65,11 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            if (r == 0.0f) {
-                throw KaoriError.DivisionByZero("can not do division by zero", line);
-            }
-
-            return l % r;
+        if ((Float) right == 0.0f) {
+            throw KaoriError.DivisionByZero("can not do division by zero", line);
         }
 
-        throw KaoriError.TypeError("expected float operands for '%'", line);
+        return (Float) left % (Float) right;
     }
 
     @Override
@@ -95,11 +77,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Boolean l && right instanceof Boolean r) {
-            return l && r;
-        }
-
-        throw KaoriError.TypeError("expected boolean operands for '&&'", line);
+        return (Boolean) left && (Boolean) right;
     }
 
     @Override
@@ -107,11 +85,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Boolean l && right instanceof Boolean r) {
-            return l || r;
-        }
-
-        throw KaoriError.TypeError("expected boolean operands for '||'", line);
+        return (Boolean) left || (Boolean) right;
     }
 
     @Override
@@ -119,19 +93,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof String l && right instanceof String r) {
-            return l.equals(r);
-        }
-
-        if (left instanceof Float l && right instanceof Float r) {
-            return l.equals(r);
-        }
-
-        if (left instanceof Boolean l && right instanceof Boolean r) {
-            return l.equals(r);
-        }
-
-        throw KaoriError.TypeError("expected operands of same type for '=='", line);
+        return left.equals(right);
     }
 
     @Override
@@ -139,19 +101,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof String l && right instanceof String r) {
-            return !l.equals(r);
-        }
-
-        if (left instanceof Float l && right instanceof Float r) {
-            return !l.equals(r);
-        }
-
-        if (left instanceof Boolean l && right instanceof Boolean r) {
-            return !l.equals(r);
-        }
-
-        throw KaoriError.TypeError("expected operands of same type for '!='", line);
+        return !left.equals(right);
     }
 
     @Override
@@ -159,11 +109,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return l > r;
-        }
-
-        throw KaoriError.TypeError("expected float operands for '>'", line);
+        return (Float) left > (Float) right;
     }
 
     @Override
@@ -171,11 +117,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return l >= r;
-        }
-
-        throw KaoriError.TypeError("expected float operands for '>='", line);
+        return (Float) left >= (Float) right;
     }
 
     @Override
@@ -183,11 +125,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return l < r;
-        }
-
-        throw KaoriError.TypeError("expected float operands for '<'", line);
+        return (Float) left < (Float) right;
     }
 
     @Override
@@ -195,23 +133,15 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float l && right instanceof Float r) {
-            return l <= r;
-        }
-
-        throw KaoriError.TypeError("expected float operands for '<='", line);
+        return (Float) left <= (Float) right;
     }
 
     @Override
     public Object visitAssign(Expression.Assign node) {
-        Object currentValue = node.left.acceptVisitor(this);
+        String identifier = node.left.value;
         Object value = node.right.acceptVisitor(this);
 
-        if (currentValue != null && value != null && currentValue.getClass() != value.getClass()) {
-            throw KaoriError.TypeError("expected different value type in variable assignment", line);
-        }
-
-        environment.assign(node.left.value, value, line);
+        environment.assign(identifier, value, line);
 
         return value;
     }
@@ -227,22 +157,14 @@ public class Interpreter extends Visitor<Object> {
     public Object visitNot(Expression.Not node) {
         Object value = node.left.acceptVisitor(this);
 
-        if (value instanceof Boolean b) {
-            return !b;
-        }
-
-        throw KaoriError.TypeError("expected boolean operand for '!'", line);
+        return !(Boolean) value;
     }
 
     @Override
     public Object visitNegation(Expression.Negation node) {
         Object left = node.left.acceptVisitor(this);
 
-        if (left instanceof Float l) {
-            return -l;
-        }
-
-        throw KaoriError.TypeError("expected float operand for unary '-'", line);
+        return -(Float) left;
     }
 
     @Override
@@ -280,15 +202,10 @@ public class Interpreter extends Visitor<Object> {
     public void visitIfStatement(Statement.If statement) {
         Object condition = statement.condition.acceptVisitor(this);
 
-        if (condition instanceof Boolean truthy) {
-            if (truthy) {
-                statement.ifBranch.acceptVisitor(this);
-            } else if (statement.elseBranch != null) {
-                statement.elseBranch.acceptVisitor(this);
-            }
-
-        } else {
-            throw KaoriError.TypeError("expected boolean value for condition", line);
+        if ((Boolean) condition) {
+            statement.ifBranch.acceptVisitor(this);
+        } else if (statement.elseBranch != null) {
+            statement.elseBranch.acceptVisitor(this);
         }
 
     }
@@ -298,15 +215,11 @@ public class Interpreter extends Visitor<Object> {
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
 
-            if (condition instanceof Boolean truthy) {
-                if (!truthy) {
-                    break;
-                }
-
-                statement.block.acceptVisitor(this);
-            } else {
-                throw KaoriError.TypeError("expected boolean value for condition", line);
+            if ((Boolean) condition) {
+                break;
             }
+
+            statement.block.acceptVisitor(this);
         }
     }
 
@@ -317,15 +230,11 @@ public class Interpreter extends Visitor<Object> {
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
 
-            if (condition instanceof Boolean truthy) {
-                if (!truthy) {
-                    break;
-                }
-
-                statement.block.acceptVisitor(this);
-            } else {
-                throw KaoriError.TypeError("expected boolean value for condition", line);
+            if ((Boolean) condition) {
+                break;
             }
+
+            statement.block.acceptVisitor(this);
 
             statement.increment.acceptVisitor(this);
         }
