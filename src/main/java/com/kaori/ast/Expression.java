@@ -1,46 +1,9 @@
 package com.kaori.ast;
 
+import com.kaori.visitor.Visitor;
+
 public abstract class Expression {
-    public abstract Object acceptVisitor(Visitor visitor);
-
-    public interface Visitor {
-        Object visitAdd(Add node);
-
-        Object visitSubtract(Subtract node);
-
-        Object visitMultiply(Multiply node);
-
-        Object visitDivide(Divide node);
-
-        Object visitModulo(Modulo node);
-
-        Object visitAnd(And node);
-
-        Object visitOr(Or node);
-
-        Object visitEqual(Equal node);
-
-        Object visitNotEqual(NotEqual node);
-
-        Object visitGreater(Greater node);
-
-        Object visitGreaterEqual(GreaterEqual node);
-
-        Object visitLess(Less node);
-
-        Object visitLessEqual(LessEqual node);
-
-        Object visitAssign(Assign assign);
-
-        Object visitNegation(Negation node);
-
-        Object visitNot(Not node);
-
-        Object visitLiteral(Literal node);
-
-        Object visitIdentifier(Identifier node);
-
-    }
+    public abstract <T> T acceptVisitor(Visitor<T> visitor);
 
     public static class Literal extends Expression {
         public final Object value;
@@ -50,7 +13,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitLiteral(this);
         }
     }
@@ -63,7 +26,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitIdentifier(this);
         }
     }
@@ -78,7 +41,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitAdd(this);
         }
     }
@@ -93,7 +56,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitSubtract(this);
         }
     }
@@ -108,7 +71,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitMultiply(this);
         }
     }
@@ -123,7 +86,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitDivide(this);
         }
     }
@@ -138,7 +101,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitModulo(this);
         }
     }
@@ -153,7 +116,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitAnd(this);
         }
     }
@@ -168,7 +131,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitOr(this);
         }
     }
@@ -183,7 +146,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitEqual(this);
         }
     }
@@ -198,7 +161,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitNotEqual(this);
         }
     }
@@ -213,7 +176,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitGreater(this);
         }
     }
@@ -228,7 +191,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitGreaterEqual(this);
         }
     }
@@ -243,7 +206,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitLess(this);
         }
     }
@@ -258,7 +221,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitLessEqual(this);
         }
     }
@@ -273,7 +236,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitAssign(this);
         }
     }
@@ -286,7 +249,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitNot(this);
         }
     }
@@ -299,7 +262,7 @@ public abstract class Expression {
         }
 
         @Override
-        public Object acceptVisitor(Visitor visitor) {
+        public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitNegation(this);
         }
     }

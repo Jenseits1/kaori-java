@@ -1,28 +1,16 @@
-package com.kaori.runtime;
+package com.kaori.visitor;
 
 import java.util.List;
+
+import com.kaori.Environment;
+import com.kaori.KaoriError;
 import com.kaori.ast.Expression;
-import com.kaori.ast.Expression.Assign;
-import com.kaori.ast.Expression.Identifier;
+
 import com.kaori.ast.Statement;
-import com.kaori.ast.Statement.ForLoop;
-import com.kaori.error.KaoriError;
 
-public class Interpreter implements Expression.Visitor, Statement.Visitor {
-    private int line;
-    private final List<Statement> statements;
-    private Scope scope;
-
-    public Interpreter(List<Statement> statements, Scope scope) {
-        this.statements = statements;
-        this.scope = scope;
-    }
-
-    public void run() {
-        for (Statement statement : statements) {
-            line = statement.line;
-            statement.acceptVisitor(this);
-        }
+public class Interpreter extends Visitor<Object> {
+    public Interpreter(List<Statement> statements) {
+        super(statements, new Environment<Object>());
     }
 
     @Override
@@ -52,7 +40,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         Object right = node.right.acceptVisitor(this);
 
         if (left instanceof Float l && right instanceof Float r) {
-            return l - r;
+            return (Float) l - (Float) r;
         }
 
         throw KaoriError.TypeError("expected float operands for '-'", line);
@@ -215,7 +203,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public Object visitAssign(Assign node) {
+    public Object visitAssign(Expression.Assign node) {
         Object currentValue = node.left.acceptVisitor(this);
         Object value = node.right.acceptVisitor(this);
 
@@ -223,14 +211,14 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             throw KaoriError.TypeError("expected different value type in variable assignment", line);
         }
 
-        scope.assign(node.left.value, value, line);
+        environment.assign(node.left.value, value, line);
 
         return value;
     }
 
     @Override
-    public Object visitIdentifier(Identifier node) {
-        Object value = scope.get(node.value, line);
+    public Object visitIdentifier(Expression.Identifier node) {
+        Object value = environment.get(node.value, line);
 
         return value;
     }
@@ -266,13 +254,13 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
 
     @Override
     public void visitBlockStatement(Statement.Block statement) {
-        scope = new Scope(scope);
+        environment = new Environment<Object>(environment);
 
         for (Statement stmt : statement.statements) {
             stmt.acceptVisitor(this);
         }
 
-        scope = scope.getOuterScope();
+        environment = environment.getPrevious();
     }
 
     @Override
@@ -285,7 +273,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         String identifier = statement.left.value;
         Object value = statement.right.acceptVisitor(this);
 
-        scope.declare(identifier, value, line);
+        environment.declare(identifier, value, line);
     }
 
     @Override
@@ -323,7 +311,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
     }
 
     @Override
-    public void visitForLoopStatement(ForLoop statement) {
+    public void visitForLoopStatement(Statement.ForLoop statement) {
         statement.variable.acceptVisitor(this);
 
         while (true) {

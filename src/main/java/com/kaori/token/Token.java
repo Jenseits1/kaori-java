@@ -1,4 +1,4 @@
-package com.kaori.lexer;
+package com.kaori.token;
 
 public class Token {
     public final TokenKind type;

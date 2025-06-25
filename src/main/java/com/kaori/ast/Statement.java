@@ -2,6 +2,8 @@ package com.kaori.ast;
 
 import java.util.List;
 
+import com.kaori.visitor.Visitor;
+
 public abstract class Statement {
     public final int line;
 
@@ -9,26 +11,9 @@ public abstract class Statement {
         this.line = line;
     }
 
-    public abstract void acceptVisitor(Visitor visitor);
-
-    public interface Visitor {
-        void visitExpressionStatement(Expr statement);
-
-        void visitPrintStatement(Print statement);
-
-        void visitBlockStatement(Block statement);
-
-        void visitVariableStatement(Variable statement);
-
-        void visitIfStatement(If statement);
-
-        void visitWhileLoopStatement(WhileLoop statement);
-
-        void visitForLoopStatement(ForLoop statement);
-    }
+    public abstract <T> void acceptVisitor(Visitor<T> visitor);
 
     public static class Print extends Statement {
-
         public final Expression expression;
 
         public Print(int line, Expression expression) {
@@ -37,7 +22,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitPrintStatement(this);
         }
     }
@@ -51,7 +36,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitExpressionStatement(this);
         }
     }
@@ -65,7 +50,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitBlockStatement(this);
         }
     }
@@ -81,7 +66,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitVariableStatement(this);
         }
 
@@ -100,7 +85,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitIfStatement(this);
         }
 
@@ -117,7 +102,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitWhileLoopStatement(this);
         }
     }
@@ -137,7 +122,7 @@ public abstract class Statement {
         }
 
         @Override
-        public void acceptVisitor(Visitor visitor) {
+        public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitForLoopStatement(this);
         }
 

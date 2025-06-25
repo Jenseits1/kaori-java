@@ -1,4 +1,4 @@
-package com.kaori.error;
+package com.kaori;
 
 public class KaoriError extends RuntimeException {
     protected final int line;

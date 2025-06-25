@@ -1,12 +1,11 @@
-package com.kaori.parser;
+package com.kaori;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.kaori.ast.Expression;
 import com.kaori.ast.Statement;
-import com.kaori.error.KaoriError;
-import com.kaori.lexer.Token;
-import com.kaori.lexer.TokenKind;
+import com.kaori.token.Token;
+import com.kaori.token.TokenKind;
 
 public class Parser {
     private final String source;
