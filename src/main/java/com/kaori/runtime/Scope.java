@@ -3,9 +3,11 @@ package com.kaori.runtime;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kaori.error.KaoriError;
+
 public class Scope {
     private Scope outerScope;
-    private Map<String, Object> values;
+    private final Map<String, Object> values;
 
     public Scope() {
         this.outerScope = null;
@@ -21,27 +23,32 @@ public class Scope {
         return outerScope;
     }
 
-    public Object get(String identifier) {
+    public void declare(String identifier, Object value, int line) {
         if (values.containsKey(identifier)) {
-            return values.get(identifier);
+            throw KaoriError.VariableError(identifier + " is already declared", line);
         }
 
-        if (outerScope == null) {
-            return null;
-        }
-
-        return outerScope.get(identifier);
-    }
-
-    public void declare(String identifier, Object value) {
         values.put(identifier, value);
     }
 
-    public void assign(String identifier, Object value) {
+    public Object get(String identifier, int line) {
+        if (values.containsKey(identifier)) {
+            return values.get(identifier);
+        } else if (outerScope == null) {
+            throw KaoriError.VariableError(identifier + " is not declared", line);
+        } else {
+            return outerScope.get(identifier, line);
+        }
+    }
+
+    public void assign(String identifier, Object value, int line) {
         if (values.containsKey(identifier)) {
             values.put(identifier, value);
-        } else if (outerScope != null) {
-            outerScope.assign(identifier, value);
+        } else if (outerScope == null) {
+            throw KaoriError.VariableError(identifier + " is not declared", line);
+        } else {
+            outerScope.assign(identifier, value, line);
         }
+
     }
 }

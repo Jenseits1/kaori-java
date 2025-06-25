@@ -305,11 +305,7 @@ public class Parser {
 
         List<Statement> statements = new ArrayList<>();
 
-        while (!parseAtEnd()) {
-            if (currentToken.type == TokenKind.RIGHT_BRACE) {
-                break;
-            }
-
+        while (!parseAtEnd() && currentToken.type != TokenKind.RIGHT_BRACE) {
             Statement statement = statement();
             statements.add(statement);
         }

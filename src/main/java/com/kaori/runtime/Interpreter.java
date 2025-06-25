@@ -10,12 +10,12 @@ import com.kaori.error.KaoriError;
 
 public class Interpreter implements Expression.Visitor, Statement.Visitor {
     private int line;
-    private Scope scope;
     private final List<Statement> statements;
+    private Scope scope;
 
-    public Interpreter(List<Statement> statements) {
+    public Interpreter(List<Statement> statements, Scope scope) {
         this.statements = statements;
-        this.scope = new Scope();
+        this.scope = scope;
     }
 
     public void run() {
@@ -223,18 +223,14 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
             throw KaoriError.TypeError("expected different value type in variable assignment", line);
         }
 
-        scope.assign(node.left.value, value);
+        scope.assign(node.left.value, value, line);
 
         return value;
     }
 
     @Override
     public Object visitIdentifier(Identifier node) {
-        Object value = scope.get(node.value);
-
-        if (value == null) {
-            throw KaoriError.UndefinedVariable(node.value, line);
-        }
+        Object value = scope.get(node.value, line);
 
         return value;
     }
@@ -289,7 +285,7 @@ public class Interpreter implements Expression.Visitor, Statement.Visitor {
         String identifier = statement.left.value;
         Object value = statement.right.acceptVisitor(this);
 
-        scope.declare(identifier, value);
+        scope.declare(identifier, value, line);
     }
 
     @Override

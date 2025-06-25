@@ -10,6 +10,7 @@ import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;
 import com.kaori.parser.Parser;
 import com.kaori.runtime.Interpreter;
+import com.kaori.runtime.Scope;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,11 +18,12 @@ public class Main {
         String source = """
                 make number = 0;
 
-                for (make number = 0; number < 10; number = number + 1) {
-                    print(number);
-                };
 
-                make number = 7;
+                for (make b = 0; b < 5; b = b + 1) {
+                    print(b);
+                };
+                number = "b";
+                print(number);
                 """;
 
         try {
@@ -30,7 +32,9 @@ public class Main {
 
             Parser parser = new Parser(source, tokens);
             List<Statement> ast = parser.parse();
-            Interpreter interpreter = new Interpreter(ast);
+
+            Scope scope = new Scope();
+            Interpreter interpreter = new Interpreter(ast, scope);
             interpreter.run();
         } catch (KaoriError error) {
             System.out.println(error);

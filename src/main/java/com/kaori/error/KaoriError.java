@@ -30,14 +30,8 @@ public class KaoriError extends RuntimeException {
         return new KaoriError(formattedMessage, line);
     }
 
-    public static KaoriError UndefinedVariable(String identifier, int line) {
-        String formattedMessage = String.format("UndefinedVariable: '%s' is not defined at line %d", identifier, line);
-
-        return new KaoriError(formattedMessage, line);
-    }
-
-    public static KaoriError InvalidOperand(String details, int line) {
-        String formattedMessage = String.format("InvalidOperand: %s at line %d", details, line);
+    public static KaoriError VariableError(String errorMessage, int line) {
+        String formattedMessage = String.format("VariableError: %s at line %d", errorMessage, line);
 
         return new KaoriError(formattedMessage, line);
     }
