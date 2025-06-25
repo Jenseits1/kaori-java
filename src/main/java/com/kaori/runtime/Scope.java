@@ -6,7 +6,7 @@ import java.util.Map;
 import com.kaori.error.KaoriError;
 
 public class Scope {
-    private Scope outerScope;
+    private final Scope outerScope;
     private final Map<String, Object> values;
 
     public Scope() {

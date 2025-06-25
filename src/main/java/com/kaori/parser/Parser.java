@@ -9,11 +9,11 @@ import com.kaori.lexer.Token;
 import com.kaori.lexer.TokenKind;
 
 public class Parser {
-    final String source;
-    final List<Token> tokens;
-    int currentIndex;
-    int line;
-    Token currentToken;
+    private final String source;
+    private final List<Token> tokens;
+    private int currentIndex;
+    private int line;
+    private Token currentToken;
 
     public Parser(String source, List<Token> tokens) {
         this.source = source;
