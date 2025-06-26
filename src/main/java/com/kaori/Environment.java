@@ -3,25 +3,25 @@ package com.kaori;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Environment<T> {
-    private final Environment<T> previous;
-    private final Map<String, T> values;
+public class Environment {
+    private final Environment previous;
+    private final Map<String, Object> values;
 
     public Environment() {
         this.previous = null;
         this.values = new HashMap<>();
     }
 
-    public Environment(Environment<T> Environment) {
+    public Environment(Environment Environment) {
         this.previous = Environment;
         this.values = new HashMap<>();
     }
 
-    public Environment<T> getPrevious() {
+    public Environment getPrevious() {
         return previous;
     }
 
-    public void declare(String identifier, T value, int line) {
+    public void declare(String identifier, Object value, int line) {
         if (values.containsKey(identifier)) {
             throw KaoriError.VariableError(identifier + " is already declared", line);
         }
@@ -29,7 +29,7 @@ public class Environment<T> {
         values.put(identifier, value);
     }
 
-    public T get(String identifier, int line) {
+    public Object get(String identifier, int line) {
         if (values.containsKey(identifier)) {
             return values.get(identifier);
         } else if (previous == null) {
@@ -39,7 +39,7 @@ public class Environment<T> {
         }
     }
 
-    public void assign(String identifier, T value, int line) {
+    public void assign(String identifier, Object value, int line) {
         if (values.containsKey(identifier)) {
             values.put(identifier, value);
         } else if (previous == null) {

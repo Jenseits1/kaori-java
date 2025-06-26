@@ -13,8 +13,11 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String source = """
+                for (make i = 0; i < 10000; i = i + 1) {
+                    print(i  / 3.14159);
+                };
 
-                print(5 - "a");
+                print("end");
                 """;
 
         try {
@@ -27,8 +30,8 @@ public class Main {
             TypeChecker typeChecker = new TypeChecker(ast);
             typeChecker.run();
 
-            // Interpreter interpreter = new Interpreter(ast);
-            // interpreter.run();
+            Interpreter interpreter = new Interpreter(ast);
+            interpreter.run();
         } catch (KaoriError error) {
             System.out.println(error);
         }

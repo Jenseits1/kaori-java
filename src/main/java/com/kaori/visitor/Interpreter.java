@@ -10,7 +10,7 @@ import com.kaori.ast.Statement;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<Statement> statements) {
-        super(statements, new Environment<Object>());
+        super(statements, new Environment());
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(Statement.Block statement) {
-        environment = new Environment<Object>(environment);
+        environment = new Environment(environment);
 
         for (Statement stmt : statement.statements) {
             stmt.acceptVisitor(this);
@@ -202,7 +202,7 @@ public class Interpreter extends Visitor<Object> {
     public void visitIfStatement(Statement.If statement) {
         Object condition = statement.condition.acceptVisitor(this);
 
-        if ((Boolean) condition) {
+        if ((Boolean) condition == true) {
             statement.ifBranch.acceptVisitor(this);
         } else if (statement.elseBranch != null) {
             statement.elseBranch.acceptVisitor(this);
@@ -215,7 +215,7 @@ public class Interpreter extends Visitor<Object> {
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
 
-            if ((Boolean) condition) {
+            if ((Boolean) condition == false) {
                 break;
             }
 
@@ -230,7 +230,7 @@ public class Interpreter extends Visitor<Object> {
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
 
-            if ((Boolean) condition) {
+            if ((Boolean) condition == false) {
                 break;
             }
 

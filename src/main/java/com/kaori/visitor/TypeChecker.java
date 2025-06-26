@@ -10,7 +10,7 @@ import com.kaori.ast.Statement;
 
 public class TypeChecker extends Visitor<KaoriType> {
     public TypeChecker(List<Statement> statements) {
-        super(statements, new Environment<KaoriType>());
+        super(statements, new Environment());
     }
 
     @Override
@@ -200,9 +200,9 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public KaoriType visitIdentifier(Expression.Identifier node) {
-        KaoriType value = environment.get(node.value, line);
+        Object value = environment.get(node.value, line);
 
-        return value;
+        return (KaoriType) value;
     }
 
     @Override
@@ -234,7 +234,7 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public void visitBlockStatement(Statement.Block statement) {
-        environment = new Environment<KaoriType>(environment);
+        environment = new Environment(environment);
 
         for (Statement stmt : statement.statements) {
             stmt.acceptVisitor(this);

@@ -9,9 +9,9 @@ import com.kaori.ast.Statement;
 public abstract class Visitor<T> {
     protected int line;
     protected final List<Statement> statements;
-    protected Environment<T> environment;
+    protected Environment environment;
 
-    public Visitor(List<Statement> statements, Environment<T> environment) {
+    public Visitor(List<Statement> statements, Environment environment) {
         this.line = 1;
         this.statements = statements;
         this.environment = environment;
