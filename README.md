@@ -38,7 +38,7 @@ It aims to offer a clear syntax, expressive semantics, and a powerful interprete
 ## 📜 Grammar
 
 ```text
-program                  -> declaration* EOF
+program                  -> statement* EOF
 
 statement                -> expr_stmt
                          | print_stmt
