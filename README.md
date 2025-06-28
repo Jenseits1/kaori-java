@@ -2,6 +2,8 @@
 
 **Kaori** is a statically typed, object-oriented programming language built with **Java 17**
 
+
+
 ## ✨ Features ✨
 
 - **Statically Typed 🔒**  
@@ -30,6 +32,7 @@
 
 - **Java 17 ☕** — The entire interpreter is written in modern Java
 - **Maven / Gradle** — Dependency and build management
+
 
 
 ## 📜 Grammar
@@ -82,6 +85,8 @@ primary                  -> NUMBER | STRING | "true" | "false"
                          | IDENTIFIER | "(" expression ")"
 ```
 
+
+
 ## 🚀 Getting Started 🚀
 
 ### 📋 Prerequisites
@@ -116,7 +121,7 @@ primary                  -> NUMBER | STRING | "true" | "false"
     java -jar target/kaori.jar
     ```
 
----
+
 
 ## 🧪 Running Scripts
 
@@ -161,10 +166,13 @@ Kaori is a passion project, and contributions are warmly welcome!
 
 4. Push and open a PR
 
+
+
 ## 😊 Fun Fact
 
 The name Kaori is inspired by the character Kaori Miyazono from the anime Your Lie in April
 She represents inspiration, motivation, and the desire to create something different from the standard — the same spirit behind this language
+
 
 
 ## 📄 License 📄
