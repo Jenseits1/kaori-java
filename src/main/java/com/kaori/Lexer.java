@@ -28,7 +28,7 @@ public class Lexer {
 
         this.currentCharacter = this.source.charAt(this.current);
 
-        if (this.currentCharacter == '\n' || this.currentCharacter == '\t') {
+        if (this.currentCharacter == '\n') {
             this.line++;
         }
     }

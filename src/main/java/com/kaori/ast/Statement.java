@@ -15,8 +15,10 @@ public abstract class Statement {
         return line;
     }
 
-    public void setLine(int line) {
+    public Statement setLine(int line) {
         this.line = line;
+
+        return this;
     }
 
     public abstract <T> void acceptVisitor(Visitor<T> visitor);

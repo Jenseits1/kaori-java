@@ -282,16 +282,15 @@ public class Parser {
     }
 
     private Statement expressionStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         Expression expression = assign();
-        Statement statement = new Statement.Expr(expression);
 
-        return statement;
+        return new Statement.Expr(expression).setLine(line);
     }
 
     private Statement printStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         consume(TokenKind.PRINT, "expected print keyword");
 
@@ -301,11 +300,11 @@ public class Parser {
 
         consume(TokenKind.RIGHT_PAREN, "expected )");
 
-        return new Statement.Print(expression);
+        return new Statement.Print(expression).setLine(line);
     }
 
     private Statement blockStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         consume(TokenKind.LEFT_BRACE, "expected {");
 
@@ -318,11 +317,11 @@ public class Parser {
 
         consume(TokenKind.RIGHT_BRACE, "expected }");
 
-        return new Statement.Block(statements);
+        return new Statement.Block(statements).setLine(line);
     }
 
     private Statement variableStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         consume(TokenKind.VARIABLE, "expected variable declaration keyword");
 
@@ -333,12 +332,12 @@ public class Parser {
 
         Expression right = expression();
 
-        return new Statement.Variable(left, right);
+        return new Statement.Variable(left, right).setLine(line);
 
     }
 
     private Statement ifStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         consume(TokenKind.IF, "expected if keyword");
         consume(TokenKind.LEFT_PAREN, "expected (");
@@ -350,7 +349,7 @@ public class Parser {
         Statement ifBranch = blockStatement();
 
         if (this.currentToken.type != TokenKind.ELSE) {
-            return new Statement.If(condition, ifBranch, null);
+            return new Statement.If(condition, ifBranch, null).setLine(line);
         }
 
         consume(TokenKind.ELSE, "expected else keyword");
@@ -360,11 +359,11 @@ public class Parser {
             default -> blockStatement();
         };
 
-        return new Statement.If(condition, ifBranch, elseBranch);
+        return new Statement.If(condition, ifBranch, elseBranch).setLine(line);
     }
 
     private Statement whileLoopStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         consume(TokenKind.WHILE, "expected while keyword");
         consume(TokenKind.LEFT_PAREN, "expected (");
@@ -375,11 +374,11 @@ public class Parser {
 
         Statement block = blockStatement();
 
-        return new Statement.WhileLoop(condition, block);
+        return new Statement.WhileLoop(condition, block).setLine(line);
     }
 
     private Statement forLoopStatement() {
-        int currentStatementLine = this.currentToken.getLine();
+        int line = this.currentToken.getLine();
 
         consume(TokenKind.FOR, "expected for keyword");
 
@@ -399,7 +398,7 @@ public class Parser {
 
         Statement block = blockStatement();
 
-        return new Statement.ForLoop(variable, condition, increment, block);
+        return new Statement.ForLoop(variable, condition, increment, block).setLine(line);
     }
 
     private Statement statement() {
