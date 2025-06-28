@@ -128,6 +128,5 @@ public abstract class Statement {
         public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitForLoopStatement(this);
         }
-
     }
 }
