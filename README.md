@@ -55,7 +55,7 @@ block                    -> "{" declaration* "}"
 
 expr_stmt                -> expression ";"
 
-print_stmt               -> "print" expression ";"
+print_stmt               -> "print" "(" expression ")" ";"
 
 if_stmt                  -> "if" "(" expression ")" block_stmt ("else" (if_stmt | block_stmt))?
 
