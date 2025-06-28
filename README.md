@@ -14,7 +14,7 @@ It aims to offer a clear syntax, expressive semantics, and a powerful interprete
 
 - **Implemented Language Features ✅**
 
-  - [x] Variable declarations (`var x = 10;`)
+  - [x] Variable declarations (`make x = 10;`)
   - [x] Logical operators (`and`, `or`, `!`)
   - [x] Arithmetic operators (`+`, `-`, `*`, `/`)
   - [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
