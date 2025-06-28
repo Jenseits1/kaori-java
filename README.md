@@ -7,7 +7,7 @@ The name *Kaori* is inspired by Kaori Miyazono from *Your Lie in April*, symboli
 ## ✨ Features ✨
 
 - **Statically Typed 🔒**  
-  Enforces type safety for predictable, robust programs
+  Enforces type safety for predictable, and faster runtimes
 
 - **Detailed Error Messages 🎯**  
   Developer-friendly diagnostics for syntax and runtime issues
@@ -24,11 +24,10 @@ The name *Kaori* is inspired by Kaori Miyazono from *Your Lie in April*, symboli
   - [x] Block statements for scope (`{ ... }`)
   - [x] Output with `print` statements
   - [ ] Functions
-  - [ ] Classes and inheritance
   - [ ] Native data structures (e.g., lists, maps)
-  - [ ] Pattern matching
-
-
+  - [ ] Bytecode generation
+  - [ ] Classes and inheritance
+  
 ## 🛠️ Technologies Used 🛠️
 
 - **Java 17 ☕** — The entire interpreter is written in modern Java
