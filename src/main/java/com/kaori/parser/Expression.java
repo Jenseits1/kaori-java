@@ -1,20 +1,46 @@
-package com.kaori.ast;
+package com.kaori.parser;
 
 import com.kaori.visitor.Visitor;
 
 public abstract class Expression {
     public abstract <T> T acceptVisitor(Visitor<T> visitor);
 
-    public static class Literal extends Expression {
-        public final Object value;
+    public static class StringLiteral extends Expression {
+        public final String value;
 
-        public Literal(Object value) {
+        public StringLiteral(String value) {
             this.value = value;
         }
 
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitLiteral(this);
+            return visitor.visitStringLiteral(this);
+        }
+    }
+
+    public static class NumberLiteral extends Expression {
+        public final double value;
+
+        public NumberLiteral(double value) {
+            this.value = value;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            return visitor.visitNumberLiteral(this);
+        }
+    }
+
+    public static class BooleanLiteral extends Expression {
+        public final boolean value;
+
+        public BooleanLiteral(boolean value) {
+            this.value = value;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            return visitor.visitBooleanLiteral(this);
         }
     }
 

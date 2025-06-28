@@ -2,28 +2,20 @@ package com.kaori.visitor;
 
 import java.util.List;
 
-import com.kaori.Environment;
-import com.kaori.KaoriError;
-import com.kaori.KaoriType;
-import com.kaori.ast.Expression;
-import com.kaori.ast.Statement;
+import com.kaori.error.KaoriError;
+import com.kaori.parser.Expression;
+import com.kaori.parser.Statement;
 
-public class TypeChecker extends Visitor<KaoriType> {
+public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     public TypeChecker(List<Statement> statements) {
         super(statements, new Environment());
     }
 
-    @Override
-    public KaoriType visitLiteral(Expression.Literal node) {
-        if (node.value instanceof Float) {
-            return KaoriType.NUMBER;
-        } else if (node.value instanceof String) {
-            return KaoriType.STRING;
-        } else if (node.value instanceof Boolean) {
-            return KaoriType.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("unrecognized type", this.line);
+    public enum KaoriType {
+        STRING,
+        NUMBER,
+        BOOLEAN,
+        FUNCTION
     }
 
     @Override
@@ -196,6 +188,21 @@ public class TypeChecker extends Visitor<KaoriType> {
         }
 
         throw KaoriError.TypeError("expected different value type in variable assignment", this.line);
+    }
+
+    @Override
+    public KaoriType visitBooleanLiteral(Expression.BooleanLiteral node) {
+        return KaoriType.BOOLEAN;
+    }
+
+    @Override
+    public KaoriType visitNumberLiteral(Expression.NumberLiteral node) {
+        return KaoriType.NUMBER;
+    }
+
+    @Override
+    public KaoriType visitStringLiteral(Expression.StringLiteral node) {
+        return KaoriType.STRING;
     }
 
     @Override

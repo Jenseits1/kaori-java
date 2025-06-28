@@ -1,10 +1,9 @@
-package com.kaori;
+package com.kaori.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.token.Token;
-import com.kaori.token.TokenKind;
+import com.kaori.error.KaoriError;
 
 public class Lexer {
     private final String source;
@@ -56,7 +55,7 @@ public class Lexer {
             advance();
         }
 
-        return TokenKind.FLOAT_LITERAL;
+        return TokenKind.NUMBER_LITERAL;
     }
 
     private TokenKind identifierOrKeyword() {

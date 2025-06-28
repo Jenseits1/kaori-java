@@ -7,8 +7,11 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kaori.ast.Statement;
-import com.kaori.token.Token;
+import com.kaori.error.KaoriError;
+import com.kaori.lexer.Lexer;
+import com.kaori.lexer.Token;
+import com.kaori.parser.Parser;
+import com.kaori.parser.Statement;
 import com.kaori.visitor.Interpreter;
 import com.kaori.visitor.TypeChecker;
 

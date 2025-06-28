@@ -1,7 +1,9 @@
-package com.kaori;
+package com.kaori.visitor;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.kaori.error.KaoriError;
 
 public class Environment {
     private final Environment previous;

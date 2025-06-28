@@ -1,4 +1,4 @@
-package com.kaori.token;
+package com.kaori.lexer;
 
 public enum TokenKind {
     // Arithmetic operators
@@ -46,7 +46,7 @@ public enum TokenKind {
     // Literals and identifiers
     IDENTIFIER,
     STRING_LITERAL,
-    FLOAT_LITERAL,
+    NUMBER_LITERAL,
     BOOLEAN_LITERAL,
     FUNCTION_LITERAL,
 }

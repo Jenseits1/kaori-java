@@ -1,11 +1,11 @@
-package com.kaori;
+package com.kaori.parser;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.kaori.ast.Expression;
-import com.kaori.ast.Statement;
-import com.kaori.token.Token;
-import com.kaori.token.TokenKind;
+
+import com.kaori.error.KaoriError;
+import com.kaori.lexer.Token;
+import com.kaori.lexer.TokenKind;
 
 public class Parser {
     private final String source;
@@ -58,19 +58,19 @@ public class Parser {
         return switch (this.currentToken.type) {
             case BOOLEAN_LITERAL -> {
                 boolean value = Boolean.parseBoolean(this.currentToken.lexeme(this.source));
-                Expression literal = new Expression.Literal(value);
+                Expression literal = new Expression.BooleanLiteral(value);
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
                 String value = this.currentToken.lexeme(this.source);
-                Expression literal = new Expression.Literal(value.substring(1, value.length() - 1));
+                Expression literal = new Expression.StringLiteral(value.substring(1, value.length() - 1));
                 consume();
                 yield literal;
             }
-            case FLOAT_LITERAL -> {
+            case NUMBER_LITERAL -> {
                 float value = Float.parseFloat(this.currentToken.lexeme(this.source));
-                Expression literal = new Expression.Literal(value);
+                Expression literal = new Expression.NumberLiteral(value);
                 consume();
                 yield literal;
             }

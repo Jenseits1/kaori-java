@@ -2,9 +2,11 @@ package com.kaori.visitor;
 
 import java.util.List;
 
-import com.kaori.Environment;
-import com.kaori.ast.Expression;
-import com.kaori.ast.Statement;
+import com.kaori.parser.Expression;
+import com.kaori.parser.Expression.BooleanLiteral;
+import com.kaori.parser.Expression.NumberLiteral;
+import com.kaori.parser.Expression.StringLiteral;
+import com.kaori.parser.Statement;
 
 public abstract class Visitor<T> {
     protected int line;
@@ -61,7 +63,11 @@ public abstract class Visitor<T> {
 
     public abstract T visitNot(Expression.Not node);
 
-    public abstract T visitLiteral(Expression.Literal node);
+    public abstract T visitBooleanLiteral(BooleanLiteral booleanLiteral);
+
+    public abstract T visitNumberLiteral(NumberLiteral numberLiteral);
+
+    public abstract T visitStringLiteral(StringLiteral stringLiteral);
 
     public abstract T visitIdentifier(Expression.Identifier node);
 
@@ -79,4 +85,5 @@ public abstract class Visitor<T> {
     public abstract void visitWhileLoopStatement(Statement.WhileLoop statement);
 
     public abstract void visitForLoopStatement(Statement.ForLoop statement);
+
 }

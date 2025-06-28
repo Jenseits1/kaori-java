@@ -2,20 +2,13 @@ package com.kaori.visitor;
 
 import java.util.List;
 
-import com.kaori.Environment;
-import com.kaori.KaoriError;
-import com.kaori.ast.Expression;
-
-import com.kaori.ast.Statement;
+import com.kaori.error.KaoriError;
+import com.kaori.parser.Expression;
+import com.kaori.parser.Statement;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<Statement> statements) {
         super(statements, new Environment());
-    }
-
-    @Override
-    public Object visitLiteral(Expression.Literal node) {
-        return node.value;
     }
 
     @Override
@@ -144,6 +137,21 @@ public class Interpreter extends Visitor<Object> {
         environment.assign(identifier, value, this.line);
 
         return value;
+    }
+
+    @Override
+    public Object visitBooleanLiteral(Expression.BooleanLiteral node) {
+        return node.value;
+    }
+
+    @Override
+    public Object visitNumberLiteral(Expression.NumberLiteral node) {
+        return node.value;
+    }
+
+    @Override
+    public Object visitStringLiteral(Expression.StringLiteral node) {
+        return node.value;
     }
 
     @Override
