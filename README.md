@@ -24,11 +24,10 @@ The name *Kaori* is inspired by Kaori Miyazono from *Your Lie in April*, symboli
   - [x] Block statements for scope (`{ ... }`)
   - [x] Output with `print` statements
   - [ ] Functions
-  - [ ] Classes and inheritance
   - [ ] Native data structures (e.g., lists, maps)
-  - [ ] Pattern matching
-
-
+  - [ ] Bytecode generation
+  - [ ] Classes and inheritance
+  
 ## 🛠️ Technologies Used 🛠️
 
 - **Java 17 ☕** — The entire interpreter is written in modern Java
