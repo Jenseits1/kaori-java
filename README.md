@@ -7,7 +7,7 @@ The name *Kaori* is inspired by Kaori Miyazono from *Your Lie in April*, symboli
 ## ✨ Features ✨
 
 - **Statically Typed 🔒**  
-  Enforces type safety for predictable, robust programs
+  Enforces type safety for predictable, and faster runtimes
 
 - **Detailed Error Messages 🎯**  
   Developer-friendly diagnostics for syntax and runtime issues
