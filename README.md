@@ -3,7 +3,6 @@
 **Kaori** is a statically typed, object-oriented programming language built with **Java 17**
 It aims to offer a clear syntax, expressive semantics, and a powerful interpreter architecture for building modern applications and learning language design
 
----
 
 ## ✨ Features ✨
 
@@ -13,14 +12,12 @@ It aims to offer a clear syntax, expressive semantics, and a powerful interprete
 - **Detailed Error Messages 🎯**  
   Developer-friendly diagnostics for syntax and runtime issues
 
----
 
 ## 🛠️ Technologies Used 🛠️
 
 - **Java 17 ☕** — The entire interpreter is written in modern Java
 - **Maven / Gradle** — Dependency and build management
 
----
 
 ## 📜 Grammar
 
@@ -132,7 +129,6 @@ To enter the interactive mode (REPL):
 java -jar target/kaori.jar
 ```
 
----
 
 ## 🤝 Contributing 🤝
 
@@ -162,7 +158,6 @@ Kaori is a passion project, and contributions are warmly welcome!
 
 4. Push and open a PR
 
----
 
 ## 📄 License 📄
 
