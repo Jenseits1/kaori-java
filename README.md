@@ -1,6 +1,6 @@
 # 🎻 Kaori - Programming Language
 
-**Kaori** is a statically typed, object-oriented programming language built with **Java 17**.
+**Kaori** is a statically typed, object-oriented programming language built with **Java 17**
 
 The name *Kaori* is inspired by Kaori Miyazono from *Your Lie in April*, symbolizing inspiration, motivation, and the drive to create something different from the standard
 
