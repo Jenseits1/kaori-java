@@ -2,8 +2,6 @@
 
 **Kaori** is a statically typed, object-oriented programming language built with **Java 17**
 
-The name *Kaori* is inspired by Kaori Miyazono from *Your Lie in April*, symbolizing inspiration, motivation, and the drive to create something different from the standard
-
 ## ✨ Features ✨
 
 - **Statically Typed 🔒**  
@@ -163,11 +161,16 @@ Kaori is a passion project, and contributions are warmly welcome!
 
 4. Push and open a PR
 
+## 😊 Fun Fact
+
+The name Kaori is inspired by the character Kaori Miyazono from the anime Your Lie in April
+She represents inspiration, motivation, and the desire to create something different from the standard — the same spirit behind this language
+
 
 ## 📄 License 📄
 
 Kaori is released under the **MIT License**.  
 See the [`LICENSE`](LICENSE) file for more details.
 
----
+
 
