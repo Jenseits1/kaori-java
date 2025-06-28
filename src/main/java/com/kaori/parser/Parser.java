@@ -91,6 +91,10 @@ public class Parser {
                 consume();
                 yield new Expression.Negation(unary());
             }
+            case NOT -> {
+                consume();
+                yield new Expression.Not(unary());
+            }
             case PLUS -> {
                 consume();
 
