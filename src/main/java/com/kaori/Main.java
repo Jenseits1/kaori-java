@@ -1,5 +1,8 @@
 package com.kaori;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -12,20 +15,19 @@ import com.kaori.visitor.TypeChecker;
 public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String source = """
-                for (make i = 0; i < 10000; i = i + 1) {
-                    print(i  / 3.14159);
-                };
-
-                print("end");
-                """;
 
         try {
+            Path path = Path.of("src/main/java/com/kaori/source/main.kaori");
+
+            String source = Files.readString(path);
+
             Lexer lexer = new Lexer(source);
             List<Token> tokens = lexer.scan();
 
             Parser parser = new Parser(source, tokens);
             List<Statement> ast = parser.parse();
+
+            // System.out.println(gson.toJson(ast));
 
             TypeChecker typeChecker = new TypeChecker(ast);
             typeChecker.run();
@@ -33,6 +35,8 @@ public class Main {
             Interpreter interpreter = new Interpreter(ast);
             interpreter.run();
         } catch (KaoriError error) {
+            System.out.println(error);
+        } catch (IOException error) {
             System.out.println(error);
         }
 

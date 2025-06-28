@@ -176,13 +176,11 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(Statement.Block statement) {
-        environment = new Environment(environment);
+        this.environment = new Environment(environment);
 
-        for (Statement stmt : statement.statements) {
-            stmt.acceptVisitor(this);
-        }
+        this.visitStatements(statement.statements);
 
-        environment = environment.getPrevious();
+        this.environment = environment.getPrevious();
     }
 
     @Override

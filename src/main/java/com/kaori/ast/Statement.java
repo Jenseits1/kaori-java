@@ -5,9 +5,17 @@ import java.util.List;
 import com.kaori.visitor.Visitor;
 
 public abstract class Statement {
-    public final int line;
+    private int line;
 
-    private Statement(int line) {
+    private Statement() {
+        this.line = 0;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
         this.line = line;
     }
 
@@ -16,8 +24,7 @@ public abstract class Statement {
     public static class Print extends Statement {
         public final Expression expression;
 
-        public Print(int line, Expression expression) {
-            super(line);
+        public Print(Expression expression) {
             this.expression = expression;
         }
 
@@ -30,8 +37,7 @@ public abstract class Statement {
     public static class Expr extends Statement {
         public final Expression expression;
 
-        public Expr(int line, Expression expression) {
-            super(line);
+        public Expr(Expression expression) {
             this.expression = expression;
         }
 
@@ -44,8 +50,7 @@ public abstract class Statement {
     public static class Block extends Statement {
         public final List<Statement> statements;
 
-        public Block(int line, List<Statement> statements) {
-            super(line);
+        public Block(List<Statement> statements) {
             this.statements = statements;
         }
 
@@ -59,8 +64,7 @@ public abstract class Statement {
         public final Expression.Identifier left;
         public final Expression right;
 
-        public Variable(int line, Expression.Identifier left, Expression right) {
-            super(line);
+        public Variable(Expression.Identifier left, Expression right) {
             this.left = left;
             this.right = right;
         }
@@ -77,8 +81,7 @@ public abstract class Statement {
         public final Statement ifBranch;
         public final Statement elseBranch;
 
-        public If(int line, Expression condition, Statement ifBranch, Statement elseBranch) {
-            super(line);
+        public If(Expression condition, Statement ifBranch, Statement elseBranch) {
             this.condition = condition;
             this.ifBranch = ifBranch;
             this.elseBranch = elseBranch;
@@ -95,8 +98,7 @@ public abstract class Statement {
         public final Expression condition;
         public final Statement block;
 
-        public WhileLoop(int line, Expression condition, Statement block) {
-            super(line);
+        public WhileLoop(Expression condition, Statement block) {
             this.condition = condition;
             this.block = block;
         }
@@ -113,8 +115,7 @@ public abstract class Statement {
         public final Statement increment;
         public final Statement block;
 
-        public ForLoop(int line, Statement variable, Expression condition, Statement increment, Statement block) {
-            super(line);
+        public ForLoop(Statement variable, Expression condition, Statement increment, Statement block) {
             this.variable = variable;
             this.condition = condition;
             this.increment = increment;

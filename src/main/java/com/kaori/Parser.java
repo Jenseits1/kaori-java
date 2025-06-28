@@ -36,7 +36,7 @@ public class Parser {
 
         if (!parseAtEnd()) {
             currentToken = tokens.get(currentIndex);
-            line = currentToken.getLine();
+            this.line = currentToken.getLine();
         }
     }
 
@@ -282,7 +282,7 @@ public class Parser {
 
     private Statement expressionStatement() {
         Expression expression = assign();
-        Statement statement = new Statement.Expr(line, expression);
+        Statement statement = new Statement.Expr(expression);
 
         return statement;
     }
@@ -296,7 +296,7 @@ public class Parser {
 
         consume(TokenKind.RIGHT_PAREN, "expected )");
 
-        return new Statement.Print(line, expression);
+        return new Statement.Print(expression);
     }
 
     private Statement blockStatement() {
@@ -311,7 +311,7 @@ public class Parser {
 
         consume(TokenKind.RIGHT_BRACE, "expected }");
 
-        return new Statement.Block(line, statements);
+        return new Statement.Block(statements);
     }
 
     private Statement variableStatement() {
@@ -324,7 +324,7 @@ public class Parser {
 
         Expression right = expression();
 
-        return new Statement.Variable(line, left, right);
+        return new Statement.Variable(left, right);
 
     }
 
@@ -339,7 +339,7 @@ public class Parser {
         Statement ifBranch = blockStatement();
 
         if (currentToken.type != TokenKind.ELSE) {
-            return new Statement.If(line, condition, ifBranch, null);
+            return new Statement.If(condition, ifBranch, null);
         }
 
         consume(TokenKind.ELSE, "expected else keyword");
@@ -349,7 +349,7 @@ public class Parser {
             default -> blockStatement();
         };
 
-        return new Statement.If(line, condition, ifBranch, elseBranch);
+        return new Statement.If(condition, ifBranch, elseBranch);
     }
 
     private Statement whileLoopStatement() {
@@ -362,7 +362,7 @@ public class Parser {
 
         Statement block = blockStatement();
 
-        return new Statement.WhileLoop(line, condition, block);
+        return new Statement.WhileLoop(condition, block);
     }
 
     private Statement forLoopStatement() {
@@ -384,10 +384,12 @@ public class Parser {
 
         Statement block = blockStatement();
 
-        return new Statement.ForLoop(line, variable, condition, increment, block);
+        return new Statement.ForLoop(variable, condition, increment, block);
     }
 
     private Statement statement() {
+        int currentStatementLine = currentToken.getLine();
+
         Statement statement = switch (currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
@@ -397,6 +399,8 @@ public class Parser {
             case FOR -> forLoopStatement();
             default -> expressionStatement();
         };
+
+        statement.setLine(currentStatementLine);
 
         if (statement instanceof Statement.Block) {
             return statement;

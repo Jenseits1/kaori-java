@@ -18,8 +18,12 @@ public abstract class Visitor<T> {
     }
 
     public void run() {
+        visitStatements(statements);
+    }
+
+    protected void visitStatements(List<Statement> statements) {
         for (Statement statement : statements) {
-            this.line = statement.line;
+            this.line = statement.getLine();
             statement.acceptVisitor(this);
         }
     }
@@ -61,9 +65,9 @@ public abstract class Visitor<T> {
 
     public abstract T visitIdentifier(Expression.Identifier node);
 
+    // Statements
     public abstract void visitExpressionStatement(Statement.Expr statement);
 
-    // Statements
     public abstract void visitPrintStatement(Statement.Print statement);
 
     public abstract void visitBlockStatement(Statement.Block statement);
