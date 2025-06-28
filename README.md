@@ -12,6 +12,22 @@ It aims to offer a clear syntax, expressive semantics, and a powerful interprete
 - **Detailed Error Messages 🎯**  
   Developer-friendly diagnostics for syntax and runtime issues
 
+- **Implemented Language Features ✅**
+
+  - [x] Variable declarations (`var x = 10;`)
+  - [x] Logical operators (`and`, `or`, `!`)
+  - [x] Arithmetic operators (`+`, `-`, `*`, `/`)
+  - [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
+  - [x] `if / else` statements
+  - [x] `for` loops
+  - [x] `while` loops
+  - [x] Block statements for scope (`{ ... }`)
+  - [x] Output with `print` statements
+  - [ ] Functions
+  - [ ] Classes and inheritance
+  - [ ] Native data structures (e.g., lists, maps)
+  - [ ] Pattern matching
+
 
 ## 🛠️ Technologies Used 🛠️
 
@@ -24,17 +40,6 @@ It aims to offer a clear syntax, expressive semantics, and a powerful interprete
 ```text
 program                  -> declaration* EOF
 
-declaration              -> class_decl
-                         | var_decl
-                         | fun_decl
-                         | statement
-
-class_decl               -> "class" IDENTIFIER "{" function* "}"
-
-fun_decl                 -> "fun" IDENTIFIER "(" parameters? ")" block
-
-var_decl                 -> "var" IDENTIFIER ( "=" expression )? ";"
-
 statement                -> expr_stmt
                          | print_stmt
                          | block
@@ -42,6 +47,9 @@ statement                -> expr_stmt
                          | while_stmt
                          | for_stmt
                          | return_stmt
+                         | variable_stmt                
+
+variable_stmt            -> "make" IDENTIFIER ( "=" expression )? ";"
 
 block                    -> "{" declaration* "}"
 
@@ -49,13 +57,11 @@ expr_stmt                -> expression ";"
 
 print_stmt               -> "print" expression ";"
 
-if_stmt                  -> "if" "(" expression ")" statement ("else" statement)?
+if_stmt                  -> "if" "(" expression ")" block_stmt ("else" (if_stmt | block_stmt))?
 
 while_stmt               -> "while" "(" expression ")" statement
 
-for_stmt                 -> "for" "(" var_decl? expression? ";" expression? ")" statement
-
-return_stmt              -> "return" expression? ";"
+for_stmt                 -> "for" "(" var_decl expression ";" expression ")" block_stmt
 
 expression               -> assignment
 
@@ -75,7 +81,7 @@ factor                   -> unary (("*" | "/") unary)*
 
 unary                    -> ("!" | "-") unary | primary
 
-primary                  -> NUMBER | STRING | "true" | "false" | "nil"
+primary                  -> NUMBER | STRING | "true" | "false"
                          | IDENTIFIER | "(" expression ")"
 ```
 
