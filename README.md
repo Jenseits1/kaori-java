@@ -42,7 +42,7 @@ program                  -> statement* EOF
 
 statement                -> expr_stmt
                          | print_stmt
-                         | block
+                         | block_stmt
                          | if_stmt
                          | while_stmt
                          | for_stmt
@@ -51,7 +51,7 @@ statement                -> expr_stmt
 
 variable_stmt            -> "make" IDENTIFIER ( "=" expression )? ";"
 
-block                    -> "{" declaration* "}"
+block_stmt               -> "{" statement* "}"
 
 expr_stmt                -> expression ";"
 
@@ -59,7 +59,7 @@ print_stmt               -> "print" "(" expression ")" ";"
 
 if_stmt                  -> "if" "(" expression ")" block_stmt ("else" (if_stmt | block_stmt))?
 
-while_stmt               -> "while" "(" expression ")" statement
+while_stmt               -> "while" "(" expression ")" block_stmt
 
 for_stmt                 -> "for" "(" var_decl expression ";" expression ")" block_stmt
 
