@@ -23,7 +23,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("unrecognized type", line);
+        throw KaoriError.TypeError("unrecognized type", this.line);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.STRING;
         }
 
-        throw KaoriError.TypeError("expected number or string operands for '+'", line);
+        throw KaoriError.TypeError("expected number or string operands for '+'", this.line);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '-'", line);
+        throw KaoriError.TypeError("expected number operands for '-'", this.line);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '*'", line);
+        throw KaoriError.TypeError("expected number operands for '*'", this.line);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '/'", line);
+        throw KaoriError.TypeError("expected number operands for '/'", this.line);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '%'", line);
+        throw KaoriError.TypeError("expected number operands for '%'", this.line);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected boolean operands for '&&'", line);
+        throw KaoriError.TypeError("expected boolean operands for '&&'", this.line);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected boolean operands for '||'", line);
+        throw KaoriError.TypeError("expected boolean operands for '||'", this.line);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected operands of same type for '=='", line);
+        throw KaoriError.TypeError("expected operands of same type for '=='", this.line);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected operands of same type for '!='", line);
+        throw KaoriError.TypeError("expected operands of same type for '!='", this.line);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '>'", line);
+        throw KaoriError.TypeError("expected number operands for '>'", this.line);
     }
 
     @Override
@@ -159,7 +159,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '>='", line);
+        throw KaoriError.TypeError("expected number operands for '>='", this.line);
     }
 
     @Override
@@ -171,7 +171,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '<'", line);
+        throw KaoriError.TypeError("expected number operands for '<'", this.line);
     }
 
     @Override
@@ -183,7 +183,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '<='", line);
+        throw KaoriError.TypeError("expected number operands for '<='", this.line);
     }
 
     @Override
@@ -195,12 +195,12 @@ public class TypeChecker extends Visitor<KaoriType> {
             return leftType;
         }
 
-        throw KaoriError.TypeError("expected different value type in variable assignment", line);
+        throw KaoriError.TypeError("expected different value type in variable assignment", this.line);
     }
 
     @Override
     public KaoriType visitIdentifier(Expression.Identifier node) {
-        Object value = environment.get(node.value, line);
+        Object value = environment.get(node.value, this.line);
 
         return (KaoriType) value;
     }
@@ -213,7 +213,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected boolean operand for '!'", line);
+        throw KaoriError.TypeError("expected boolean operand for '!'", this.line);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return KaoriType.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected float operand for unary '-'", line);
+        throw KaoriError.TypeError("expected float operand for unary '-'", this.line);
     }
 
     @Override
@@ -251,7 +251,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         String identifier = statement.left.value;
         KaoriType value = statement.right.acceptVisitor(this);
 
-        environment.declare(identifier, value, line);
+        environment.declare(identifier, value, this.line);
     }
 
     @Override
@@ -259,7 +259,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
         if (condition != KaoriType.BOOLEAN) {
-            throw KaoriError.TypeError("expected boolean value for condition", line);
+            throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
         statement.ifBranch.acceptVisitor(this);
@@ -272,7 +272,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
         if (condition != KaoriType.BOOLEAN) {
-            throw KaoriError.TypeError("expected boolean value for condition", line);
+            throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
         statement.block.acceptVisitor(this);
@@ -285,7 +285,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
         if (condition != KaoriType.BOOLEAN) {
-            throw KaoriError.TypeError("expected boolean value for condition", line);
+            throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
         statement.block.acceptVisitor(this);

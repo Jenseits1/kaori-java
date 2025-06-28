@@ -18,7 +18,7 @@ public abstract class Visitor<T> {
     }
 
     public void run() {
-        visitStatements(statements);
+        visitStatements(this.statements);
     }
 
     protected void visitStatements(List<Statement> statements) {

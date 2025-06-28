@@ -54,7 +54,7 @@ public class Interpreter extends Visitor<Object> {
         Object right = node.right.acceptVisitor(this);
 
         if ((Float) right == 0.0f) {
-            throw KaoriError.DivisionByZero("can not do division by zero", line);
+            throw KaoriError.DivisionByZero("can not do division by zero", this.line);
         }
 
         return (Float) left / (Float) right;
@@ -66,7 +66,7 @@ public class Interpreter extends Visitor<Object> {
         Object right = node.right.acceptVisitor(this);
 
         if ((Float) right == 0.0f) {
-            throw KaoriError.DivisionByZero("can not do division by zero", line);
+            throw KaoriError.DivisionByZero("can not do division by zero", this.line);
         }
 
         return (Float) left % (Float) right;
@@ -141,14 +141,14 @@ public class Interpreter extends Visitor<Object> {
         String identifier = node.left.value;
         Object value = node.right.acceptVisitor(this);
 
-        environment.assign(identifier, value, line);
+        environment.assign(identifier, value, this.line);
 
         return value;
     }
 
     @Override
     public Object visitIdentifier(Expression.Identifier node) {
-        Object value = environment.get(node.value, line);
+        Object value = environment.get(node.value, this.line);
 
         return value;
     }
@@ -193,7 +193,7 @@ public class Interpreter extends Visitor<Object> {
         String identifier = statement.left.value;
         Object value = statement.right.acceptVisitor(this);
 
-        environment.declare(identifier, value, line);
+        environment.declare(identifier, value, this.line);
     }
 
     @Override

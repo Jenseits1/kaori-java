@@ -20,23 +20,23 @@ public class Parser {
     }
 
     private boolean parseAtEnd() {
-        return currentIndex >= tokens.size();
+        return this.currentIndex >= this.tokens.size();
     }
 
     private void consume(TokenKind expected, String errorMessage) {
-        if (parseAtEnd() || currentToken.type != expected) {
-            throw KaoriError.SyntaxError(errorMessage, line);
+        if (parseAtEnd() || this.currentToken.type != expected) {
+            throw KaoriError.SyntaxError(errorMessage, this.line);
         }
 
         consume();
     }
 
     private void consume() {
-        currentIndex++;
+        this.currentIndex++;
 
         if (!parseAtEnd()) {
-            currentToken = tokens.get(currentIndex);
-            this.line = currentToken.getLine();
+            this.currentToken = this.tokens.get(this.currentIndex);
+            this.line = this.currentToken.getLine();
         }
     }
 
@@ -52,47 +52,48 @@ public class Parser {
 
     private Expression primary() {
         if (parseAtEnd()) {
-            throw KaoriError.SyntaxError("expected valid operand", line);
+            throw KaoriError.SyntaxError("expected valid operand", this.line);
         }
 
-        return switch (currentToken.type) {
+        return switch (this.currentToken.type) {
             case BOOLEAN_LITERAL -> {
-                boolean value = Boolean.parseBoolean(currentToken.lexeme(source));
+                boolean value = Boolean.parseBoolean(this.currentToken.lexeme(this.source));
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case STRING_LITERAL -> {
-                String value = currentToken.lexeme(source);
+                String value = this.currentToken.lexeme(this.source);
                 Expression literal = new Expression.Literal(value.substring(1, value.length() - 1));
                 consume();
                 yield literal;
             }
             case FLOAT_LITERAL -> {
-                float value = Float.parseFloat(currentToken.lexeme(source));
+                float value = Float.parseFloat(this.currentToken.lexeme(this.source));
                 Expression literal = new Expression.Literal(value);
                 consume();
                 yield literal;
             }
             case IDENTIFIER -> {
-                Expression identifier = new Expression.Identifier(currentToken.lexeme(source));
+                Expression identifier = new Expression.Identifier(this.currentToken.lexeme(this.source));
                 consume();
                 yield identifier;
             }
             case LEFT_PAREN -> parenthesis();
-            default -> throw KaoriError.SyntaxError("expected valid operand", line);
+            default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
         };
 
     }
 
     private Expression unary() {
-        return switch (currentToken.type) {
+        return switch (this.currentToken.type) {
             case MINUS -> {
                 consume();
                 yield new Expression.Negation(unary());
             }
             case PLUS -> {
                 consume();
+
                 yield unary();
 
             }
@@ -104,7 +105,7 @@ public class Parser {
         Expression left = unary();
 
         while (!parseAtEnd()) {
-            TokenKind operator = currentToken.type;
+            TokenKind operator = this.currentToken.type;
 
             switch (operator) {
                 case MULTIPLY -> {
@@ -137,7 +138,7 @@ public class Parser {
         Expression left = factor();
 
         while (!parseAtEnd()) {
-            TokenKind operator = currentToken.type;
+            TokenKind operator = this.currentToken.type;
 
             switch (operator) {
                 case PLUS -> {
@@ -163,7 +164,7 @@ public class Parser {
         Expression left = term();
 
         while (!parseAtEnd()) {
-            TokenKind operator = currentToken.type;
+            TokenKind operator = this.currentToken.type;
 
             switch (operator) {
                 case GREATER -> {
@@ -199,7 +200,7 @@ public class Parser {
         Expression left = comparison();
 
         while (!parseAtEnd()) {
-            TokenKind operator = currentToken.type;
+            TokenKind operator = this.currentToken.type;
 
             switch (operator) {
                 case EQUAL -> {
@@ -225,7 +226,7 @@ public class Parser {
         Expression left = equality();
 
         while (!parseAtEnd()) {
-            TokenKind operator = currentToken.type;
+            TokenKind operator = this.currentToken.type;
 
             switch (operator) {
                 case AND -> {
@@ -246,7 +247,7 @@ public class Parser {
         Expression left = and();
 
         while (!parseAtEnd()) {
-            TokenKind operator = currentToken.type;
+            TokenKind operator = this.currentToken.type;
 
             switch (operator) {
                 case OR -> {
@@ -281,6 +282,8 @@ public class Parser {
     }
 
     private Statement expressionStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         Expression expression = assign();
         Statement statement = new Statement.Expr(expression);
 
@@ -288,6 +291,8 @@ public class Parser {
     }
 
     private Statement printStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         consume(TokenKind.PRINT, "expected print keyword");
 
         consume(TokenKind.LEFT_PAREN, "expected (");
@@ -300,11 +305,13 @@ public class Parser {
     }
 
     private Statement blockStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         consume(TokenKind.LEFT_BRACE, "expected {");
 
         List<Statement> statements = new ArrayList<>();
 
-        while (!parseAtEnd() && currentToken.type != TokenKind.RIGHT_BRACE) {
+        while (!parseAtEnd() && this.currentToken.type != TokenKind.RIGHT_BRACE) {
             Statement statement = statement();
             statements.add(statement);
         }
@@ -315,9 +322,11 @@ public class Parser {
     }
 
     private Statement variableStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         consume(TokenKind.VARIABLE, "expected variable declaration keyword");
 
-        Expression.Identifier left = new Expression.Identifier(currentToken.lexeme(source));
+        Expression.Identifier left = new Expression.Identifier(this.currentToken.lexeme(this.source));
 
         consume(TokenKind.IDENTIFIER, "expected an identifier");
         consume(TokenKind.ASSIGN, "expected =");
@@ -329,6 +338,8 @@ public class Parser {
     }
 
     private Statement ifStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         consume(TokenKind.IF, "expected if keyword");
         consume(TokenKind.LEFT_PAREN, "expected (");
 
@@ -338,13 +349,13 @@ public class Parser {
 
         Statement ifBranch = blockStatement();
 
-        if (currentToken.type != TokenKind.ELSE) {
+        if (this.currentToken.type != TokenKind.ELSE) {
             return new Statement.If(condition, ifBranch, null);
         }
 
         consume(TokenKind.ELSE, "expected else keyword");
 
-        Statement elseBranch = switch (currentToken.type) {
+        Statement elseBranch = switch (this.currentToken.type) {
             case IF -> ifStatement();
             default -> blockStatement();
         };
@@ -353,6 +364,8 @@ public class Parser {
     }
 
     private Statement whileLoopStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         consume(TokenKind.WHILE, "expected while keyword");
         consume(TokenKind.LEFT_PAREN, "expected (");
 
@@ -366,6 +379,8 @@ public class Parser {
     }
 
     private Statement forLoopStatement() {
+        int currentStatementLine = this.currentToken.getLine();
+
         consume(TokenKind.FOR, "expected for keyword");
 
         consume(TokenKind.LEFT_PAREN, "expected (");
@@ -388,9 +403,7 @@ public class Parser {
     }
 
     private Statement statement() {
-        int currentStatementLine = currentToken.getLine();
-
-        Statement statement = switch (currentToken.type) {
+        Statement statement = switch (this.currentToken.type) {
             case PRINT -> printStatement();
             case LEFT_BRACE -> blockStatement();
             case VARIABLE -> variableStatement();
@@ -399,8 +412,6 @@ public class Parser {
             case FOR -> forLoopStatement();
             default -> expressionStatement();
         };
-
-        statement.setLine(currentStatementLine);
 
         if (statement instanceof Statement.Block) {
             return statement;
@@ -412,9 +423,9 @@ public class Parser {
     }
 
     private void reset() {
-        currentIndex = 0;
-        currentToken = tokens.get(0);
-        line = 1;
+        this.currentIndex = 0;
+        this.currentToken = this.tokens.get(0);
+        this.line = 1;
     }
 
     private List<Statement> start() {
