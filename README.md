@@ -1,8 +1,6 @@
 # 🎻 Kaori - Programming Language
 
-**Kaori** is a statically typed, object-oriented programming language built with **Java 17**
-
-
+**Kaori** is an interpreted statically typed programming language built with **Java 17**
 
 ## ✨ Features ✨
 
