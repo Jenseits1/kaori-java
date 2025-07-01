@@ -39,32 +39,32 @@ public class Lexer {
     private void addToken(TokenKind type) {
         Token token = new Token(type, this.line, this.start, this.current);
 
-        tokens.add(token);
+        this.tokens.add(token);
     }
 
     private TokenKind number() {
-        while (!fileAtEnd() && Character.isDigit(this.currentCharacter)) {
-            advance();
+        while (!this.fileAtEnd() && Character.isDigit(this.currentCharacter)) {
+            this.advance();
         }
 
         if (this.currentCharacter == '.') {
-            advance();
+            this.advance();
         }
 
-        while (!fileAtEnd() && Character.isDigit(this.currentCharacter)) {
-            advance();
+        while (!this.fileAtEnd() && Character.isDigit(this.currentCharacter)) {
+            this.advance();
         }
 
         return TokenKind.NUMBER_LITERAL;
     }
 
     private TokenKind identifierOrKeyword() {
-        while (!fileAtEnd() && Character.isAlphabetic(this.currentCharacter)) {
-            advance();
+        while (!this.fileAtEnd() && Character.isAlphabetic(this.currentCharacter)) {
+            this.advance();
         }
 
-        while (!fileAtEnd() && Character.isLetterOrDigit(this.currentCharacter)) {
-            advance();
+        while (!this.fileAtEnd() && Character.isLetterOrDigit(this.currentCharacter)) {
+            this.advance();
         }
 
         return switch (this.source.substring(this.start, this.current)) {
@@ -84,17 +84,17 @@ public class Lexer {
     }
 
     private TokenKind stringLiteral() {
-        advance();
+        this.advance();
 
-        while (!fileAtEnd() && this.currentCharacter != '"') {
-            advance();
+        while (!this.fileAtEnd() && this.currentCharacter != '"') {
+            this.advance();
         }
 
         if (this.currentCharacter != '"') {
             throw KaoriError.SyntaxError("expected closing quotation marks", this.line);
         }
 
-        advance();
+        this.advance();
 
         return TokenKind.STRING_LITERAL;
     }
@@ -103,33 +103,33 @@ public class Lexer {
         String lookahead = this.source.substring(this.current);
 
         if (lookahead.startsWith("&&")) {
-            advance();
-            advance();
+            this.advance();
+            this.advance();
             return TokenKind.AND;
         }
         if (lookahead.startsWith("||")) {
-            advance();
-            advance();
+            this.advance();
+            this.advance();
             return TokenKind.OR;
         }
         if (lookahead.startsWith("!=")) {
-            advance();
-            advance();
+            this.advance();
+            this.advance();
             return TokenKind.NOT_EQUAL;
         }
         if (lookahead.startsWith("==")) {
-            advance();
-            advance();
+            this.advance();
+            this.advance();
             return TokenKind.EQUAL;
         }
         if (lookahead.startsWith(">=")) {
-            advance();
-            advance();
+            this.advance();
+            this.advance();
             return TokenKind.GREATER_EQUAL;
         }
         if (lookahead.startsWith("<=")) {
-            advance();
-            advance();
+            this.advance();
+            this.advance();
             return TokenKind.LESS_EQUAL;
         }
 
@@ -152,7 +152,7 @@ public class Lexer {
             default -> throw KaoriError.SyntaxError("unexpected token", this.line);
         };
 
-        advance();
+        this.advance();
 
         return type;
     }
@@ -162,25 +162,25 @@ public class Lexer {
         this.current = 0;
         this.line = 1;
         this.currentCharacter = this.source.charAt(0);
-        tokens = new ArrayList<>();
+        this.tokens = new ArrayList<>();
     }
 
     private void start() {
-        while (!fileAtEnd()) {
+        while (!this.fileAtEnd()) {
             if (Character.isWhitespace(this.currentCharacter)) {
-                advance();
+                this.advance();
             } else if (Character.isDigit(this.currentCharacter)) {
                 TokenKind token = number();
-                addToken(token);
+                this.addToken(token);
             } else if (Character.isLetter(this.currentCharacter)) {
                 TokenKind token = identifierOrKeyword();
-                addToken(token);
+                this.addToken(token);
             } else if (this.currentCharacter == '"') {
                 TokenKind token = stringLiteral();
-                addToken(token);
+                this.addToken(token);
             } else {
                 TokenKind token = symbol();
-                addToken(token);
+                this.addToken(token);
             }
 
             this.start = this.current;
@@ -188,7 +188,7 @@ public class Lexer {
     }
 
     public List<Token> scan() {
-        reset();
+        this.reset();
         this.start();
 
         return tokens;
