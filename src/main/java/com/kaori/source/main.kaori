@@ -1,8 +1,9 @@
 
-make a = 4;
-make b = 7;
+var a = 4;
+var b = fun () {
+    print("hello");
+};
 
-a = b;
+
 print(a);
 print(b);
-

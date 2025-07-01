@@ -68,7 +68,7 @@ public class Lexer {
         }
 
         return switch (this.source.substring(this.start, this.current)) {
-            case "make" -> TokenKind.VARIABLE;
+            case "var" -> TokenKind.VARIABLE;
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;
@@ -76,7 +76,7 @@ public class Lexer {
             case "break" -> TokenKind.BREAK;
             case "continue" -> TokenKind.CONTINUE;
             case "return" -> TokenKind.RETURN;
-            case "func" -> TokenKind.FUNCTION_LITERAL;
+            case "fun" -> TokenKind.FUNCTION;
             case "print" -> TokenKind.PRINT;
             case "true", "false" -> TokenKind.BOOLEAN_LITERAL;
             default -> TokenKind.IDENTIFIER;

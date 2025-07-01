@@ -299,4 +299,9 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         statement.increment.acceptVisitor(this);
 
     }
+
+    @Override
+    public KaoriType visitFunctionLiteral(Expression.FunctionLiteral functionLiteral) {
+        return KaoriType.FUNCTION;
+    }
 }

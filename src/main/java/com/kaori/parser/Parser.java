@@ -50,6 +50,33 @@ public class Parser {
         return expression;
     }
 
+    private Expression functionLiteral() {
+        consume(TokenKind.FUNCTION, "expected function keyword");
+
+        consume(TokenKind.LEFT_PAREN, "expected (");
+
+        List<Statement> parameters = new ArrayList<>();
+
+        while (!parseAtEnd() && this.currentToken.type == TokenKind.VARIABLE) {
+            Statement statement = variableStatement();
+            parameters.add(statement);
+
+            if (this.currentToken.type == TokenKind.RIGHT_PAREN) {
+                consume(TokenKind.RIGHT_PAREN, "expected )");
+                Statement block = blockStatement();
+
+                return new Expression.FunctionLiteral(parameters, block);
+            }
+
+            consume(TokenKind.COMMA, "expected ,");
+        }
+
+        consume(TokenKind.RIGHT_PAREN, "expected )");
+
+        Statement block = blockStatement();
+        return new Expression.FunctionLiteral(parameters, block);
+    }
+
     private Expression primary() {
         if (parseAtEnd()) {
             throw KaoriError.SyntaxError("expected valid operand", this.line);
@@ -79,6 +106,7 @@ public class Parser {
                 consume();
                 yield identifier;
             }
+            case FUNCTION -> functionLiteral();
             case LEFT_PAREN -> parenthesis();
             default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
         };

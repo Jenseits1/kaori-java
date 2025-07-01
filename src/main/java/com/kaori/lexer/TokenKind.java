@@ -42,11 +42,12 @@ public enum TokenKind {
     RETURN,
     PRINT,
     VARIABLE,
+    FUNCTION,
 
     // Literals and identifiers
     IDENTIFIER,
     STRING_LITERAL,
     NUMBER_LITERAL,
     BOOLEAN_LITERAL,
-    FUNCTION_LITERAL,
+
 }

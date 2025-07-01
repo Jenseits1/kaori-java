@@ -155,6 +155,11 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
+    public Object visitFunctionLiteral(Expression.FunctionLiteral node) {
+        return node;
+    }
+
+    @Override
     public Object visitIdentifier(Expression.Identifier node) {
         Object value = environment.get(node.value, this.line);
 

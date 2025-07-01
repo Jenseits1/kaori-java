@@ -1,5 +1,7 @@
 package com.kaori.parser;
 
+import java.util.List;
+
 import com.kaori.visitor.Visitor;
 
 public abstract class Expression {
@@ -41,6 +43,22 @@ public abstract class Expression {
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitBooleanLiteral(this);
+        }
+    }
+
+    public static class FunctionLiteral extends Expression {
+        public final List<Statement> parameters;
+        public final Statement block;
+
+        public FunctionLiteral(List<Statement> parameters, Statement block) {
+            this.parameters = parameters;
+            this.block = block;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            // TODO Auto-generated method stub
+            return visitor.visitFunctionLiteral(this);
         }
     }
 

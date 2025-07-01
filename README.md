@@ -45,7 +45,7 @@ statement                -> expr_stmt
                          | return_stmt
                          | variable_stmt
 
-variable_stmt            -> "make" IDENTIFIER ( "=" expression )? ";"
+variable_stmt            -> "var" IDENTIFIER ( "=" expression )? ";"
 
 block_stmt               -> "{" statement* "}"
 
