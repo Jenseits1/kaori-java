@@ -268,27 +268,23 @@ public class Parser {
         return left;
     }
 
-    private Expression assign() {
-        Expression expression = expression();
+    private Expression expression() {
+        Expression or = or();
 
-        if (expression instanceof Expression.Identifier left) {
-            consume(TokenKind.ASSIGN, "expected =");
-            Expression right = expression();
+        if (or instanceof Expression.Identifier identifier && this.currentToken.type == TokenKind.ASSIGN) {
+            this.consume();
+            Expression expression = expression();
 
-            return new Expression.Assign(left, right);
+            return new Expression.Assign(identifier, expression);
         }
 
-        return expression;
-    }
-
-    private Expression expression() {
-        return or();
+        return or;
     }
 
     private Statement expressionStatement() {
         int line = this.currentToken.getLine();
 
-        Expression expression = assign();
+        Expression expression = expression();
 
         return new Statement.Expr(expression).setLine(line);
     }

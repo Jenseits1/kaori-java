@@ -4,34 +4,32 @@
 
 ## ✨ Features ✨
 
-- **Statically Typed 🔒**  
-  Enforces type safety for predictable, and faster runtimes
+-   **Statically Typed 🔒**  
+    Enforces type safety for predictable, and faster runtimes
 
-- **Detailed Error Messages 🎯**  
-  Developer-friendly diagnostics for syntax and runtime issues
+-   **Detailed Error Messages 🎯**  
+    Developer-friendly diagnostics for syntax and runtime issues
 
-- **Implemented Language Features ✅**
+-   **Implemented Language Features ✅**
 
-  - [x] Variable declarations (`make x = 10;`)
-  - [x] Logical operators (`and`, `or`, `!`)
-  - [x] Arithmetic operators (`+`, `-`, `*`, `/`)
-  - [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
-  - [x] `if / else` statements
-  - [x] `for` loops
-  - [x] `while` loops
-  - [x] Block statements for scope (`{ ... }`)
-  - [x] Output with `print` statements
-  - [ ] Functions
-  - [ ] Native data structures (e.g., lists, maps)
-  - [ ] Bytecode generation
-  - [ ] Classes and inheritance
-  
+    -   [x] Variable declarations (`make x = 10;`)
+    -   [x] Logical operators (`and`, `or`, `!`)
+    -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
+    -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
+    -   [x] `if / else` statements
+    -   [x] `for` loops
+    -   [x] `while` loops
+    -   [x] Block statements for scope (`{ ... }`)
+    -   [x] Output with `print` statements
+    -   [ ] Functions
+    -   [ ] Native data structures (e.g., lists, maps)
+    -   [ ] Bytecode generation
+    -   [ ] Classes and inheritance
+
 ## 🛠️ Technologies Used 🛠️
 
-- **Java 17 ☕** — The entire interpreter is written in modern Java
-- **Maven / Gradle** — Dependency and build management
-
-
+-   **Java 17 ☕** — The entire interpreter is written in modern Java
+-   **Maven / Gradle** — Dependency and build management
 
 ## 📜 Grammar
 
@@ -45,7 +43,7 @@ statement                -> expr_stmt
                          | while_stmt
                          | for_stmt
                          | return_stmt
-                         | variable_stmt                
+                         | variable_stmt
 
 variable_stmt            -> "make" IDENTIFIER ( "=" expression )? ";"
 
@@ -83,14 +81,12 @@ primary                  -> NUMBER | STRING | "true" | "false"
                          | IDENTIFIER | "(" expression ")"
 ```
 
-
-
 ## 🚀 Getting Started 🚀
 
 ### 📋 Prerequisites
 
-- Java 17+
-- Maven or Gradle (recommended for building)
+-   Java 17+
+-   Maven or Gradle (recommended for building)
 
 ### ⬇️ Installation
 
@@ -119,8 +115,6 @@ primary                  -> NUMBER | STRING | "true" | "false"
     java -jar target/kaori.jar
     ```
 
-
-
 ## 🧪 Running Scripts
 
 To run a `.kaori` script:
@@ -135,21 +129,20 @@ To enter the interactive mode (REPL):
 java -jar target/kaori.jar
 ```
 
-
 ## 🤝 Contributing 🤝
 
 Kaori is a passion project, and contributions are warmly welcome!
 
 ### Ways to Contribute:
 
-- 🚨 Report bugs  
-- ✨ Propose new features or syntax ideas  
-- 🧪 Add new test cases  
-- 📚 Improve the documentation  
+-   🚨 Report bugs
+-   ✨ Propose new features or syntax ideas
+-   🧪 Add new test cases
+-   📚 Improve the documentation
 
 ### Steps:
 
-1. Fork the repo  
+1. Fork the repo
 2. Create a new branch:
 
     ```bash
@@ -164,18 +157,11 @@ Kaori is a passion project, and contributions are warmly welcome!
 
 4. Push and open a PR
 
-
-
 ## 💖 Name Inspiration
 
 The name Kaori is inspired by the character Kaori Miyazono from the anime Your Lie in April. She represents inspiration, motivation, and the desire to create something different from the standard — the same spirit behind creating this language
-
-
 
 ## 📄 License 📄
 
 Kaori is released under the **MIT License**.  
 See the [`LICENSE`](LICENSE) file for more details.
-
-
-
