@@ -18,6 +18,6 @@ public class Token {
     }
 
     public int getLine() {
-        return line;
+        return this.line;
     }
 }

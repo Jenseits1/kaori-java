@@ -20,34 +20,34 @@ public class Environment {
     }
 
     public Environment getPrevious() {
-        return previous;
+        return this.previous;
     }
 
     public void declare(String identifier, Object value, int line) {
-        if (values.containsKey(identifier)) {
+        if (this.values.containsKey(identifier)) {
             throw KaoriError.VariableError(identifier + " is already declared", line);
         }
 
-        values.put(identifier, value);
+        this.values.put(identifier, value);
     }
 
     public Object get(String identifier, int line) {
-        if (values.containsKey(identifier)) {
-            return values.get(identifier);
-        } else if (previous == null) {
+        if (this.values.containsKey(identifier)) {
+            return this.values.get(identifier);
+        } else if (this.previous == null) {
             throw KaoriError.VariableError(identifier + " is not declared", line);
         } else {
-            return previous.get(identifier, line);
+            return this.previous.get(identifier, line);
         }
     }
 
     public void assign(String identifier, Object value, int line) {
-        if (values.containsKey(identifier)) {
-            values.put(identifier, value);
-        } else if (previous == null) {
+        if (this.values.containsKey(identifier)) {
+            this.values.put(identifier, value);
+        } else if (this.previous == null) {
             throw KaoriError.VariableError(identifier + " is not declared", line);
         } else {
-            previous.assign(identifier, value, line);
+            this.previous.assign(identifier, value, line);
         }
 
     }
