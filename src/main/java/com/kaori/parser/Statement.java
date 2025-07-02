@@ -62,22 +62,6 @@ public abstract class Statement {
         }
     }
 
-    public static class Variable extends Statement {
-        public final Expression left;
-        public final Expression right;
-
-        public Variable(Expression left, Expression right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitVariableStatement(this);
-        }
-
-    }
-
     public static class If extends Statement {
         public final Expression condition;
         public final Statement ifBranch;
@@ -112,12 +96,12 @@ public abstract class Statement {
     }
 
     public static class ForLoop extends Statement {
-        public final Statement variable;
+        public final Expression variable;
         public final Expression condition;
         public final Statement increment;
         public final Statement block;
 
-        public ForLoop(Statement variable, Expression condition, Statement increment, Statement block) {
+        public ForLoop(Expression variable, Expression condition, Statement increment, Statement block) {
             this.variable = variable;
             this.condition = condition;
             this.increment = increment;

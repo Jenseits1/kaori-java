@@ -41,7 +41,6 @@ public enum TokenKind {
     ELSE,
     RETURN,
     PRINT,
-    VARIABLE,
     FUNCTION,
 
     // Literals and identifiers

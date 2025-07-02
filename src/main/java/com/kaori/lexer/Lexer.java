@@ -68,7 +68,6 @@ public class Lexer {
         }
 
         return switch (this.source.substring(this.start, this.current)) {
-            case "var" -> TokenKind.VARIABLE;
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;

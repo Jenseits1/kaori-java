@@ -3,7 +3,6 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.parser.Expression;
-
 import com.kaori.parser.Statement;
 
 public abstract class Visitor<T> {
@@ -29,6 +28,8 @@ public abstract class Visitor<T> {
     }
 
     // Expressions
+    public abstract T visitComma(Expression.Comma comma);
+
     public abstract T visitAdd(Expression.Add node);
 
     public abstract T visitSubtract(Expression.Subtract node);
@@ -77,8 +78,6 @@ public abstract class Visitor<T> {
     public abstract void visitPrintStatement(Statement.Print statement);
 
     public abstract void visitBlockStatement(Statement.Block statement);
-
-    public abstract void visitVariableStatement(Statement.Variable statement);
 
     public abstract void visitIfStatement(Statement.If statement);
 

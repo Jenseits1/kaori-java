@@ -59,21 +59,7 @@ public class Parser {
 
         this.consume(TokenKind.LEFT_PAREN, "expected (");
 
-        List<Statement> parameters = new ArrayList<>();
-
-        while (!this.parseAtEnd() && this.currentToken.type == TokenKind.VARIABLE) {
-            Statement statement = this.variableStatement();
-            parameters.add(statement);
-
-            if (this.currentToken.type == TokenKind.RIGHT_PAREN) {
-                this.consume(TokenKind.RIGHT_PAREN, "expected )");
-                Statement block = this.blockStatement();
-
-                return new Expression.FunctionLiteral(parameters, block);
-            }
-
-            this.consume(TokenKind.COMMA, "expected ,");
-        }
+        Expression parameters = this.expression();
 
         this.consume(TokenKind.RIGHT_PAREN, "expected )");
         Statement block = this.blockStatement();
@@ -307,7 +293,7 @@ public class Parser {
         return left;
     }
 
-    private Expression expression() {
+    private Expression assign() {
         Expression or = this.or();
 
         if (or instanceof Expression.Identifier && this.currentToken.type == TokenKind.ASSIGN) {
@@ -318,6 +304,22 @@ public class Parser {
         }
 
         return or;
+    }
+
+    private Expression comma() {
+        Expression left = this.assign();
+
+        while (!this.parseAtEnd() && currentToken.type == TokenKind.COMMA) {
+            this.consume();
+            Expression right = this.assign();
+            left = new Expression.Assign(left, right);
+        }
+
+        return left;
+    }
+
+    private Expression expression() {
+        return comma();
     }
 
     private Statement expressionStatement() {
@@ -357,21 +359,6 @@ public class Parser {
         this.consume(TokenKind.RIGHT_BRACE, "expected }");
 
         return new Statement.Block(statements).setLine(line);
-    }
-
-    private Statement variableStatement() {
-        int line = this.currentToken.getLine();
-
-        this.consume(TokenKind.VARIABLE, "expected variable declaration keyword");
-
-        Expression left = this.identifier();
-
-        this.consume(TokenKind.ASSIGN, "expected =");
-
-        Expression right = this.expression();
-
-        return new Statement.Variable(left, right).setLine(line);
-
     }
 
     private Statement ifStatement() {
@@ -422,7 +409,7 @@ public class Parser {
 
         this.consume(TokenKind.LEFT_PAREN, "expected (");
 
-        Statement variable = this.variableStatement();
+        Expression variable = this.expression();
 
         this.consume(TokenKind.SEMICOLON, "expected semicolon after variable declaration");
 
@@ -443,7 +430,6 @@ public class Parser {
         Statement statement = switch (this.currentToken.type) {
             case PRINT -> this.printStatement();
             case LEFT_BRACE -> this.blockStatement();
-            case VARIABLE -> this.variableStatement();
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();

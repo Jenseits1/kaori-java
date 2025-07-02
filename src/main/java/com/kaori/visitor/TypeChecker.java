@@ -19,6 +19,13 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     }
 
     @Override
+    public KaoriType visitComma(Expression.Comma node) {
+        Object right = node.right.acceptVisitor(this);
+
+        return (KaoriType) right;
+    }
+
+    @Override
     public KaoriType visitAdd(Expression.Add node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
@@ -251,15 +258,6 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     @Override
     public void visitExpressionStatement(Statement.Expr statement) {
         statement.expression.acceptVisitor(this);
-    }
-
-    @Override
-    public void visitVariableStatement(Statement.Variable statement) {
-        Expression.Identifier identifier = (Expression.Identifier) statement.left;
-
-        KaoriType value = statement.right.acceptVisitor(this);
-
-        environment.declare(identifier.value, value, this.line);
     }
 
     @Override

@@ -4,11 +4,18 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.Expression;
+import com.kaori.parser.Expression.Comma;
 import com.kaori.parser.Statement;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<Statement> statements) {
         super(statements, new Environment());
+    }
+
+    @Override
+    public Object visitComma(Comma comma) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitComma'");
     }
 
     @Override
@@ -202,15 +209,6 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public void visitVariableStatement(Statement.Variable statement) {
-        Expression.Identifier left = (Expression.Identifier) statement.left;
-        String identifier = left.value;
-        Object value = statement.right.acceptVisitor(this);
-
-        environment.declare(identifier, value, this.line);
-    }
-
-    @Override
     public void visitIfStatement(Statement.If statement) {
         Object condition = statement.condition.acceptVisitor(this);
 
@@ -251,4 +249,5 @@ public class Interpreter extends Visitor<Object> {
             statement.increment.acceptVisitor(this);
         }
     }
+
 }
