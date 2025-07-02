@@ -30,7 +30,7 @@ public class Main {
             Parser parser = new Parser(source, tokens);
             List<Statement> ast = parser.parse();
 
-            // System.out.println(gson.toJson(ast));
+            System.out.println(gson.toJson(ast));
 
             TypeChecker typeChecker = new TypeChecker(ast);
             typeChecker.run();

@@ -57,9 +57,7 @@ while_stmt               -> "while" "(" expression ")" block_stmt
 
 for_stmt                 -> "for" "(" var_decl expression ";" expression ")" block_stmt
 
-expression               -> comma
-
-comma                    -> assign ("," assign)*
+expression               -> assign
 
 assign                   -> IDENTIFIER "=" assignment | logic_or
 

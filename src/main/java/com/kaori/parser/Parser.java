@@ -6,6 +6,7 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Token;
 import com.kaori.lexer.TokenKind;
+import com.kaori.parser.Statement.Expr;
 
 public class Parser {
     private final String source;
@@ -55,14 +56,27 @@ public class Parser {
     }
 
     private Expression functionLiteral() {
-        this.consume(TokenKind.FUNCTION, "expected function keyword");
+        this.consume(TokenKind.FUNCTION, "expected fun keyword");
 
         this.consume(TokenKind.LEFT_PAREN, "expected (");
 
         List<Expression> parameters = new ArrayList<>();
 
-        while (!this.parseAtEnd()) {
+        while (!this.parseAtEnd() && currentToken.type != TokenKind.RIGHT_PAREN) {
             Expression expression = this.expression();
+
+            if (!(expression instanceof Expression.Assign)) {
+                throw KaoriError.SyntaxError("expected variable assignment", this.line);
+
+            }
+
+            parameters.add(expression);
+
+            if (this.currentToken.type == TokenKind.RIGHT_PAREN) {
+                break;
+            }
+
+            this.consume(TokenKind.COMMA, "expected ,");
 
         }
 
