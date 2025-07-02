@@ -1,7 +1,10 @@
 
 
 
-for (i = 5, j = 7; i < 10; i = i + 1) {
-    print(i);
-    print(j);
-};
+i = 5, j = 7;
+
+print(i);
+print(j);
+
+print(i);
+

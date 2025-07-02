@@ -13,6 +13,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitComma(Expression.Comma node) {
+        node.left.acceptVisitor(this);
         return node.right.acceptVisitor(this);
     }
 

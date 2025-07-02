@@ -298,7 +298,7 @@ public class Parser {
 
         if (or instanceof Expression.Identifier && this.currentToken.type == TokenKind.ASSIGN) {
             this.consume();
-            Expression expression = this.expression();
+            Expression expression = this.assign();
 
             return new Expression.Assign(or, expression);
         }
