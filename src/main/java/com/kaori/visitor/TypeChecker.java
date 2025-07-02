@@ -19,13 +19,6 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     }
 
     @Override
-    public KaoriType visitComma(Expression.Comma node) {
-        Object right = node.right.acceptVisitor(this);
-
-        return (KaoriType) right;
-    }
-
-    @Override
     public KaoriType visitAdd(Expression.Add node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);

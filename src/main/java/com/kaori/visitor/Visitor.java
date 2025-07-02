@@ -28,7 +28,6 @@ public abstract class Visitor<T> {
     }
 
     // Expressions
-    public abstract T visitComma(Expression.Comma comma);
 
     public abstract T visitAdd(Expression.Add node);
 

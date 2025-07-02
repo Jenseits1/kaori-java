@@ -12,12 +12,6 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitComma(Expression.Comma node) {
-        node.left.acceptVisitor(this);
-        return node.right.acceptVisitor(this);
-    }
-
-    @Override
     public Object visitAdd(Expression.Add node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);

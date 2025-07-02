@@ -1,8 +1,10 @@
 
 
 
-sum = fun (a = 2, b = 3) {
+sum = fun (a, b) {
     print(a + b);
 };
 
 print(sum);
+
+

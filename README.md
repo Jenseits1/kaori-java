@@ -12,10 +12,11 @@
 
 -   **Implemented Language Features ✅**
 
-    -   [x] Variable declarations (`make x = 10;`)
+    -   [x] Variable assign operator (`x = 10;`)
     -   [x] Logical operators (`and`, `or`, `!`)
     -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
     -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
+    -   [x] Comma operator (`,`)
     -   [x] `if / else` statements
     -   [x] `for` loops
     -   [x] `while` loops

@@ -59,7 +59,12 @@ public class Parser {
 
         this.consume(TokenKind.LEFT_PAREN, "expected (");
 
-        Expression parameters = this.expression();
+        List<Expression> parameters = new ArrayList<>();
+
+        while (!this.parseAtEnd()) {
+            Expression expression = this.expression();
+
+        }
 
         this.consume(TokenKind.RIGHT_PAREN, "expected )");
         Statement block = this.blockStatement();
@@ -306,20 +311,8 @@ public class Parser {
         return or;
     }
 
-    private Expression comma() {
-        Expression left = this.assign();
-
-        while (!this.parseAtEnd() && currentToken.type == TokenKind.COMMA) {
-            this.consume();
-            Expression right = this.assign();
-            left = new Expression.Comma(left, right);
-        }
-
-        return left;
-    }
-
     private Expression expression() {
-        return comma();
+        return assign();
     }
 
     private Statement expressionStatement() {

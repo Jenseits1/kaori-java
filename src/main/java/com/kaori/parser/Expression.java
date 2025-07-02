@@ -1,5 +1,7 @@
 package com.kaori.parser;
 
+import java.util.List;
+
 import com.kaori.visitor.Visitor;
 
 public abstract class Expression {
@@ -45,10 +47,10 @@ public abstract class Expression {
     }
 
     public static class FunctionLiteral extends Expression {
-        public final Expression parameters;
+        public final List<Expression> parameters;
         public final Statement block;
 
-        public FunctionLiteral(Expression parameters, Statement block) {
+        public FunctionLiteral(List<Expression> parameters, Statement block) {
             this.parameters = parameters;
             this.block = block;
         }
@@ -69,21 +71,6 @@ public abstract class Expression {
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitIdentifier(this);
-        }
-    }
-
-    public static class Comma extends Expression {
-        public final Expression left;
-        public final Expression right;
-
-        public Comma(Expression left, Expression right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitComma(this);
         }
     }
 
