@@ -270,10 +270,10 @@ public abstract class Expression {
     }
 
     public static class Assign extends Expression {
-        public final Expression.Identifier left;
+        public final Expression left;
         public final Expression right;
 
-        public Assign(Expression.Identifier left, Expression right) {
+        public Assign(Expression left, Expression right) {
             this.left = left;
             this.right = right;
         }

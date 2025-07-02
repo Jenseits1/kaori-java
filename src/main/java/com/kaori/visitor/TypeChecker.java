@@ -180,11 +180,11 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
 
     @Override
     public KaoriType visitAssign(Expression.Assign node) {
-        KaoriType leftType = node.left.acceptVisitor(this);
-        KaoriType rightType = node.right.acceptVisitor(this);
+        KaoriType left = node.left.acceptVisitor(this);
+        KaoriType right = node.right.acceptVisitor(this);
 
-        if (leftType == rightType) {
-            return leftType;
+        if (left == right) {
+            return left;
         }
 
         throw KaoriError.TypeError("expected different value type in variable assignment", this.line);
@@ -255,10 +255,11 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
-        String identifier = statement.left.value;
+        Expression.Identifier identifier = (Expression.Identifier) statement.left;
+
         KaoriType value = statement.right.acceptVisitor(this);
 
-        environment.declare(identifier, value, this.line);
+        environment.declare(identifier.value, value, this.line);
     }
 
     @Override

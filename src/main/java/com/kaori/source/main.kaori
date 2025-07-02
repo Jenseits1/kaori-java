@@ -1,9 +1,9 @@
 
 var a = 4;
-var b = fun () {
+var b = fun (var a = 5, var b = 3) {
     print("hello");
 };
 
 
 print(a);
-print(b);
+print( b);

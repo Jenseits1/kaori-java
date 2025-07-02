@@ -41,7 +41,7 @@ public class Parser {
     }
 
     private Expression postfixUnary() {
-        throw KaoriError.SyntaxError("no found", this.line);
+        throw KaoriError.SyntaxError("not found", this.line);
     }
 
     private Expression parenthesis() {
@@ -76,9 +76,17 @@ public class Parser {
         }
 
         this.consume(TokenKind.RIGHT_PAREN, "expected )");
-
         Statement block = this.blockStatement();
+
         return new Expression.FunctionLiteral(parameters, block);
+    }
+
+    private Expression identifier() {
+        String value = this.currentToken.lexeme(this.source);
+        Expression identifier = new Expression.Identifier(value);
+        this.consume();
+
+        return identifier;
     }
 
     private Expression primary() {
@@ -90,26 +98,25 @@ public class Parser {
             case BOOLEAN_LITERAL -> {
                 boolean value = Boolean.parseBoolean(this.currentToken.lexeme(this.source));
                 Expression literal = new Expression.BooleanLiteral(value);
-                this.consume();
+                consume();
+
                 yield literal;
             }
             case STRING_LITERAL -> {
                 String value = this.currentToken.lexeme(this.source);
                 Expression literal = new Expression.StringLiteral(value.substring(1, value.length() - 1));
                 this.consume();
+
                 yield literal;
             }
             case NUMBER_LITERAL -> {
                 float value = Float.parseFloat(this.currentToken.lexeme(this.source));
                 Expression literal = new Expression.NumberLiteral(value);
                 this.consume();
+
                 yield literal;
             }
-            case IDENTIFIER -> {
-                Expression identifier = new Expression.Identifier(this.currentToken.lexeme(this.source));
-                this.consume();
-                yield identifier;
-            }
+            case IDENTIFIER -> this.identifier();
             case FUNCTION -> this.functionLiteral();
             case LEFT_PAREN -> this.parenthesis();
             default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
@@ -303,11 +310,11 @@ public class Parser {
     private Expression expression() {
         Expression or = this.or();
 
-        if (or instanceof Expression.Identifier identifier && this.currentToken.type == TokenKind.ASSIGN) {
+        if (or instanceof Expression.Identifier && this.currentToken.type == TokenKind.ASSIGN) {
             this.consume();
             Expression expression = this.expression();
 
-            return new Expression.Assign(identifier, expression);
+            return new Expression.Assign(or, expression);
         }
 
         return or;
@@ -357,9 +364,8 @@ public class Parser {
 
         this.consume(TokenKind.VARIABLE, "expected variable declaration keyword");
 
-        Expression.Identifier left = new Expression.Identifier(this.currentToken.lexeme(this.source));
+        Expression left = this.identifier();
 
-        this.consume(TokenKind.IDENTIFIER, "expected an identifier");
         this.consume(TokenKind.ASSIGN, "expected =");
 
         Expression right = this.expression();

@@ -63,10 +63,10 @@ public abstract class Statement {
     }
 
     public static class Variable extends Statement {
-        public final Expression.Identifier left;
+        public final Expression left;
         public final Expression right;
 
-        public Variable(Expression.Identifier left, Expression right) {
+        public Variable(Expression left, Expression right) {
             this.left = left;
             this.right = right;
         }
