@@ -43,9 +43,6 @@ statement                -> expr_stmt
                          | while_stmt
                          | for_stmt
                          | return_stmt
-                         | variable_stmt
-
-variable_stmt            -> "var" IDENTIFIER ( "=" expression )? ";"
 
 block_stmt               -> "{" statement* "}"
 
@@ -59,9 +56,11 @@ while_stmt               -> "while" "(" expression ")" block_stmt
 
 for_stmt                 -> "for" "(" var_decl expression ";" expression ")" block_stmt
 
-expression               -> assignment
+expression               -> comma
 
-assignment               -> IDENTIFIER "=" assignment | logic_or
+comma                    -> assign ("," assign)*
+
+assign                   -> IDENTIFIER "=" assignment | logic_or
 
 logic_or                 -> logic_and ("or" logic_and)*
 

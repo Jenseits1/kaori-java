@@ -1,10 +1,8 @@
 
 
 
-i = 5, j = 7;
+sum = fun (a = 2, b = 3) {
+    print(a + b);
+};
 
-print(i);
-print(j);
-
-print(i);
-
+print(sum);

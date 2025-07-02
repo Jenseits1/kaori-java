@@ -15,7 +15,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         STRING,
         NUMBER,
         BOOLEAN,
-        FUNCTION
+        FUNCTION,
     }
 
     @Override
@@ -187,13 +187,14 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
 
     @Override
     public KaoriType visitAssign(Expression.Assign node) {
-        KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
-
-        if (left == null) {
+        KaoriType left;
+        try {
+            left = node.left.acceptVisitor(this);
+        } catch (KaoriError error) {
             Expression.Identifier identifier = (Expression.Identifier) node.left;
-            this.environment.set(identifier.value, right);
-            return right;
+            environment.set(identifier.value, right);
+            left = right;
         }
 
         if (left == right) {
@@ -221,6 +222,10 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     @Override
     public KaoriType visitIdentifier(Expression.Identifier node) {
         Object value = environment.get(node.value, this.line);
+
+        if (value == null) {
+            throw KaoriError.TypeError(node.value + " is undefined", this.line);
+        }
 
         return (KaoriType) value;
     }
