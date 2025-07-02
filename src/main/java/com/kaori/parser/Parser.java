@@ -312,7 +312,7 @@ public class Parser {
         while (!this.parseAtEnd() && currentToken.type == TokenKind.COMMA) {
             this.consume();
             Expression right = this.assign();
-            left = new Expression.Assign(left, right);
+            left = new Expression.Comma(left, right);
         }
 
         return left;

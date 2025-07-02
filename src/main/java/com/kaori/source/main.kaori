@@ -1,9 +1,7 @@
 
-var a = 4;
-var b = fun (var a = 5, var b = 3) {
-    print("hello");
+
+
+for (i = 5, j = 7; i < 10; i = i + 1) {
+    print(i);
+    print(j);
 };
-
-
-print(a);
-print( b);

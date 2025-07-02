@@ -1,7 +1,5 @@
 package com.kaori.parser;
 
-import java.util.List;
-
 import com.kaori.visitor.Visitor;
 
 public abstract class Expression {
@@ -21,9 +19,9 @@ public abstract class Expression {
     }
 
     public static class NumberLiteral extends Expression {
-        public final double value;
+        public final float value;
 
-        public NumberLiteral(double value) {
+        public NumberLiteral(float value) {
             this.value = value;
         }
 

@@ -37,6 +37,7 @@ public class Main {
 
             Interpreter interpreter = new Interpreter(ast);
             interpreter.run();
+
         } catch (KaoriError error) {
             System.out.println(error);
         } catch (IOException error) {

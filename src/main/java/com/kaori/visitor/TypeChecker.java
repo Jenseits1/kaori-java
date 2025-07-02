@@ -190,8 +190,14 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
+        if (left == null) {
+            Expression.Identifier identifier = (Expression.Identifier) node.left;
+            this.environment.set(identifier.value, right);
+            return right;
+        }
+
         if (left == right) {
-            return left;
+            return right;
         }
 
         throw KaoriError.TypeError("expected different value type in variable assignment", this.line);

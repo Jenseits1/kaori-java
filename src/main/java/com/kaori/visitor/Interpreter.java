@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.Expression;
-import com.kaori.parser.Expression.Comma;
 import com.kaori.parser.Statement;
 
 public class Interpreter extends Visitor<Object> {
@@ -13,9 +12,8 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitComma(Comma comma) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitComma'");
+    public Object visitComma(Expression.Comma node) {
+        return node.right.acceptVisitor(this);
     }
 
     @Override
@@ -141,7 +139,7 @@ public class Interpreter extends Visitor<Object> {
         Expression.Identifier identifier = (Expression.Identifier) node.left;
         Object value = node.right.acceptVisitor(this);
 
-        environment.assign(identifier.value, value, this.line);
+        environment.set(identifier.value, value);
 
         return value;
     }

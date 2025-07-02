@@ -3,8 +3,6 @@ package com.kaori.visitor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.kaori.error.KaoriError;
-
 public class Environment {
     private final Environment previous;
     private final Map<String, Object> values;
@@ -23,32 +21,17 @@ public class Environment {
         return this.previous;
     }
 
-    public void declare(String identifier, Object value, int line) {
-        if (this.values.containsKey(identifier)) {
-            throw KaoriError.VariableError(identifier + " is already declared", line);
-        }
-
-        this.values.put(identifier, value);
-    }
-
     public Object get(String identifier, int line) {
         if (this.values.containsKey(identifier)) {
             return this.values.get(identifier);
         } else if (this.previous == null) {
-            throw KaoriError.VariableError(identifier + " is not declared", line);
+            return null;
         } else {
             return this.previous.get(identifier, line);
         }
     }
 
-    public void assign(String identifier, Object value, int line) {
-        if (this.values.containsKey(identifier)) {
-            this.values.put(identifier, value);
-        } else if (this.previous == null) {
-            throw KaoriError.VariableError(identifier + " is not declared", line);
-        } else {
-            this.previous.assign(identifier, value, line);
-        }
-
+    public void set(String identifier, Object value) {
+        this.values.put(identifier, value);
     }
 }
