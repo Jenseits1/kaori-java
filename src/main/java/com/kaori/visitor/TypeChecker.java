@@ -245,7 +245,7 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'visitVariableStatement'");
     }
 

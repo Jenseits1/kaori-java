@@ -370,6 +370,10 @@ public class Parser {
         return new Statement.Block(statements).setLine(line);
     }
 
+    private Statement variableStatement() {
+        throw KaoriError.SyntaxError("expected valid operand", this.line);
+    }
+
     private Statement ifStatement() {
         int line = this.currentToken.getLine();
 
@@ -442,6 +446,7 @@ public class Parser {
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
+            case IDENTIFIER -> this.variableStatement();
             default -> this.expressionStatement();
         };
 

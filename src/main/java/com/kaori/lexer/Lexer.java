@@ -144,10 +144,12 @@ public class Lexer {
             case '}' -> TokenKind.RIGHT_BRACE;
             case ',' -> TokenKind.COMMA;
             case ';' -> TokenKind.SEMICOLON;
+            case ':' -> TokenKind.COLON;
             case '!' -> TokenKind.NOT;
             case '=' -> TokenKind.ASSIGN;
             case '>' -> TokenKind.GREATER;
             case '<' -> TokenKind.LESS;
+
             default -> throw KaoriError.SyntaxError("unexpected token", this.line);
         };
 

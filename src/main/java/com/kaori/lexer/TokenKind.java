@@ -25,6 +25,7 @@ public enum TokenKind {
     ASSIGN,
     COMMA,
     SEMICOLON,
+    COLON,
 
     // Grouping symbols
     LEFT_PAREN,
