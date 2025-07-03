@@ -49,6 +49,24 @@ public abstract class Statement {
         }
     }
 
+    public static class Variable extends Statement {
+        public final Expression left;
+        public final Expression right;
+        public final KaoriType type;
+
+        public Variable(Expression left, Expression right, KaoriType type) {
+            this.left = left;
+            this.right = right;
+            this.type = type;
+        }
+
+        @Override
+        public <T> void acceptVisitor(Visitor<T> visitor) {
+            visitor.visitVariableStatement(this);
+        }
+
+    }
+
     public static class Block extends Statement {
         public final List<Statement> statements;
 

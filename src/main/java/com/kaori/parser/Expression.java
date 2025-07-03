@@ -7,42 +7,18 @@ import com.kaori.visitor.Visitor;
 public abstract class Expression {
     public abstract <T> T acceptVisitor(Visitor<T> visitor);
 
-    public static class StringLiteral extends Expression {
-        public final String value;
+    public static class Literal extends Expression {
+        public final KaoriType type;
+        public final Object value;
 
-        public StringLiteral(String value) {
+        public Literal(KaoriType type, Object value) {
+            this.type = type;
             this.value = value;
         }
 
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitStringLiteral(this);
-        }
-    }
-
-    public static class NumberLiteral extends Expression {
-        public final float value;
-
-        public NumberLiteral(float value) {
-            this.value = value;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitNumberLiteral(this);
-        }
-    }
-
-    public static class BooleanLiteral extends Expression {
-        public final boolean value;
-
-        public BooleanLiteral(boolean value) {
-            this.value = value;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitBooleanLiteral(this);
+            return visitor.visitLiteral(this);
         }
     }
 

@@ -4,18 +4,12 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.Expression;
+import com.kaori.parser.KaoriType;
 import com.kaori.parser.Statement;
 
-public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
+public class TypeChecker extends Visitor<KaoriType> {
     public TypeChecker(List<Statement> statements) {
         super(statements, new Environment());
-    }
-
-    public enum KaoriType {
-        STRING,
-        NUMBER,
-        BOOLEAN,
-        FUNCTION,
     }
 
     @Override
@@ -23,12 +17,12 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.NUMBER;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.NUMBER;
         }
 
-        if (left == KaoriType.STRING && right == KaoriType.STRING) {
-            return KaoriType.STRING;
+        if (left == KaoriType.Primitive.STRING && right == KaoriType.Primitive.STRING) {
+            return KaoriType.Primitive.STRING;
         }
 
         throw KaoriError.TypeError("expected number or string operands for '+'", this.line);
@@ -39,8 +33,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.NUMBER;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '-'", this.line);
@@ -51,8 +45,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.NUMBER;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '*'", this.line);
@@ -63,8 +57,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.NUMBER;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '/'", this.line);
@@ -75,8 +69,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.NUMBER;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '%'", this.line);
@@ -87,8 +81,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.BOOLEAN && right == KaoriType.BOOLEAN) {
-            return KaoriType.BOOLEAN;
+        if (left == KaoriType.Primitive.BOOLEAN && right == KaoriType.Primitive.BOOLEAN) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected boolean operands for '&&'", this.line);
@@ -99,8 +93,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.BOOLEAN && right == KaoriType.BOOLEAN) {
-            return KaoriType.BOOLEAN;
+        if (left == KaoriType.Primitive.BOOLEAN && right == KaoriType.Primitive.BOOLEAN) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected boolean operands for '||'", this.line);
@@ -112,7 +106,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType right = node.right.acceptVisitor(this);
 
         if (left == right) {
-            return KaoriType.BOOLEAN;
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected operands of same type for '=='", this.line);
@@ -124,7 +118,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType right = node.right.acceptVisitor(this);
 
         if (left == right) {
-            return KaoriType.BOOLEAN;
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected operands of same type for '!='", this.line);
@@ -135,8 +129,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.BOOLEAN;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '>'", this.line);
@@ -147,8 +141,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.BOOLEAN;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '>='", this.line);
@@ -159,8 +153,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.BOOLEAN;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '<'", this.line);
@@ -171,8 +165,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER && right == KaoriType.NUMBER) {
-            return KaoriType.BOOLEAN;
+        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '<='", this.line);
@@ -198,18 +192,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     }
 
     @Override
-    public KaoriType visitBooleanLiteral(Expression.BooleanLiteral node) {
-        return KaoriType.BOOLEAN;
-    }
-
-    @Override
-    public KaoriType visitNumberLiteral(Expression.NumberLiteral node) {
-        return KaoriType.NUMBER;
-    }
-
-    @Override
-    public KaoriType visitStringLiteral(Expression.StringLiteral node) {
-        return KaoriType.STRING;
+    public KaoriType visitLiteral(Expression.Literal node) {
+        return node.type;
     }
 
     @Override
@@ -227,8 +211,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     public KaoriType visitNot(Expression.Not node) {
         KaoriType value = node.left.acceptVisitor(this);
 
-        if (value == KaoriType.BOOLEAN) {
-            return KaoriType.BOOLEAN;
+        if (value == KaoriType.Primitive.BOOLEAN) {
+            return KaoriType.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected boolean operand for '!'", this.line);
@@ -238,8 +222,8 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     public KaoriType visitNegation(Expression.Negation node) {
         KaoriType left = node.left.acceptVisitor(this);
 
-        if (left == KaoriType.NUMBER) {
-            return KaoriType.NUMBER;
+        if (left == KaoriType.Primitive.NUMBER) {
+            return KaoriType.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected float operand for unary '-'", this.line);
@@ -260,6 +244,12 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     }
 
     @Override
+    public void visitVariableStatement(Statement.Variable statement) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitVariableStatement'");
+    }
+
+    @Override
     public void visitExpressionStatement(Statement.Expr statement) {
         statement.expression.acceptVisitor(this);
     }
@@ -268,7 +258,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     public void visitIfStatement(Statement.If statement) {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
-        if (condition != KaoriType.BOOLEAN) {
+        if (condition != KaoriType.Primitive.BOOLEAN) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -281,7 +271,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
     public void visitWhileLoopStatement(Statement.WhileLoop statement) {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
-        if (condition != KaoriType.BOOLEAN) {
+        if (condition != KaoriType.Primitive.BOOLEAN) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -294,7 +284,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
 
         KaoriType condition = statement.condition.acceptVisitor(this);
 
-        if (condition != KaoriType.BOOLEAN) {
+        if (condition != KaoriType.Primitive.BOOLEAN) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -305,6 +295,7 @@ public class TypeChecker extends Visitor<TypeChecker.KaoriType> {
 
     @Override
     public KaoriType visitFunctionLiteral(Expression.FunctionLiteral functionLiteral) {
-        return KaoriType.FUNCTION;
+        return KaoriType.Primitive.NUMBER;
     }
+
 }

@@ -61,11 +61,7 @@ public abstract class Visitor<T> {
 
     public abstract T visitNot(Expression.Not node);
 
-    public abstract T visitBooleanLiteral(Expression.BooleanLiteral booleanLiteral);
-
-    public abstract T visitNumberLiteral(Expression.NumberLiteral numberLiteral);
-
-    public abstract T visitStringLiteral(Expression.StringLiteral stringLiteral);
+    public abstract T visitLiteral(Expression.Literal Literal);
 
     public abstract T visitIdentifier(Expression.Identifier node);
 
@@ -75,6 +71,8 @@ public abstract class Visitor<T> {
     public abstract void visitExpressionStatement(Statement.Expr statement);
 
     public abstract void visitPrintStatement(Statement.Print statement);
+
+    public abstract void visitVariableStatement(Statement.Variable variable);
 
     public abstract void visitBlockStatement(Statement.Block statement);
 

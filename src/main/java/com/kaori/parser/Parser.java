@@ -6,7 +6,6 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Token;
 import com.kaori.lexer.TokenKind;
-import com.kaori.parser.Statement.Expr;
 
 public class Parser {
     private final String source;
@@ -102,21 +101,24 @@ public class Parser {
         return switch (this.currentToken.type) {
             case BOOLEAN_LITERAL -> {
                 boolean value = Boolean.parseBoolean(this.currentToken.lexeme(this.source));
-                Expression literal = new Expression.BooleanLiteral(value);
+                Expression literal = new Expression.Literal(KaoriType.Primitive.BOOLEAN, value);
                 consume();
 
                 yield literal;
             }
             case STRING_LITERAL -> {
                 String value = this.currentToken.lexeme(this.source);
-                Expression literal = new Expression.StringLiteral(value.substring(1, value.length() - 1));
+                KaoriType type = KaoriType.Primitive.STRING;
+                Expression literal = new Expression.Literal(type,
+                        value.substring(1, value.length() - 1));
                 this.consume();
 
                 yield literal;
             }
             case NUMBER_LITERAL -> {
                 float value = Float.parseFloat(this.currentToken.lexeme(this.source));
-                Expression literal = new Expression.NumberLiteral(value);
+                KaoriType type = KaoriType.Primitive.NUMBER;
+                Expression literal = new Expression.Literal(type, value);
                 this.consume();
 
                 yield literal;

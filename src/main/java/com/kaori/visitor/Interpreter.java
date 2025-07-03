@@ -140,17 +140,7 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitBooleanLiteral(Expression.BooleanLiteral node) {
-        return node.value;
-    }
-
-    @Override
-    public Object visitNumberLiteral(Expression.NumberLiteral node) {
-        return node.value;
-    }
-
-    @Override
-    public Object visitStringLiteral(Expression.StringLiteral node) {
+    public Object visitLiteral(Expression.Literal node) {
         return node.value;
     }
 
@@ -194,6 +184,12 @@ public class Interpreter extends Visitor<Object> {
         this.visitStatements(statement.statements);
 
         this.environment = environment.getPrevious();
+    }
+
+    @Override
+    public void visitVariableStatement(Statement.Variable statement) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitVariableStatement'");
     }
 
     @Override
