@@ -55,37 +55,6 @@ public class Parser {
         return expression;
     }
 
-    private Expression functionLiteral() {
-        this.consume(TokenKind.FUNCTION, "expected fun keyword");
-
-        this.consume(TokenKind.LEFT_PAREN, "expected (");
-
-        List<Expression> parameters = new ArrayList<>();
-
-        while (!this.parseAtEnd() && currentToken.type != TokenKind.RIGHT_PAREN) {
-            Expression expression = this.expression();
-
-            if (!(expression instanceof Expression.Assign)) {
-                throw KaoriError.SyntaxError("expected variable assignment", this.line);
-
-            }
-
-            parameters.add(expression);
-
-            if (this.currentToken.type == TokenKind.RIGHT_PAREN) {
-                break;
-            }
-
-            this.consume(TokenKind.COMMA, "expected ,");
-
-        }
-
-        this.consume(TokenKind.RIGHT_PAREN, "expected )");
-        Statement block = this.blockStatement();
-
-        return new Expression.FunctionLiteral(parameters, block);
-    }
-
     private Expression identifier() {
         String value = this.currentToken.lexeme(this.source);
         Expression identifier = new Expression.Identifier(value);
@@ -125,7 +94,6 @@ public class Parser {
                 yield literal;
             }
             case IDENTIFIER -> this.identifier();
-            case FUNCTION -> this.functionLiteral();
             case LEFT_PAREN -> this.parenthesis();
             default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
         };
@@ -347,9 +315,9 @@ public class Parser {
         String lexeme = this.currentToken.lexeme(this.source);
 
         KaoriType type = switch (lexeme) {
-            case "string" -> KaoriType.Primitive.STRING;
+            case "str" -> KaoriType.Primitive.STRING;
             case "bool" -> KaoriType.Primitive.BOOLEAN;
-            case "number" -> KaoriType.Primitive.NUMBER;
+            case "num" -> KaoriType.Primitive.NUMBER;
             default -> throw KaoriError.SyntaxError("expected primitive types", this.line);
         };
 

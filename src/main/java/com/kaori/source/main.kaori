@@ -3,5 +3,5 @@ a: bool = true;
 print(a);
 a = false;
 print(a);
-a = "text";
-print(a);
+b: str = "hello world";
+print(b);

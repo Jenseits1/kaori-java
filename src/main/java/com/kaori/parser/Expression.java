@@ -22,21 +22,6 @@ public abstract class Expression {
         }
     }
 
-    public static class FunctionLiteral extends Expression {
-        public final List<Expression> parameters;
-        public final Statement block;
-
-        public FunctionLiteral(List<Expression> parameters, Statement block) {
-            this.parameters = parameters;
-            this.block = block;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitFunctionLiteral(this);
-        }
-    }
-
     public static class Identifier extends Expression {
         public final String value;
 

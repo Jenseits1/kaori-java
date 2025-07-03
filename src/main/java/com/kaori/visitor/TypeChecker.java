@@ -291,9 +291,4 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     }
 
-    @Override
-    public KaoriType visitFunctionLiteral(Expression.FunctionLiteral functionLiteral) {
-        return KaoriType.Primitive.NUMBER;
-    }
-
 }

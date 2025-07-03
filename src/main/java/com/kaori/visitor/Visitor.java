@@ -65,8 +65,6 @@ public abstract class Visitor<T> {
 
     public abstract T visitIdentifier(Expression.Identifier node);
 
-    public abstract T visitFunctionLiteral(Expression.FunctionLiteral functionLiteral);
-
     // Statements
     public abstract void visitExpressionStatement(Statement.Expr statement);
 
