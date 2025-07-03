@@ -10,7 +10,7 @@ import com.google.gson.GsonBuilder;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 import com.kaori.lexer.Token;
-
+import com.kaori.parser.KaoriType;
 import com.kaori.parser.Parser;
 import com.kaori.parser.Statement;
 import com.kaori.visitor.Interpreter;
@@ -31,7 +31,7 @@ public class Main {
             Parser parser = new Parser(source, tokens);
             List<Statement> ast = parser.parse();
 
-            System.out.println(gson.toJson(ast));
+            // System.out.println(gson.toJson(ast));
 
             TypeChecker typeChecker = new TypeChecker(ast);
             typeChecker.run();
@@ -45,6 +45,5 @@ public class Main {
             System.out.println(error);
         }
 
-        System.out.println("hello");
     }
 }

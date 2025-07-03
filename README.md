@@ -12,11 +12,10 @@
 
 -   **Implemented Language Features ✅**
 
-    -   [x] Variable assign operator (`x = 10;`)
+    -   [x] Variable assign operator (`$x: int = 10;`)
     -   [x] Logical operators (`and`, `or`, `!`)
     -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
     -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
-    -   [x] Comma operator (`,`)
     -   [x] `if / else` statements
     -   [x] `for` loops
     -   [x] `while` loops
@@ -44,8 +43,11 @@ statement                -> expr_stmt
                          | while_stmt
                          | for_stmt
                          | return_stmt
+                         | variable_stmt
 
 block_stmt               -> "{" statement* "}"
+
+variable_stmt            -> "$" identifier ":" type = expression ";"
 
 expr_stmt                -> expression ";"
 
@@ -59,7 +61,7 @@ for_stmt                 -> "for" "(" var_decl expression ";" expression ")" blo
 
 expression               -> assign
 
-assign                   -> IDENTIFIER "=" assignment | logic_or
+assign                   -> identifier "=" assignment | logic_or
 
 logic_or                 -> logic_and ("or" logic_and)*
 
@@ -75,8 +77,7 @@ factor                   -> unary (("*" | "/") unary)*
 
 unary                    -> ("!" | "-") unary | primary
 
-primary                  -> NUMBER | STRING | "true" | "false"
-                         | IDENTIFIER | "(" expression ")"
+primary                  -> number | string | boolean | identifier | "(" expression ")"
 ```
 
 ## 🚀 Getting Started 🚀
