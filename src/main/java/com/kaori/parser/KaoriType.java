@@ -1,10 +1,15 @@
 package com.kaori.parser;
 
-public interface KaoriType {
-    public enum Primitive implements KaoriType {
-        STRING,
-        NUMBER,
-        BOOLEAN,
-    }
+public abstract class KaoriType {
 
+    public static class Primitive extends KaoriType {
+        private String value;
+        public static final Primitive STRING = new Primitive("string");
+        public static final Primitive NUMBER = new Primitive("number");
+        public static final Primitive BOOLEAN = new Primitive("boolean");
+
+        private Primitive(String value) {
+            this.value = value;
+        }
+    }
 }

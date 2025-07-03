@@ -134,7 +134,7 @@ public class Interpreter extends Visitor<Object> {
         Expression.Identifier identifier = (Expression.Identifier) node.left;
         Object value = node.right.acceptVisitor(this);
 
-        environment.set(identifier.value, value);
+        environment.assign(identifier.value, value, this.line);
 
         return value;
     }

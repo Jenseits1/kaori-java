@@ -145,6 +145,7 @@ public class Lexer {
             case ',' -> TokenKind.COMMA;
             case ';' -> TokenKind.SEMICOLON;
             case ':' -> TokenKind.COLON;
+            case '$' -> TokenKind.DOLLAR;
             case '!' -> TokenKind.NOT;
             case '=' -> TokenKind.ASSIGN;
             case '>' -> TokenKind.GREATER;
@@ -171,17 +172,17 @@ public class Lexer {
             if (Character.isWhitespace(this.currentCharacter)) {
                 this.advance();
             } else if (Character.isDigit(this.currentCharacter)) {
-                TokenKind token = number();
-                this.addToken(token);
+                TokenKind type = number();
+                this.addToken(type);
             } else if (Character.isLetter(this.currentCharacter)) {
-                TokenKind token = identifierOrKeyword();
-                this.addToken(token);
+                TokenKind type = identifierOrKeyword();
+                this.addToken(type);
             } else if (this.currentCharacter == '"') {
-                TokenKind token = stringLiteral();
-                this.addToken(token);
+                TokenKind type = stringLiteral();
+                this.addToken(type);
             } else {
-                TokenKind token = symbol();
-                this.addToken(token);
+                TokenKind type = symbol();
+                this.addToken(type);
             }
 
             this.start = this.current;

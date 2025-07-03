@@ -14,8 +14,8 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public KaoriType visitAdd(Expression.Add node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        KaoriType left = node.left.acceptVisitor(this);
+        KaoriType right = node.right.acceptVisitor(this);
 
         if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
             return KaoriType.Primitive.NUMBER;
@@ -174,21 +174,14 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public KaoriType visitAssign(Expression.Assign node) {
+        KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
-        KaoriType left;
-        try {
-            left = node.left.acceptVisitor(this);
-        } catch (KaoriError error) {
-            Expression.Identifier identifier = (Expression.Identifier) node.left;
-            environment.set(identifier.value, right);
-            left = right;
-        }
 
         if (left == right) {
             return right;
         }
 
-        throw KaoriError.TypeError("expected different value type in variable assignment", this.line);
+        throw KaoriError.TypeError("cannot assign variable to a different type", this.line);
     }
 
     @Override
@@ -199,10 +192,6 @@ public class TypeChecker extends Visitor<KaoriType> {
     @Override
     public KaoriType visitIdentifier(Expression.Identifier node) {
         Object value = environment.get(node.value, this.line);
-
-        if (value == null) {
-            throw KaoriError.TypeError(node.value + " is undefined", this.line);
-        }
 
         return (KaoriType) value;
     }
@@ -245,8 +234,17 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
+        Expression.Identifier identifier = (Expression.Identifier) statement.left;
 
-        throw new UnsupportedOperationException("Unimplemented method 'visitVariableStatement'");
+        KaoriType left = statement.type;
+        KaoriType right = statement.right.acceptVisitor(this);
+
+        if (left != right) {
+            throw KaoriError.TypeError("expected different type for variable declaration", this.line);
+
+        }
+
+        this.environment.declare(identifier.value, right, this.line);
     }
 
     @Override

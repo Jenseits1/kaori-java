@@ -371,7 +371,21 @@ public class Parser {
     }
 
     private Statement variableStatement() {
-        throw KaoriError.SyntaxError("expected valid operand", this.line);
+        int line = this.currentToken.getLine();
+
+        this.consume(TokenKind.DOLLAR, "expected $");
+
+        Expression left = this.identifier();
+
+        this.consume(TokenKind.COLON, "expected :");
+
+        KaoriType type = null;
+
+        this.consume(TokenKind.ASSIGN, "expected =");
+
+        Expression right = this.expression();
+
+        return new Statement.Variable(left, right, type).setLine(line);
     }
 
     private Statement ifStatement() {
@@ -446,7 +460,7 @@ public class Parser {
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
-            case IDENTIFIER -> this.variableStatement();
+            case DOLLAR -> this.variableStatement();
             default -> this.expressionStatement();
         };
 
