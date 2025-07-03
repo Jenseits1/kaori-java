@@ -82,12 +82,12 @@ public abstract class Statement {
 
     public static class If extends Statement {
         public final Expression condition;
-        public final Statement ifBranch;
+        public final Statement thenBranch;
         public final Statement elseBranch;
 
-        public If(Expression condition, Statement ifBranch, Statement elseBranch) {
+        public If(Expression condition, Statement thenBranch, Statement elseBranch) {
             this.condition = condition;
-            this.ifBranch = ifBranch;
+            this.thenBranch = thenBranch;
             this.elseBranch = elseBranch;
         }
 

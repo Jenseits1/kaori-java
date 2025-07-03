@@ -260,7 +260,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
-        statement.ifBranch.acceptVisitor(this);
+        statement.thenBranch.acceptVisitor(this);
         statement.elseBranch.acceptVisitor(this);
 
     }

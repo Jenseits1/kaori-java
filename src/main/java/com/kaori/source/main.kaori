@@ -1,3 +1,7 @@
 
-
-print(5 * 2);
+a: bool = true;
+print(a);
+a = false;
+print(a);
+a = "text";
+print(a);

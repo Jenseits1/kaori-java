@@ -40,6 +40,7 @@ public class Parser {
         }
     }
 
+    /* Expressions */
     private Expression postfixUnary() {
         throw KaoriError.SyntaxError("not found", this.line);
     }
@@ -322,6 +323,7 @@ public class Parser {
             Expression expression = this.assign();
 
             return new Expression.Assign(or, expression);
+
         }
 
         return or;
@@ -331,12 +333,56 @@ public class Parser {
         return assign();
     }
 
+    /* Types */
+    private KaoriType type() {
+        KaoriType type = switch (currentToken.type) {
+            case IDENTIFIER -> this.primitiveType();
+            default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
+        };
+
+        return type;
+    }
+
+    private KaoriType primitiveType() {
+        String lexeme = this.currentToken.lexeme(this.source);
+
+        KaoriType type = switch (lexeme) {
+            case "string" -> KaoriType.Primitive.STRING;
+            case "bool" -> KaoriType.Primitive.BOOLEAN;
+            case "number" -> KaoriType.Primitive.NUMBER;
+            default -> throw KaoriError.SyntaxError("expected primitive types", this.line);
+        };
+
+        this.consume(TokenKind.IDENTIFIER, "expected identifier");
+
+        return type;
+    }
+
+    /* Statements */
     private Statement expressionStatement() {
         int line = this.currentToken.getLine();
 
         Expression expression = this.expression();
 
+        if (expression instanceof Expression.Identifier identifier && this.currentToken.type == TokenKind.COLON) {
+            return this.variableStatement(identifier);
+        }
+
         return new Statement.Expr(expression).setLine(line);
+    }
+
+    private Statement variableStatement(Expression.Identifier left) {
+        int line = this.currentToken.getLine();
+
+        this.consume(TokenKind.COLON, "expected :");
+
+        KaoriType type = this.type();
+
+        this.consume(TokenKind.ASSIGN, "expected =");
+
+        Expression right = this.expression();
+
+        return new Statement.Variable(left, right, type).setLine(line);
     }
 
     private Statement printStatement() {
@@ -370,24 +416,6 @@ public class Parser {
         return new Statement.Block(statements).setLine(line);
     }
 
-    private Statement variableStatement() {
-        int line = this.currentToken.getLine();
-
-        this.consume(TokenKind.DOLLAR, "expected $");
-
-        Expression left = this.identifier();
-
-        this.consume(TokenKind.COLON, "expected :");
-
-        KaoriType type = null;
-
-        this.consume(TokenKind.ASSIGN, "expected =");
-
-        Expression right = this.expression();
-
-        return new Statement.Variable(left, right, type).setLine(line);
-    }
-
     private Statement ifStatement() {
         int line = this.currentToken.getLine();
 
@@ -398,10 +426,10 @@ public class Parser {
 
         this.consume(TokenKind.RIGHT_PAREN, "expected )");
 
-        Statement ifBranch = this.blockStatement();
+        Statement thenBranch = this.blockStatement();
 
         if (this.currentToken.type != TokenKind.ELSE) {
-            return new Statement.If(condition, ifBranch, null).setLine(line);
+            return new Statement.If(condition, thenBranch, null).setLine(line);
         }
 
         this.consume(TokenKind.ELSE, "expected else keyword");
@@ -411,7 +439,7 @@ public class Parser {
             default -> this.blockStatement();
         };
 
-        return new Statement.If(condition, ifBranch, elseBranch).setLine(line);
+        return new Statement.If(condition, thenBranch, elseBranch).setLine(line);
     }
 
     private Statement whileLoopStatement() {
@@ -460,7 +488,6 @@ public class Parser {
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
-            case DOLLAR -> this.variableStatement();
             default -> this.expressionStatement();
         };
 

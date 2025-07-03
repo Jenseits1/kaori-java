@@ -188,8 +188,11 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitVariableStatement'");
+        Expression.Identifier identifier = (Expression.Identifier) statement.left;
+
+        Object value = statement.right.acceptVisitor(this);
+
+        this.environment.declare(identifier.value, value, line);
     }
 
     @Override
@@ -202,7 +205,7 @@ public class Interpreter extends Visitor<Object> {
         Object condition = statement.condition.acceptVisitor(this);
 
         if ((Boolean) condition == true) {
-            statement.ifBranch.acceptVisitor(this);
+            statement.thenBranch.acceptVisitor(this);
         } else if (statement.elseBranch != null) {
             statement.elseBranch.acceptVisitor(this);
         }
