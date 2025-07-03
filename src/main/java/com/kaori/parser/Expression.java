@@ -1,7 +1,5 @@
 package com.kaori.parser;
 
-import java.util.List;
-
 import com.kaori.visitor.Visitor;
 
 public abstract class Expression {

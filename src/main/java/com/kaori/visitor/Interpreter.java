@@ -16,8 +16,8 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if (left instanceof Float) {
-            return (Float) left + (Float) right;
+        if (left instanceof Double) {
+            return (Double) left + (Double) right;
         } else {
             return (String) left + (String) right;
         }
@@ -29,7 +29,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        return (Float) left - (Float) right;
+        return (Double) left - (Double) right;
 
     }
 
@@ -38,7 +38,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        return (Float) left * (Float) right;
+        return (Double) left * (Double) right;
     }
 
     @Override
@@ -46,11 +46,11 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if ((Float) right == 0.0f) {
+        if ((Double) right == 0.0f) {
             throw KaoriError.DivisionByZero("can not do division by zero", this.line);
         }
 
-        return (Float) left / (Float) right;
+        return (Double) left / (Double) right;
     }
 
     @Override
@@ -58,11 +58,11 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        if ((Float) right == 0.0f) {
+        if ((Double) right == 0.0f) {
             throw KaoriError.DivisionByZero("can not do division by zero", this.line);
         }
 
-        return (Float) left % (Float) right;
+        return (Double) left % (Double) right;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        return (Float) left > (Float) right;
+        return (Double) left > (Double) right;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        return (Float) left >= (Float) right;
+        return (Double) left >= (Double) right;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        return (Float) left < (Float) right;
+        return (Double) left < (Double) right;
     }
 
     @Override
@@ -126,7 +126,7 @@ public class Interpreter extends Visitor<Object> {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
 
-        return (Float) left <= (Float) right;
+        return (Double) left <= (Double) right;
     }
 
     @Override
@@ -162,7 +162,7 @@ public class Interpreter extends Visitor<Object> {
     public Object visitNegation(Expression.Negation node) {
         Object left = node.left.acceptVisitor(this);
 
-        return -(Float) left;
+        return -(Double) left;
     }
 
     @Override

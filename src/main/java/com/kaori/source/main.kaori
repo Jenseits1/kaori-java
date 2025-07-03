@@ -1,7 +1,19 @@
 
-a: bool = true;
-print(a);
-a = false;
-print(a);
-b: str = "hello world";
-print(b);
+hello: string = "hello world";
+print(hello);
+
+idunno: boolean = true;
+idunno = false;
+print(idunno);
+idunno;
+
+for (i: number = 0; i < 5; i = i + 1) {
+    print(i);
+}
+
+nicenumber: number = 0;
+
+while (nicenumber < 5) {
+    print(nicenumber);
+    nicenumber = nicenumber + 1;
+}

@@ -40,6 +40,12 @@ public class Parser {
         }
     }
 
+    private void retreat() {
+        this.currentIndex--;
+        this.currentToken = this.tokens.get(this.currentIndex);
+        this.line = this.currentToken.getLine();
+    }
+
     /* Expressions */
     private Expression postfixUnary() {
         throw KaoriError.SyntaxError("not found", this.line);
@@ -55,9 +61,9 @@ public class Parser {
         return expression;
     }
 
-    private Expression identifier() {
+    private Expression.Identifier identifier() {
         String value = this.currentToken.lexeme(this.source);
-        Expression identifier = new Expression.Identifier(value);
+        Expression.Identifier identifier = new Expression.Identifier(value);
         this.consume();
 
         return identifier;
@@ -86,7 +92,7 @@ public class Parser {
                 yield literal;
             }
             case NUMBER_LITERAL -> {
-                float value = Float.parseFloat(this.currentToken.lexeme(this.source));
+                Double value = Double.parseDouble(this.currentToken.lexeme(this.source));
                 KaoriType type = KaoriType.Primitive.NUMBER;
                 Expression literal = new Expression.Literal(type, value);
                 this.consume();
@@ -284,21 +290,15 @@ public class Parser {
     }
 
     private Expression assign() {
-        Expression or = this.or();
+        Expression left = this.identifier();
+        this.consume(TokenKind.ASSIGN, "expected =");
+        Expression right = this.expression();
 
-        if (or instanceof Expression.Identifier && this.currentToken.type == TokenKind.ASSIGN) {
-            this.consume();
-            Expression expression = this.assign();
-
-            return new Expression.Assign(or, expression);
-
-        }
-
-        return or;
+        return new Expression.Assign(left, right);
     }
 
     private Expression expression() {
-        return assign();
+        return or();
     }
 
     /* Types */
@@ -312,16 +312,14 @@ public class Parser {
     }
 
     private KaoriType primitiveType() {
-        String lexeme = this.currentToken.lexeme(this.source);
+        Expression.Identifier identifier = this.identifier();
 
-        KaoriType type = switch (lexeme) {
-            case "str" -> KaoriType.Primitive.STRING;
-            case "bool" -> KaoriType.Primitive.BOOLEAN;
-            case "num" -> KaoriType.Primitive.NUMBER;
+        KaoriType type = switch (identifier.value) {
+            case "string" -> KaoriType.Primitive.STRING;
+            case "boolean" -> KaoriType.Primitive.BOOLEAN;
+            case "number" -> KaoriType.Primitive.NUMBER;
             default -> throw KaoriError.SyntaxError("expected primitive types", this.line);
         };
-
-        this.consume(TokenKind.IDENTIFIER, "expected identifier");
 
         return type;
     }
@@ -332,16 +330,30 @@ public class Parser {
 
         Expression expression = this.expression();
 
-        if (expression instanceof Expression.Identifier identifier && this.currentToken.type == TokenKind.COLON) {
-            return this.variableStatement(identifier);
+        if (expression instanceof Expression.Identifier) {
+            return switch (this.currentToken.type) {
+                case ASSIGN -> {
+                    this.retreat();
+                    Expression assign = this.assign();
+                    yield new Statement.Expr(assign).setLine(line);
+                }
+                case COLON -> {
+                    this.retreat();
+                    yield this.variableStatement();
+                }
+                default -> {
+                    yield new Statement.Expr(expression).setLine(line);
+                }
+            };
         }
 
         return new Statement.Expr(expression).setLine(line);
     }
 
-    private Statement variableStatement(Expression.Identifier left) {
+    private Statement variableStatement() {
         int line = this.currentToken.getLine();
 
+        Expression left = this.identifier();
         this.consume(TokenKind.COLON, "expected :");
 
         KaoriType type = this.type();
@@ -432,13 +444,13 @@ public class Parser {
 
         this.consume(TokenKind.LEFT_PAREN, "expected (");
 
-        Expression variable = this.expression();
+        Statement variable = this.variableStatement();
 
-        this.consume(TokenKind.SEMICOLON, "expected semicolon after variable declaration");
+        this.consume(TokenKind.SEMICOLON, "expected semicolon");
 
         Expression condition = this.expression();
 
-        this.consume(TokenKind.SEMICOLON, "expected semicolon after condition");
+        this.consume(TokenKind.SEMICOLON, "expected semicolon");
 
         Statement increment = this.expressionStatement();
 
@@ -459,11 +471,10 @@ public class Parser {
             default -> this.expressionStatement();
         };
 
-        if (statement instanceof Statement.Block) {
-            return statement;
+        if (statement instanceof Statement.Expr || statement instanceof Statement.Variable
+                || statement instanceof Statement.Print) {
+            this.consume(TokenKind.SEMICOLON, "expected ; at the end of statement");
         }
-
-        this.consume(TokenKind.SEMICOLON, "expected ; at the end of statement");
 
         return statement;
     }

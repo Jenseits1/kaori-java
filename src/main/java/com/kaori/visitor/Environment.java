@@ -23,9 +23,9 @@ public class Environment {
         return this.previous;
     }
 
-    private Object find(String identifier) {
+    private Environment find(String identifier) {
         if (this.values.containsKey(identifier)) {
-            return this.values.get(identifier);
+            return this;
         } else if (this.previous == null) {
             return null;
         } else {
@@ -34,21 +34,23 @@ public class Environment {
     }
 
     public Object get(String identifier, int line) {
-        Object value = this.find(identifier);
+        Environment env = this.find(identifier);
 
-        if (value == null) {
+        if (env == null) {
             throw KaoriError.VariableError(identifier + " is not declared", line);
         }
 
-        return value;
+        return env.values.get(identifier);
     }
 
     public void assign(String identifier, Object value, int line) {
-        if (this.find(identifier) == null) {
+        Environment env = this.find(identifier);
+
+        if (env == null) {
             throw KaoriError.VariableError(identifier + " is not declared", line);
         }
 
-        this.values.put(identifier, value);
+        env.values.put(identifier, value);
     }
 
     public void declare(String identifier, Object value, int line) {

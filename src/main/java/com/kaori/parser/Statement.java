@@ -114,12 +114,12 @@ public abstract class Statement {
     }
 
     public static class ForLoop extends Statement {
-        public final Expression variable;
+        public final Statement variable;
         public final Expression condition;
         public final Statement increment;
         public final Statement block;
 
-        public ForLoop(Expression variable, Expression condition, Statement increment, Statement block) {
+        public ForLoop(Statement variable, Expression condition, Statement increment, Statement block) {
             this.variable = variable;
             this.condition = condition;
             this.increment = increment;
