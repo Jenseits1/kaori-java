@@ -16,7 +16,23 @@ public class Parser {
 
     /* Expressions */
     private Expression postfixUnary() {
-        throw KaoriError.SyntaxError("not found", this.tokens.getLine());
+        Expression identifier = this.identifier();
+
+        return switch (this.tokens.getCurrent()) {
+            case INCREMENT -> {
+                Expression literal = new Expression.Literal(KaoriType.Primitive.NUMBER, 1.0);
+                Expression add = new Expression.Add(identifier, literal);
+                this.tokens.consume();
+                yield new Expression.Assign(identifier, add);
+            }
+            case DECREMENT -> {
+                Expression literal = new Expression.Literal(KaoriType.Primitive.NUMBER, 1.0);
+                Expression subtract = new Expression.Subtract(identifier, literal);
+                this.tokens.consume();
+                yield new Expression.Assign(identifier, subtract);
+            }
+            default -> identifier;
+        };
     }
 
     private Expression parenthesis() {
@@ -67,7 +83,7 @@ public class Parser {
 
                 yield literal;
             }
-            case IDENTIFIER -> this.identifier();
+            case IDENTIFIER -> this.postfixUnary();
             case LEFT_PAREN -> this.parenthesis();
             default -> throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
         };
