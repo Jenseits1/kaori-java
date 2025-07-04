@@ -29,10 +29,10 @@ public class Parser {
         return expression;
     }
 
-    private Expression.Identifier identifier() {
-        String value = this.tokens.getLexeme();
-        Expression.Identifier identifier = new Expression.Identifier(value);
-        this.tokens.consume();
+    private Expression identifier() {
+        String lexeme = this.tokens.getLexeme();
+        this.tokens.consume(TokenKind.IDENTIFIER);
+        Expression identifier = new Expression.Identifier(lexeme);
 
         return identifier;
     }
@@ -284,9 +284,10 @@ public class Parser {
     }
 
     private KaoriType primitiveType() {
-        Expression.Identifier identifier = this.identifier();
+        String lexeme = this.tokens.getLexeme();
+        this.tokens.consume(TokenKind.IDENTIFIER);
 
-        KaoriType type = switch (identifier.value) {
+        KaoriType type = switch (lexeme) {
             case "string" -> KaoriType.Primitive.STRING;
             case "boolean" -> KaoriType.Primitive.BOOLEAN;
             case "number" -> KaoriType.Primitive.NUMBER;

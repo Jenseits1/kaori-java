@@ -48,7 +48,7 @@ expr_stmt                -> expression | variable_stmt
 
 block_stmt               -> "{" statement* "}"
 
-variable_stmt            -> identifier ":" type = expression
+variable_stmt            -> identifierr ":" type = expression
 
 print_stmt               -> "print" "(" expression ")"
 
