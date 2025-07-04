@@ -40,6 +40,12 @@ public class Environment {
             throw KaoriError.VariableError(identifier + " is not declared", line);
         }
 
+        Object value = env.values.get(identifier);
+
+        if (value == null) {
+            throw KaoriError.VariableError(identifier + " is null", line);
+        }
+
         return env.values.get(identifier);
     }
 

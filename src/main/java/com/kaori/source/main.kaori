@@ -1,6 +1,6 @@
 
 hello: string = "hello world";
-print(hello)
+print(hello);
 
 idunno: boolean = true;
 idunno = false;
@@ -17,3 +17,7 @@ while (nicenumber < 5) {
     print(nicenumber);
     nicenumber = nicenumber + 1;
 }
+
+a: number;
+
+print(a);

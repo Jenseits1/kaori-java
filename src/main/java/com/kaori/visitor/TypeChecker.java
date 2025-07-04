@@ -237,14 +237,18 @@ public class TypeChecker extends Visitor<KaoriType> {
         Expression.Identifier identifier = (Expression.Identifier) statement.left;
 
         KaoriType left = statement.type;
-        KaoriType right = statement.right.acceptVisitor(this);
+        KaoriType right = null;
 
-        if (left != right) {
-            throw KaoriError.TypeError("expected different type for variable declaration", this.line);
-
+        if (statement.right != null) {
+            right = statement.right.acceptVisitor(this);
         }
 
-        this.environment.declare(identifier.value, right, this.line);
+        if (left == right || right == null) {
+            this.environment.declare(identifier.value, right, this.line);
+        } else {
+            throw KaoriError.TypeError("expected different type for variable declaration", this.line);
+        }
+
     }
 
     @Override

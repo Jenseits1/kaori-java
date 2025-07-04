@@ -28,7 +28,6 @@ public abstract class Visitor<T> {
     }
 
     // Expressions
-
     public abstract T visitAdd(Expression.Add node);
 
     public abstract T visitSubtract(Expression.Subtract node);

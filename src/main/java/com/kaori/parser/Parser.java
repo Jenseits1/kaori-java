@@ -268,16 +268,14 @@ public class Parser {
             return assign();
         }
 
-        Expression or = this.or();
-
-        return or;
+        return this.or();
     }
 
     /* Types */
     private KaoriType type() {
         KaoriType type = switch (this.tokens.getCurrent()) {
             case IDENTIFIER -> this.primitiveType();
-            default -> throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
+            default -> throw KaoriError.SyntaxError("expected valid type", this.tokens.getLine());
         };
 
         return type;
@@ -313,6 +311,10 @@ public class Parser {
         this.tokens.consume(TokenKind.COLON);
 
         KaoriType type = this.type();
+
+        if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
+            return new Statement.Variable(left, null, type).setLine(line);
+        }
 
         this.tokens.consume(TokenKind.ASSIGN);
 
