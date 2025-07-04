@@ -2,53 +2,62 @@ package com.kaori.token;
 
 public enum TokenKind {
     // Arithmetic operators
-    PLUS,
-    MINUS,
-    MULTIPLY,
-    DIVIDE,
-    MODULO,
+    PLUS("+"),
+    MINUS("-"),
+    MULTIPLY("*"),
+    DIVIDE("/"),
+    MODULO("%"),
 
     // Logical operators
-    AND,
-    OR,
-    NOT,
+    AND("&&"),
+    OR("||"),
+    NOT("!"),
 
     // Comparison
-    NOT_EQUAL,
-    EQUAL,
-    GREATER,
-    GREATER_EQUAL,
-    LESS,
-    LESS_EQUAL,
+    NOT_EQUAL("!="),
+    EQUAL("=="),
+    GREATER(">"),
+    GREATER_EQUAL(">="),
+    LESS("<"),
+    LESS_EQUAL("<="),
 
     // Punctuation
-    ASSIGN,
-    COMMA,
-    SEMICOLON,
-    COLON,
-    DOLLAR,
+    ASSIGN("="),
+    COMMA(","),
+    SEMICOLON(";"),
+    COLON(":"),
+    DOLLAR("$"),
 
     // Grouping symbols
-    LEFT_PAREN,
-    RIGHT_PAREN,
-    LEFT_BRACE,
-    RIGHT_BRACE,
+    LEFT_PAREN("("),
+    RIGHT_PAREN(")"),
+    LEFT_BRACE("{"),
+    RIGHT_BRACE("}"),
 
     // Keywords
-    FOR,
-    WHILE,
-    BREAK,
-    CONTINUE,
-    IF,
-    ELSE,
-    RETURN,
-    PRINT,
-    FUNCTION,
+    FOR("for"),
+    WHILE("while"),
+    BREAK("break"),
+    CONTINUE("continue"),
+    IF("if"),
+    ELSE("else"),
+    RETURN("return"),
+    PRINT("print"),
+    FUNCTION("fun"),
 
     // Literals and identifiers
-    IDENTIFIER,
-    STRING_LITERAL,
-    NUMBER_LITERAL,
-    BOOLEAN_LITERAL,
+    IDENTIFIER("identifier"),
+    STRING_LITERAL("string"),
+    NUMBER_LITERAL("number"),
+    BOOLEAN_LITERAL("boolean");
 
+    public final String label;
+
+    private TokenKind(String label) {
+        this.label = label;
+    }
+
+    public String toString() {
+        return this.label;
+    }
 }

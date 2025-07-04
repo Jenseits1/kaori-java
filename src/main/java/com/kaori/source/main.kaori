@@ -1,6 +1,6 @@
 
 hello: string = "hello world";
-print(hello);
+print(hello)
 
 idunno: boolean = true;
 idunno = false;

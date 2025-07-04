@@ -49,7 +49,7 @@ public class TokenStream {
 
     public void consume(TokenKind expected) {
         if (current.kind != expected) {
-            throw KaoriError.SyntaxError("expected x", this.line);
+            throw KaoriError.SyntaxError("expected " + expected, this.line);
         }
 
         this.advance();
