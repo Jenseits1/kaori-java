@@ -313,7 +313,8 @@ public class Parser {
         KaoriType type = this.type();
 
         if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
-            return new Statement.Variable(left, null, type).setLine(line);
+            Expression right = new Expression.Literal(type, null);
+            return new Statement.Variable(left, right, type).setLine(line);
         }
 
         this.tokens.consume(TokenKind.ASSIGN);
@@ -367,7 +368,8 @@ public class Parser {
         Statement thenBranch = this.blockStatement();
 
         if (this.tokens.getCurrent() != TokenKind.ELSE) {
-            return new Statement.If(condition, thenBranch, null).setLine(line);
+            Statement elseBranch = new Statement.Block();
+            return new Statement.If(condition, thenBranch, elseBranch).setLine(line);
         }
 
         this.tokens.consume(TokenKind.ELSE);

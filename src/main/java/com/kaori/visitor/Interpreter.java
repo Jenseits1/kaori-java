@@ -185,11 +185,7 @@ public class Interpreter extends Visitor<Object> {
     public void visitVariableStatement(Statement.Variable statement) {
         Expression.Identifier identifier = (Expression.Identifier) statement.left;
 
-        Object value = null;
-
-        if (statement.right != null) {
-            value = statement.right.acceptVisitor(this);
-        }
+        Object value = statement.right.acceptVisitor(this);
 
         this.environment.declare(identifier.value, value, line);
     }
@@ -205,7 +201,7 @@ public class Interpreter extends Visitor<Object> {
 
         if ((Boolean) condition == true) {
             statement.thenBranch.acceptVisitor(this);
-        } else if (statement.elseBranch != null) {
+        } else {
             statement.elseBranch.acceptVisitor(this);
         }
 

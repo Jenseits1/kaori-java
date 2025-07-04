@@ -1,5 +1,6 @@
 package com.kaori.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kaori.visitor.Visitor;
@@ -72,6 +73,10 @@ public abstract class Statement {
 
         public Block(List<Statement> statements) {
             this.statements = statements;
+        }
+
+        public Block() {
+            this.statements = new ArrayList<>();
         }
 
         @Override

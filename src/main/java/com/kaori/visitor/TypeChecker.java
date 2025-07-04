@@ -237,11 +237,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         Expression.Identifier identifier = (Expression.Identifier) statement.left;
 
         KaoriType left = statement.type;
-        KaoriType right = null;
-
-        if (statement.right != null) {
-            right = statement.right.acceptVisitor(this);
-        }
+        KaoriType right = statement.right.acceptVisitor(this);
 
         if (left == right || right == null) {
             this.environment.declare(identifier.value, right, this.line);
