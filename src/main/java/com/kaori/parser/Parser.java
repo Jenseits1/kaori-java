@@ -40,10 +40,22 @@ public class Parser {
         }
     }
 
-    private void retreat() {
-        this.currentIndex--;
-        this.currentToken = this.tokens.get(this.currentIndex);
-        this.line = this.currentToken.getLine();
+    private boolean lookAhead(TokenKind... expectedKinds) {
+        for (int i = 0; i < expectedKinds.length; i++) {
+            int index = this.currentIndex + i;
+
+            if (index >= this.tokens.size()) {
+                return false;
+            }
+
+            TokenKind currentKind = this.tokens.get(index).type;
+
+            if (currentKind != expectedKinds[index]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /* Expressions */
@@ -298,7 +310,12 @@ public class Parser {
     }
 
     private Expression expression() {
-        return or();
+        if (this.lookAhead(TokenKind.IDENTIFIER, TokenKind.ASSIGN)) {
+            return assign();
+        }
+
+        Expression or = this.or();
+        return or;
     }
 
     /* Types */
@@ -329,23 +346,6 @@ public class Parser {
         int line = this.currentToken.getLine();
 
         Expression expression = this.expression();
-
-        if (expression instanceof Expression.Identifier) {
-            return switch (this.currentToken.type) {
-                case ASSIGN -> {
-                    this.retreat();
-                    Expression assign = this.assign();
-                    yield new Statement.Expr(assign).setLine(line);
-                }
-                case COLON -> {
-                    this.retreat();
-                    yield this.variableStatement();
-                }
-                default -> {
-                    yield new Statement.Expr(expression).setLine(line);
-                }
-            };
-        }
 
         return new Statement.Expr(expression).setLine(line);
     }
@@ -468,7 +468,13 @@ public class Parser {
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
-            default -> this.expressionStatement();
+            default -> {
+                if (lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
+                    yield this.variableStatement();
+                }
+
+                yield this.expressionStatement();
+            }
         };
 
         if (statement instanceof Statement.Expr || statement instanceof Statement.Variable
