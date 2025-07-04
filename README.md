@@ -12,7 +12,7 @@
 
 -   **Implemented Language Features ✅**
 
-    -   [x] Variable assign operator (`$x: int = 10;`)
+    -   [x] Variable assign operator (`x: int = 10;`)
     -   [x] Logical operators (`and`, `or`, `!`)
     -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
     -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
@@ -43,7 +43,7 @@ statement                -> expr_stmt
                          | while_stmt
                          | for_stmt
                          | return_stmt
-                         | variable_stmt 
+                         | variable_stmt
 
 expr_stmt                -> expression | variable_stmt ";"
 
