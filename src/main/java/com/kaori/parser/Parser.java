@@ -42,15 +42,15 @@ public class Parser {
 
     private boolean lookAhead(TokenKind... expectedKinds) {
         for (int i = 0; i < expectedKinds.length; i++) {
-            int index = this.currentIndex + i;
+            int j = this.currentIndex + i;
 
-            if (index >= this.tokens.size()) {
+            if (j >= this.tokens.size()) {
                 return false;
             }
 
-            TokenKind currentKind = this.tokens.get(index).type;
+            TokenKind currentKind = this.tokens.get(j).type;
 
-            if (currentKind != expectedKinds[index]) {
+            if (currentKind != expectedKinds[i]) {
                 return false;
             }
         }
@@ -315,6 +315,7 @@ public class Parser {
         }
 
         Expression or = this.or();
+
         return or;
     }
 
