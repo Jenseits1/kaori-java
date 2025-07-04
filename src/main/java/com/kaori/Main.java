@@ -44,5 +44,19 @@ public class Main {
             System.out.println(error);
         }
 
+    }}
+
+Statement statement = switch (this.currentToken.type) {
+    case PRINT -> this.printStatement();
+    case LEFT_BRACE -> this.blockStatement();
+    case IF -> this.ifStatement();
+    case WHILE -> this.whileLoopStatement();
+    case FOR -> this.forLoopStatement();
+    default -> {
+        if (lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
+            yield this.variableStatement();
+        }
+
+        yield this.expressionStatement();
     }
-}
+};

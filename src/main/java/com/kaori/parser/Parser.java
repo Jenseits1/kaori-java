@@ -4,58 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kaori.error.KaoriError;
-import com.kaori.lexer.Token;
-import com.kaori.lexer.TokenKind;
+import com.kaori.token.Token;
+import com.kaori.token.TokenKind;
+import com.kaori.token.TokenStream;
 
 public class Parser {
     private final String source;
-    private final List<Token> tokens;
-    private int currentIndex;
-    private int line;
-    private Token currentToken;
+    private final TokenStream tokens;
 
-    public Parser(String source, List<Token> tokens) {
-        this.source = source;
+    public Parser(String source, TokenStream tokens) {
         this.tokens = tokens;
-    }
-
-    private boolean parseAtEnd() {
-        return this.currentIndex >= this.tokens.size();
-    }
-
-    private void consume(TokenKind expected, String errorMessage) {
-        if (this.parseAtEnd() || this.currentToken.type != expected) {
-            throw KaoriError.SyntaxError(errorMessage, this.line);
-        }
-
-        this.consume();
-    }
-
-    private void consume() {
-        this.currentIndex++;
-
-        if (!this.parseAtEnd()) {
-            this.currentToken = this.tokens.get(this.currentIndex);
-            this.line = this.currentToken.getLine();
-        }
-    }
-
-    private boolean lookAhead(TokenKind... expectedKinds) {
-        for (int i = 0; i < expectedKinds.length; i++) {
-            int j = this.currentIndex + i;
-
-            if (j >= this.tokens.size()) {
-                return false;
-            }
-
-            TokenKind currentKind = this.tokens.get(j).type;
-
-            if (currentKind != expectedKinds[i]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /* Expressions */
@@ -90,7 +48,7 @@ public class Parser {
             case BOOLEAN_LITERAL -> {
                 boolean value = Boolean.parseBoolean(this.currentToken.lexeme(this.source));
                 Expression literal = new Expression.Literal(KaoriType.Primitive.BOOLEAN, value);
-                consume();
+                this.consume();
 
                 yield literal;
             }
@@ -163,9 +121,7 @@ public class Parser {
                 default -> {
                     return left;
                 }
-
             }
-
         }
 
         return left;
