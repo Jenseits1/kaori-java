@@ -43,14 +43,15 @@ statement                -> expr_stmt
                          | while_stmt
                          | for_stmt
                          | return_stmt
+                         | variable_stmt 
 
-expr_stmt                -> expression | variable_stmt
+expr_stmt                -> expression | variable_stmt ";"
 
 block_stmt               -> "{" statement* "}"
 
-variable_stmt            -> identifier ":" type = expression
+variable_stmt            -> identifier ":" type = expression ";"
 
-print_stmt               -> "print" "(" expression ")"
+print_stmt               -> "print" "(" expression ")" ";"
 
 if_stmt                  -> "if" "(" expression ")" block_stmt ("else" (if_stmt | block_stmt))?
 
@@ -58,7 +59,7 @@ while_stmt               -> "while" "(" expression ")" block_stmt
 
 for_stmt                 -> "for" "(" variable_stmt ";" expression ";" expression ")" block_stmt
 
-expression               -> assign
+expression               -> assign ";"
 
 assign                   -> identifier "=" assignment | logic_or
 
