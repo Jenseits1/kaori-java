@@ -82,7 +82,7 @@ public class Parser {
             }
             case NOT -> {
                 this.tokens.consume();
-                yield new Expression.Not(this.expression());
+                yield new Expression.Not(this.prefixUnary());
             }
             case PLUS -> {
                 this.tokens.consume();
@@ -286,9 +286,9 @@ public class Parser {
         this.tokens.consume(TokenKind.IDENTIFIER);
 
         KaoriType type = switch (lexeme) {
-            case "string" -> KaoriType.Primitive.STRING;
+            case "str" -> KaoriType.Primitive.STRING;
             case "bool" -> KaoriType.Primitive.BOOLEAN;
-            case "number" -> KaoriType.Primitive.NUMBER;
+            case "f64" -> KaoriType.Primitive.NUMBER;
             default -> throw KaoriError.SyntaxError("expected primitive types", this.tokens.getLine());
         };
 
@@ -359,11 +359,8 @@ public class Parser {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.IF);
-        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Expression condition = this.expression();
-
-        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         Statement thenBranch = this.blockStatement();
 
@@ -386,11 +383,8 @@ public class Parser {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.WHILE);
-        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Expression condition = this.expression();
-
-        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         Statement block = this.blockStatement();
 
@@ -402,8 +396,6 @@ public class Parser {
 
         this.tokens.consume(TokenKind.FOR);
 
-        this.tokens.consume(TokenKind.LEFT_PAREN);
-
         Statement variable = this.variableStatement();
 
         this.tokens.consume(TokenKind.SEMICOLON);
@@ -413,8 +405,6 @@ public class Parser {
         this.tokens.consume(TokenKind.SEMICOLON);
 
         Statement increment = this.expressionStatement();
-
-        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         Statement block = this.blockStatement();
 

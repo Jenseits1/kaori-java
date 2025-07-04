@@ -71,9 +71,6 @@ public class Lexer {
         }
 
         return switch (this.source.substring(this.start, this.current)) {
-            case "and" -> TokenKind.AND;
-            case "or" -> TokenKind.OR;
-            case "not" -> TokenKind.NOT;
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;
@@ -107,6 +104,16 @@ public class Lexer {
     private TokenKind symbol() {
         String lookahead = this.source.substring(this.current);
 
+        if (lookahead.startsWith("&&")) {
+            this.advance();
+            this.advance();
+            return TokenKind.AND;
+        }
+        if (lookahead.startsWith("||")) {
+            this.advance();
+            this.advance();
+            return TokenKind.OR;
+        }
         if (lookahead.startsWith("!=")) {
             this.advance();
             this.advance();
@@ -142,6 +149,7 @@ public class Lexer {
             case ';' -> TokenKind.SEMICOLON;
             case ':' -> TokenKind.COLON;
             case '$' -> TokenKind.DOLLAR;
+            case '!' -> TokenKind.NOT;
             case '=' -> TokenKind.ASSIGN;
             case '>' -> TokenKind.GREATER;
             case '<' -> TokenKind.LESS;

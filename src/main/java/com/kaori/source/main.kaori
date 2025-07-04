@@ -1,7 +1,26 @@
 
-a: number = 1;
+some_cool_number: f64 = 1;
+is_false: bool = true;
+hello_pretty_world: str = "hello world";
 
-
-if (not a > 2) {
-    print("not bigger");
+if some_cool_number > 0 {
+    print("bigger than 0");
+} else if some_cool_number < 0  {
+    print("smaller than 0");
+} else if is_false and hello_pretty_world == "hello world" or true {
+    print("crazy world");
+} else {
+    print("guess what?");
 }
+
+i: f64 = 0;
+
+while i < 5 {
+    print(i);
+    i = i + 1;
+}
+
+for j: f64 = 0; j < 5; j = j + 1 {
+    print(j);
+}
+
