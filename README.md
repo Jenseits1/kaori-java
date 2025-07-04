@@ -4,13 +4,13 @@
 
 ## ✨ Features ✨
 
--   **Statically Typed 🔒**  
+-   **Statically Typed**  
     Enforces type safety for predictable, and faster runtimes
 
--   **Detailed Error Messages 🎯**  
+-   **Detailed Error Messages**  
     Developer-friendly diagnostics for syntax and runtime issues
 
--   **Implemented Language Features ✅**
+-   **Implemented Language Features**
 
     -   [x] Variable assign operator (`x: int = 10;`)
     -   [x] Logical operators (`and`, `or`, `!`)
@@ -28,7 +28,7 @@
 
 ## 🛠️ Technologies Used 🛠️
 
--   **Java 17 ☕** — The entire interpreter is written in modern Java
+-   **Java 17** — The entire interpreter is written in modern Java
 -   **Maven / Gradle** — Dependency and build management
 
 ## 📜 Grammar
