@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kaori.error.KaoriError;
+import com.kaori.token.Token;
+import com.kaori.token.TokenKind;
 
 public class Lexer {
     private final String source;

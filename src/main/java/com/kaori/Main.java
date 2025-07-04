@@ -9,9 +9,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
-import com.kaori.lexer.Token;
 import com.kaori.parser.Parser;
 import com.kaori.parser.Statement;
+import com.kaori.token.Token;
+import com.kaori.token.TokenStream;
 import com.kaori.visitor.Interpreter;
 import com.kaori.visitor.TypeChecker;
 
@@ -25,9 +26,13 @@ public class Main {
             String source = Files.readString(path);
 
             Lexer lexer = new Lexer(source);
+
             List<Token> tokens = lexer.scan();
 
-            Parser parser = new Parser(source, tokens);
+            TokenStream tokenStream = new TokenStream(tokens, source);
+
+            Parser parser = new Parser(tokenStream);
+
             List<Statement> ast = parser.parse();
 
             // System.out.println(gson.toJson(ast));
@@ -44,19 +49,5 @@ public class Main {
             System.out.println(error);
         }
 
-    }}
-
-Statement statement = switch (this.currentToken.type) {
-    case PRINT -> this.printStatement();
-    case LEFT_BRACE -> this.blockStatement();
-    case IF -> this.ifStatement();
-    case WHILE -> this.whileLoopStatement();
-    case FOR -> this.forLoopStatement();
-    default -> {
-        if (lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
-            yield this.variableStatement();
-        }
-
-        yield this.expressionStatement();
     }
-};
+}

@@ -4,90 +4,88 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kaori.error.KaoriError;
-import com.kaori.token.Token;
 import com.kaori.token.TokenKind;
 import com.kaori.token.TokenStream;
 
 public class Parser {
-    private final String source;
     private final TokenStream tokens;
 
-    public Parser(String source, TokenStream tokens) {
+    public Parser(TokenStream tokens) {
         this.tokens = tokens;
     }
 
     /* Expressions */
     private Expression postfixUnary() {
-        throw KaoriError.SyntaxError("not found", this.line);
+        throw KaoriError.SyntaxError("not found", this.tokens.getLine());
     }
 
     private Expression parenthesis() {
-        this.consume(TokenKind.LEFT_PAREN, "expected (");
+        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Expression expression = expression();
 
-        this.consume(TokenKind.RIGHT_PAREN, "expected )");
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         return expression;
     }
 
     private Expression.Identifier identifier() {
-        String value = this.currentToken.lexeme(this.source);
+        String value = this.tokens.getLexeme();
         Expression.Identifier identifier = new Expression.Identifier(value);
-        this.consume();
+        this.tokens.consume();
 
         return identifier;
     }
 
     private Expression primary() {
-        if (this.parseAtEnd()) {
-            throw KaoriError.SyntaxError("expected valid operand", this.line);
+        if (this.tokens.atEnd()) {
+            throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
         }
 
-        return switch (this.currentToken.type) {
+        return switch (this.tokens.getCurrent()) {
             case BOOLEAN_LITERAL -> {
-                boolean value = Boolean.parseBoolean(this.currentToken.lexeme(this.source));
+                boolean value = Boolean.parseBoolean(this.tokens.getLexeme());
                 Expression literal = new Expression.Literal(KaoriType.Primitive.BOOLEAN, value);
-                this.consume();
+                this.tokens.consume();
 
                 yield literal;
             }
             case STRING_LITERAL -> {
-                String value = this.currentToken.lexeme(this.source);
+                String value = this.tokens.getLexeme();
                 KaoriType type = KaoriType.Primitive.STRING;
                 Expression literal = new Expression.Literal(type,
                         value.substring(1, value.length() - 1));
-                this.consume();
+                this.tokens.consume();
 
                 yield literal;
             }
             case NUMBER_LITERAL -> {
-                Double value = Double.parseDouble(this.currentToken.lexeme(this.source));
+                Double value = Double.parseDouble(this.tokens.getLexeme());
                 KaoriType type = KaoriType.Primitive.NUMBER;
                 Expression literal = new Expression.Literal(type, value);
-                this.consume();
+                this.tokens.consume();
 
                 yield literal;
             }
             case IDENTIFIER -> this.identifier();
             case LEFT_PAREN -> this.parenthesis();
-            default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
+            default -> throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
         };
 
     }
 
     private Expression prefixUnary() {
-        return switch (this.currentToken.type) {
+        return switch (this.tokens.getCurrent()) {
             case MINUS -> {
-                this.consume();
+                this.tokens.consume();
                 yield new Expression.Negation(this.prefixUnary());
             }
             case NOT -> {
-                this.consume();
+                this.tokens.consume();
                 yield new Expression.Not(this.prefixUnary());
             }
             case PLUS -> {
-                this.consume();
+                this.tokens.consume();
 
                 yield this.prefixUnary();
 
@@ -99,22 +97,22 @@ public class Parser {
     private Expression factor() {
         Expression left = this.prefixUnary();
 
-        while (!this.parseAtEnd()) {
-            TokenKind operator = this.currentToken.type;
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
 
             switch (operator) {
                 case MULTIPLY -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.prefixUnary();
                     left = new Expression.Multiply(left, right);
                 }
                 case DIVIDE -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.prefixUnary();
                     left = new Expression.Divide(left, right);
                 }
                 case MODULO -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.prefixUnary();
                     left = new Expression.Modulo(left, right);
                 }
@@ -130,17 +128,17 @@ public class Parser {
     private Expression term() {
         Expression left = this.factor();
 
-        while (!this.parseAtEnd()) {
-            TokenKind operator = this.currentToken.type;
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
 
             switch (operator) {
                 case PLUS -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.factor();
                     left = new Expression.Add(left, right);
                 }
                 case MINUS -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.factor();
                     left = new Expression.Subtract(left, right);
                 }
@@ -156,27 +154,27 @@ public class Parser {
     private Expression comparison() {
         Expression left = this.term();
 
-        while (!this.parseAtEnd()) {
-            TokenKind operator = this.currentToken.type;
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
 
             switch (operator) {
                 case GREATER -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.term();
                     left = new Expression.Greater(left, right);
                 }
                 case GREATER_EQUAL -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.term();
                     left = new Expression.GreaterEqual(left, right);
                 }
                 case LESS -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.term();
                     left = new Expression.Less(left, right);
                 }
                 case LESS_EQUAL -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.term();
                     left = new Expression.LessEqual(left, right);
                 }
@@ -192,17 +190,17 @@ public class Parser {
     private Expression equality() {
         Expression left = this.comparison();
 
-        while (!this.parseAtEnd()) {
-            TokenKind operator = this.currentToken.type;
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
 
             switch (operator) {
                 case EQUAL -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.comparison();
                     left = new Expression.Equal(left, right);
                 }
                 case NOT_EQUAL -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.comparison();
                     left = new Expression.NotEqual(left, right);
                 }
@@ -218,12 +216,12 @@ public class Parser {
     private Expression and() {
         Expression left = this.equality();
 
-        while (!this.parseAtEnd()) {
-            TokenKind operator = this.currentToken.type;
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
 
             switch (operator) {
                 case AND -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.equality();
                     left = new Expression.And(left, right);
                 }
@@ -239,12 +237,12 @@ public class Parser {
     private Expression or() {
         Expression left = this.and();
 
-        while (!this.parseAtEnd()) {
-            TokenKind operator = this.currentToken.type;
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
 
             switch (operator) {
                 case OR -> {
-                    this.consume();
+                    this.tokens.consume();
                     Expression right = this.and();
                     left = new Expression.Or(left, right);
                 }
@@ -259,14 +257,14 @@ public class Parser {
 
     private Expression assign() {
         Expression left = this.identifier();
-        this.consume(TokenKind.ASSIGN, "expected =");
+        this.tokens.consume(TokenKind.ASSIGN);
         Expression right = this.expression();
 
         return new Expression.Assign(left, right);
     }
 
     private Expression expression() {
-        if (this.lookAhead(TokenKind.IDENTIFIER, TokenKind.ASSIGN)) {
+        if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.ASSIGN)) {
             return assign();
         }
 
@@ -277,9 +275,9 @@ public class Parser {
 
     /* Types */
     private KaoriType type() {
-        KaoriType type = switch (currentToken.type) {
+        KaoriType type = switch (this.tokens.getCurrent()) {
             case IDENTIFIER -> this.primitiveType();
-            default -> throw KaoriError.SyntaxError("expected valid operand", this.line);
+            default -> throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
         };
 
         return type;
@@ -292,7 +290,7 @@ public class Parser {
             case "string" -> KaoriType.Primitive.STRING;
             case "boolean" -> KaoriType.Primitive.BOOLEAN;
             case "number" -> KaoriType.Primitive.NUMBER;
-            default -> throw KaoriError.SyntaxError("expected primitive types", this.line);
+            default -> throw KaoriError.SyntaxError("expected primitive types", this.tokens.getLine());
         };
 
         return type;
@@ -300,7 +298,7 @@ public class Parser {
 
     /* Statements */
     private Statement expressionStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
         Expression expression = this.expression();
 
@@ -308,14 +306,14 @@ public class Parser {
     }
 
     private Statement variableStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
         Expression left = this.identifier();
-        this.consume(TokenKind.COLON, "expected :");
+        this.tokens.consume(TokenKind.COLON);
 
         KaoriType type = this.type();
 
-        this.consume(TokenKind.ASSIGN, "expected =");
+        this.tokens.consume(TokenKind.ASSIGN);
 
         Expression right = this.expression();
 
@@ -323,55 +321,55 @@ public class Parser {
     }
 
     private Statement printStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
-        this.consume(TokenKind.PRINT, "expected print keyword");
+        this.tokens.consume(TokenKind.PRINT);
 
-        this.consume(TokenKind.LEFT_PAREN, "expected (");
+        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Expression expression = this.expression();
 
-        this.consume(TokenKind.RIGHT_PAREN, "expected )");
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         return new Statement.Print(expression).setLine(line);
     }
 
     private Statement blockStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
-        this.consume(TokenKind.LEFT_BRACE, "expected {");
+        this.tokens.consume(TokenKind.LEFT_BRACE);
 
         List<Statement> statements = new ArrayList<>();
 
-        while (!this.parseAtEnd() && this.currentToken.type != TokenKind.RIGHT_BRACE) {
+        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_BRACE) {
             Statement statement = this.statement();
             statements.add(statement);
         }
 
-        this.consume(TokenKind.RIGHT_BRACE, "expected }");
+        this.tokens.consume(TokenKind.RIGHT_BRACE);
 
         return new Statement.Block(statements).setLine(line);
     }
 
     private Statement ifStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
-        this.consume(TokenKind.IF, "expected if keyword");
-        this.consume(TokenKind.LEFT_PAREN, "expected (");
+        this.tokens.consume(TokenKind.IF);
+        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Expression condition = this.expression();
 
-        this.consume(TokenKind.RIGHT_PAREN, "expected )");
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         Statement thenBranch = this.blockStatement();
 
-        if (this.currentToken.type != TokenKind.ELSE) {
+        if (this.tokens.getCurrent() != TokenKind.ELSE) {
             return new Statement.If(condition, thenBranch, null).setLine(line);
         }
 
-        this.consume(TokenKind.ELSE, "expected else keyword");
+        this.tokens.consume(TokenKind.ELSE);
 
-        Statement elseBranch = switch (this.currentToken.type) {
+        Statement elseBranch = switch (this.tokens.getCurrent()) {
             case IF -> this.ifStatement();
             default -> this.blockStatement();
         };
@@ -380,14 +378,14 @@ public class Parser {
     }
 
     private Statement whileLoopStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
-        this.consume(TokenKind.WHILE, "expected while keyword");
-        this.consume(TokenKind.LEFT_PAREN, "expected (");
+        this.tokens.consume(TokenKind.WHILE);
+        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Expression condition = this.expression();
 
-        this.consume(TokenKind.RIGHT_PAREN, "expected )");
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         Statement block = this.blockStatement();
 
@@ -395,23 +393,23 @@ public class Parser {
     }
 
     private Statement forLoopStatement() {
-        int line = this.currentToken.getLine();
+        int line = this.tokens.getLine();
 
-        this.consume(TokenKind.FOR, "expected for keyword");
+        this.tokens.consume(TokenKind.FOR);
 
-        this.consume(TokenKind.LEFT_PAREN, "expected (");
+        this.tokens.consume(TokenKind.LEFT_PAREN);
 
         Statement variable = this.variableStatement();
 
-        this.consume(TokenKind.SEMICOLON, "expected semicolon");
+        this.tokens.consume(TokenKind.SEMICOLON);
 
         Expression condition = this.expression();
 
-        this.consume(TokenKind.SEMICOLON, "expected semicolon");
+        this.tokens.consume(TokenKind.SEMICOLON);
 
         Statement increment = this.expressionStatement();
 
-        this.consume(TokenKind.RIGHT_PAREN, "expected )");
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         Statement block = this.blockStatement();
 
@@ -419,14 +417,14 @@ public class Parser {
     }
 
     private Statement statement() {
-        Statement statement = switch (this.currentToken.type) {
+        Statement statement = switch (this.tokens.getCurrent()) {
             case PRINT -> this.printStatement();
             case LEFT_BRACE -> this.blockStatement();
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
             default -> {
-                if (lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
+                if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
                     yield this.variableStatement();
                 }
 
@@ -436,22 +434,16 @@ public class Parser {
 
         if (statement instanceof Statement.Expr || statement instanceof Statement.Variable
                 || statement instanceof Statement.Print) {
-            this.consume(TokenKind.SEMICOLON, "expected ; at the end of statement");
+            this.tokens.consume(TokenKind.SEMICOLON);
         }
 
         return statement;
     }
 
-    private void reset() {
-        this.currentIndex = 0;
-        this.currentToken = this.tokens.get(0);
-        this.line = 1;
-    }
-
     private List<Statement> start() {
         List<Statement> statements = new ArrayList<>();
 
-        while (!this.parseAtEnd()) {
+        while (!this.tokens.atEnd()) {
             Statement statement = this.statement();
             statements.add(statement);
 
@@ -461,7 +453,6 @@ public class Parser {
     }
 
     public List<Statement> parse() {
-        reset();
         List<Statement> statements = start();
 
         return statements;
