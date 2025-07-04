@@ -16,6 +16,7 @@
     -   [x] Logical operators (`&&`, `||`, `!`)
     -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
     -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
+    -   [x] Postfix operators (`++`, `--`)
     -   [x] `if / else` statements
     -   [x] `for` loops
     -   [x] `while` loops
@@ -75,9 +76,11 @@ term                     -> factor (("+" | "-") factor)*
 
 factor                   -> unary (("*" | "/") unary)*
 
-unary                    -> ("!" | "-") unary | primary
+prefix_unary             -> ("!" | "-") unary | primary
 
-primary                  -> number | string | boolean | identifier | "(" expression ")"
+primary                  -> number | string | boolean | postfix_unary | "(" expression ")"
+
+postfix_unary            -> identifier ("++" | "--")?
 ```
 
 ## 🚀 Getting Started 🚀
