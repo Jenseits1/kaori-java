@@ -1,23 +1,7 @@
 
-hello: string = "hello world";
-print(hello);
+a: number = 1;
 
-idunno: boolean = true;
-idunno = false;
-print(idunno);
-idunno;
 
-for (i: number = 0; i < 5; i = i + 1) {
-    print(i);
+if (not a > 2) {
+    print("not bigger");
 }
-
-nicenumber: number = 0;
-
-while (nicenumber < 5) {
-    print(nicenumber);
-    nicenumber = nicenumber + 1;
-}
-
-a: number;
-
-print(a);

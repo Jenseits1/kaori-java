@@ -13,7 +13,7 @@
 -   **Implemented Language Features**
 
     -   [x] Variable assign operator (`x: int = 10;`)
-    -   [x] Logical operators (`and`, `or`, `!`)
+    -   [x] Logical operators (`and`, `or`, `not`)
     -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
     -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)
     -   [x] `if / else` statements

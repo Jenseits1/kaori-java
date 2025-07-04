@@ -35,8 +35,6 @@ public class Main {
 
             List<Statement> ast = parser.parse();
 
-            // System.out.println(gson.toJson(ast));
-
             TypeChecker typeChecker = new TypeChecker(ast);
             typeChecker.run();
 
@@ -50,4 +48,5 @@ public class Main {
         }
 
     }
+
 }

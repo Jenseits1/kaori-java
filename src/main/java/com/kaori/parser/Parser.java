@@ -82,7 +82,7 @@ public class Parser {
             }
             case NOT -> {
                 this.tokens.consume();
-                yield new Expression.Not(this.prefixUnary());
+                yield new Expression.Not(this.expression());
             }
             case PLUS -> {
                 this.tokens.consume();
@@ -287,7 +287,7 @@ public class Parser {
 
         KaoriType type = switch (lexeme) {
             case "string" -> KaoriType.Primitive.STRING;
-            case "boolean" -> KaoriType.Primitive.BOOLEAN;
+            case "bool" -> KaoriType.Primitive.BOOLEAN;
             case "number" -> KaoriType.Primitive.NUMBER;
             default -> throw KaoriError.SyntaxError("expected primitive types", this.tokens.getLine());
         };

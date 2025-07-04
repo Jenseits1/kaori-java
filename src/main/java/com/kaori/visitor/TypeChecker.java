@@ -181,7 +181,7 @@ public class TypeChecker extends Visitor<KaoriType> {
             return right;
         }
 
-        throw KaoriError.TypeError("cannot assign variable to a different type", this.line);
+        throw KaoriError.TypeError("expected the same type on variable assignment", this.line);
     }
 
     @Override
@@ -239,12 +239,11 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = statement.type;
         KaoriType right = statement.right.acceptVisitor(this);
 
-        if (left == right || right == null) {
+        if (left == right) {
             this.environment.declare(identifier.value, right, this.line);
         } else {
-            throw KaoriError.TypeError("expected different type for variable declaration", this.line);
+            throw KaoriError.TypeError("expected correct type in variable declaration", this.line);
         }
-
     }
 
     @Override
