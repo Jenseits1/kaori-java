@@ -7,7 +7,7 @@ if some_cool_number > 0 {
     print("bigger than 0");
 } else if some_cool_number < 0  {
     print("smaller than 0");
-} else if is_false and hello_pretty_world == "hello world" or true {
+} else if is_false && hello_pretty_world == "hello world" || true {
     print("crazy world");
 } else {
     print("guess what?");
@@ -17,10 +17,10 @@ i: f64 = 0;
 
 while i < 5 {
     print(i);
-    i = i + 1;
+    i++;
 }
 
-for j: f64 = 0; j < 5; j = j + 1 {
+for j: f64 = 0; j < 5; j++ {
     print(j);
 }
 

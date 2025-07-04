@@ -8,6 +8,10 @@ public enum TokenKind {
     DIVIDE("/"),
     MODULO("%"),
 
+    // Unary arithmetic operators
+    INCREMENT("++"),
+    DECREMENT("--"),
+
     // Logical operators
     AND("&&"),
     OR("||"),

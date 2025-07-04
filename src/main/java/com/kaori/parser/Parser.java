@@ -71,7 +71,6 @@ public class Parser {
             case LEFT_PAREN -> this.parenthesis();
             default -> throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
         };
-
     }
 
     private Expression prefixUnary() {

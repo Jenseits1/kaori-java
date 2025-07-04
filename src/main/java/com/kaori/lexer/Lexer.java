@@ -135,6 +135,18 @@ public class Lexer {
             return TokenKind.LESS_EQUAL;
         }
 
+        if (lookahead.startsWith("++")) {
+            this.advance();
+            this.advance();
+            return TokenKind.INCREMENT;
+        }
+
+        if (lookahead.startsWith("--")) {
+            this.advance();
+            this.advance();
+            return TokenKind.DECREMENT;
+        }
+
         TokenKind type = switch (this.currentCharacter) {
             case '+' -> TokenKind.PLUS;
             case '-' -> TokenKind.MINUS;
