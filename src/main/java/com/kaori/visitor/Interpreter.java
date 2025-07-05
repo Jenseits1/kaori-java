@@ -8,7 +8,7 @@ import com.kaori.parser.Statement;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<Statement> statements) {
-        super(statements, new Environment());
+        super(statements, new Environment<Object>());
     }
 
     @Override
@@ -174,7 +174,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(Statement.Block statement) {
-        this.environment = new Environment(environment);
+        this.environment = new Environment<Object>(environment);
 
         this.visitStatements(statement.statements);
 

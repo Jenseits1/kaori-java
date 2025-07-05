@@ -5,25 +5,25 @@ import java.util.Map;
 
 import com.kaori.error.KaoriError;
 
-public class Environment {
-    private final Environment previous;
-    private final Map<String, Object> values;
+public class Environment<T> {
+    private final Environment<T> previous;
+    private final Map<String, T> values;
 
     public Environment() {
         this.previous = null;
         this.values = new HashMap<>();
     }
 
-    public Environment(Environment Environment) {
-        this.previous = Environment;
+    public Environment(Environment<T> environment) {
+        this.previous = environment;
         this.values = new HashMap<>();
     }
 
-    public Environment getPrevious() {
+    public Environment<T> getPrevious() {
         return this.previous;
     }
 
-    private Environment find(String identifier) {
+    private Environment<T> find(String identifier) {
         if (this.values.containsKey(identifier)) {
             return this;
         } else if (this.previous == null) {
@@ -33,14 +33,14 @@ public class Environment {
         }
     }
 
-    public Object get(String identifier, int line) {
-        Environment env = this.find(identifier);
+    public T get(String identifier, int line) {
+        Environment<T> env = this.find(identifier);
 
         if (env == null) {
             throw KaoriError.VariableError(identifier + " is not declared", line);
         }
 
-        Object value = env.values.get(identifier);
+        T value = env.values.get(identifier);
 
         if (value == null) {
             throw KaoriError.VariableError(identifier + " is null", line);
@@ -49,8 +49,8 @@ public class Environment {
         return env.values.get(identifier);
     }
 
-    public void assign(String identifier, Object value, int line) {
-        Environment env = this.find(identifier);
+    public void assign(String identifier, T value, int line) {
+        Environment<T> env = this.find(identifier);
 
         if (env == null) {
             throw KaoriError.VariableError(identifier + " is not declared", line);
@@ -59,7 +59,7 @@ public class Environment {
         env.values.put(identifier, value);
     }
 
-    public void declare(String identifier, Object value, int line) {
+    public void declare(String identifier, T value, int line) {
         if (this.values.containsKey(identifier)) {
             throw KaoriError.VariableError(identifier + " is already declared", line);
         }
