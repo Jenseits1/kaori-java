@@ -77,108 +77,80 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public Object visitNotEqual(Expression.NotEqual node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
 
-        if (left == right) {
-            return Object.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("expected operands of same type for '!='", this.line);
+        return null;
     }
 
     @Override
     public Object visitGreater(Expression.Greater node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
 
-        if (left == Object.Primitive.NUMBER && right == Object.Primitive.NUMBER) {
-            return Object.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("expected number operands for '>'", this.line);
+        return null;
     }
 
     @Override
     public Object visitGreaterEqual(Expression.GreaterEqual node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
 
-        if (left == Object.Primitive.NUMBER && right == Object.Primitive.NUMBER) {
-            return Object.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("expected number operands for '>='", this.line);
+        return null;
     }
 
     @Override
     public Object visitLess(Expression.Less node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
 
-        if (left == Object.Primitive.NUMBER && right == Object.Primitive.NUMBER) {
-            return Object.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("expected number operands for '<'", this.line);
+        return null;
     }
 
     @Override
     public Object visitLessEqual(Expression.LessEqual node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
 
-        if (left == Object.Primitive.NUMBER && right == Object.Primitive.NUMBER) {
-            return Object.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("expected number operands for '<='", this.line);
+        return null;
     }
 
     @Override
     public Object visitAssign(Expression.Assign node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
 
-        if (left == right) {
-            return right;
-        }
-
-        throw KaoriError.TypeError("expected the same type on variable assignment", this.line);
+        return null;
     }
 
     @Override
     public Object visitLiteral(Expression.Literal node) {
-        return node.type;
+        return null;
     }
 
     @Override
     public Object visitIdentifier(Expression.Identifier node) {
-        Object value = environment.get(node.value, this.line);
+        Environment<Object> env = this.environment.find(node.value);
 
-        return value;
+        if (env.get(node.value) == null) {
+            throw KaoriError.VariableError("expected " + node.value + " to be declared", this.line);
+        }
+
+        return null;
     }
 
     @Override
     public Object visitNot(Expression.Not node) {
-        Object value = node.left.acceptVisitor(this);
+        node.left.acceptVisitor(this);
 
-        if (value == Object.Primitive.BOOLEAN) {
-            return Object.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError("expected boolean operand for '!'", this.line);
+        return null;
     }
 
     @Override
     public Object visitNegation(Expression.Negation node) {
-        Object left = node.left.acceptVisitor(this);
+        node.left.acceptVisitor(this);
 
-        if (left == Object.Primitive.NUMBER) {
-            return Object.Primitive.NUMBER;
-        }
-
-        throw KaoriError.TypeError("expected float operand for unary '-'", this.line);
+        return null;
     }
 
     @Override
@@ -199,13 +171,11 @@ public class Resolver extends Visitor<Object> {
     public void visitVariableStatement(Statement.Variable statement) {
         Expression.Identifier identifier = (Expression.Identifier) statement.left;
 
-        Object left = statement.type;
-        Object right = statement.right.acceptVisitor(this);
-
-        if (left == right) {
-            this.environment.declare(identifier.value, right, this.line);
+        if (this.environment.get(identifier.value) == null) {
+            statement.right.acceptVisitor(this);
+            this.environment.set(identifier.value, 1);
         } else {
-            throw KaoriError.TypeError("expected correct type in variable declaration", this.line);
+            throw KaoriError.VariableError(identifier.value + " is already declared", this.line);
         }
     }
 
@@ -216,12 +186,7 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitIfStatement(Statement.If statement) {
-        Object condition = statement.condition.acceptVisitor(this);
-
-        if (condition != Object.Primitive.BOOLEAN) {
-            throw KaoriError.TypeError("expected boolean value for condition", this.line);
-        }
-
+        statement.condition.acceptVisitor(this);
         statement.thenBranch.acceptVisitor(this);
         statement.elseBranch.acceptVisitor(this);
 
@@ -229,25 +194,14 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitWhileLoopStatement(Statement.WhileLoop statement) {
-        Object condition = statement.condition.acceptVisitor(this);
-
-        if (condition != Object.Primitive.BOOLEAN) {
-            throw KaoriError.TypeError("expected boolean value for condition", this.line);
-        }
-
+        statement.condition.acceptVisitor(this);
         statement.block.acceptVisitor(this);
     }
 
     @Override
     public void visitForLoopStatement(Statement.ForLoop statement) {
         statement.variable.acceptVisitor(this);
-
-        Object condition = statement.condition.acceptVisitor(this);
-
-        if (condition != Object.Primitive.BOOLEAN) {
-            throw KaoriError.TypeError("expected boolean value for condition", this.line);
-        }
-
+        statement.condition.acceptVisitor(this);
         statement.block.acceptVisitor(this);
         statement.increment.acceptVisitor(this);
 

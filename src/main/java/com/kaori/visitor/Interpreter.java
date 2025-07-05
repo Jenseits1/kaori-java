@@ -131,10 +131,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitAssign(Expression.Assign node) {
-        Expression.Identifier identifier = (Expression.Identifier) node.left;
         Object value = node.right.acceptVisitor(this);
 
-        environment.assign(identifier.value, value, this.line);
+        this.environment.set((Expression.Identifier) node.left, value);
 
         return value;
     }
@@ -146,9 +145,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(Expression.Identifier node) {
-        Object value = environment.get(node.value, this.line);
-
-        return value;
+        return this.environment.get(node);
     }
 
     @Override
@@ -183,11 +180,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
-        Expression.Identifier identifier = (Expression.Identifier) statement.left;
-
         Object value = statement.right.acceptVisitor(this);
 
-        this.environment.declare(identifier.value, value, line);
+        this.environment.set((Expression.Identifier) statement.left, value);
     }
 
     @Override

@@ -1,27 +1,6 @@
 
-some_cool_number: f64 = 1;
-is_false: bool = true;
-is_false = false;
-hello_pretty_world: str = "hello world";
 
-if some_cool_number > 0 {
-    print("bigger than 0");
-} else if some_cool_number < 0  {
-    print("smaller than 0");
-} else if is_false && hello_pretty_world == "hello world" || true {
-    print("don't u know?");
-} else {
-    print("guess what? :D");
-}
+b = a;
+a: str = "hello";
 
-i: f64 = 0;
-
-while i < 5 {
-    print(i);
-    i++;
-}
-
-for j: f64 = 0; j < 5; j++ {
-    print(j);
-}
-
+print(b);

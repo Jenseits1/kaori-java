@@ -191,9 +191,7 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public KaoriType visitIdentifier(Expression.Identifier node) {
-        KaoriType value = environment.get(node.value, this.line);
-
-        return value;
+        return this.environment.get(node);
     }
 
     @Override
@@ -234,13 +232,11 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
-        Expression.Identifier identifier = (Expression.Identifier) statement.left;
-
         KaoriType left = statement.type;
         KaoriType right = statement.right.acceptVisitor(this);
 
         if (left == right) {
-            this.environment.declare(identifier.value, right, this.line);
+            this.environment.set((Expression.Identifier) statement.left, right);
         } else {
             throw KaoriError.TypeError("expected correct type in variable declaration", this.line);
         }

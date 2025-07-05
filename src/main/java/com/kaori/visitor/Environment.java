@@ -3,7 +3,7 @@ package com.kaori.visitor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.kaori.error.KaoriError;
+import com.kaori.parser.Expression;
 
 public class Environment<T> {
     private final Environment<T> previous;
@@ -23,47 +23,20 @@ public class Environment<T> {
         return this.previous;
     }
 
-    private Environment<T> find(String identifier) {
-        if (this.values.containsKey(identifier)) {
+    public Environment<T> find(Expression.Identifier identifier) {
+        if (this.values.containsKey(identifier.value) || this.previous == null) {
             return this;
-        } else if (this.previous == null) {
-            return null;
         } else {
             return this.previous.find(identifier);
         }
     }
 
-    public T get(String identifier, int line) {
-        Environment<T> env = this.find(identifier);
-
-        if (env == null) {
-            throw KaoriError.VariableError(identifier + " is not declared", line);
-        }
-
-        T value = env.values.get(identifier);
-
-        if (value == null) {
-            throw KaoriError.VariableError(identifier + " is null", line);
-        }
-
-        return env.values.get(identifier);
+    public T get(Expression.Identifier identifier) {
+        return this.values.get(identifier.value);
     }
 
-    public void assign(String identifier, T value, int line) {
-        Environment<T> env = this.find(identifier);
-
-        if (env == null) {
-            throw KaoriError.VariableError(identifier + " is not declared", line);
-        }
-
-        env.values.put(identifier, value);
+    public void set(Expression.Identifier identifier, T value) {
+        this.values.put(identifier.value, value);
     }
 
-    public void declare(String identifier, T value, int line) {
-        if (this.values.containsKey(identifier)) {
-            throw KaoriError.VariableError(identifier + " is already declared", line);
-        }
-
-        this.values.put(identifier, value);
-    }
 }
