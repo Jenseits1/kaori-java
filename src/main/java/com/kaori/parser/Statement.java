@@ -82,10 +82,10 @@ public abstract class Statement {
 
     public static class If extends Statement {
         public final Expression condition;
-        public final Statement thenBranch;
-        public final Statement elseBranch;
+        public final Statement.Block thenBranch;
+        public final Statement.Block elseBranch;
 
-        public If(int line, Expression condition, Statement thenBranch, Statement elseBranch) {
+        public If(int line, Expression condition, Statement.Block thenBranch, Statement.Block elseBranch) {
             super(line);
             this.condition = condition;
             this.thenBranch = thenBranch;
@@ -101,9 +101,9 @@ public abstract class Statement {
 
     public static class WhileLoop extends Statement {
         public final Expression condition;
-        public final Statement block;
+        public final Statement.Block block;
 
-        public WhileLoop(int line, Expression condition, Statement block) {
+        public WhileLoop(int line, Expression condition, Statement.Block block) {
             super(line);
             this.condition = condition;
             this.block = block;
@@ -116,12 +116,13 @@ public abstract class Statement {
     }
 
     public static class ForLoop extends Statement {
-        public final Statement variable;
+        public final Statement.Variable variable;
         public final Expression condition;
-        public final Statement increment;
-        public final Statement block;
+        public final Expression increment;
+        public final Statement.Block block;
 
-        public ForLoop(int line, Statement variable, Expression condition, Statement increment, Statement block) {
+        public ForLoop(int line, Statement.Variable variable, Expression condition, Expression increment,
+                Statement.Block block) {
             super(line);
             this.variable = variable;
             this.condition = condition;

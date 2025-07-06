@@ -22,7 +22,7 @@ public abstract class Visitor<T> {
 
     protected void visitStatements(List<Statement> statements) {
         for (Statement statement : statements) {
-            this.line = statement.getLine();
+            this.line = statement.line;
             statement.acceptVisitor(this);
         }
     }
