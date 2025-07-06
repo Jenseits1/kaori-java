@@ -310,15 +310,15 @@ public class Parser {
     }
 
     /* Statements */
-    private Statement expressionStatement() {
+    private Statement.Expr expressionStatement() {
         int line = this.tokens.getLine();
 
         Expression expression = this.expression();
 
-        return new Statement.Expr(expression).setLine(line);
+        return new Statement.Expr(line, expression);
     }
 
-    private Statement variableStatement() {
+    private Statement.Variable variableStatement() {
         int line = this.tokens.getLine();
 
         Expression.Identifier left = this.identifier();
@@ -328,17 +328,17 @@ public class Parser {
 
         if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
             Expression right = new Expression.Literal(type, null);
-            return new Statement.Variable(left, right, type).setLine(line);
+            return new Statement.Variable(line, left, right, type);
         }
 
         this.tokens.consume(TokenKind.ASSIGN);
 
         Expression right = this.expression();
 
-        return new Statement.Variable(left, right, type).setLine(line);
+        return new Statement.Variable(line, left, right, type);
     }
 
-    private Statement printStatement() {
+    private Statement.Print printStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.PRINT);
@@ -349,10 +349,10 @@ public class Parser {
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
 
-        return new Statement.Print(expression).setLine(line);
+        return new Statement.Print(line, expression);
     }
 
-    private Statement blockStatement() {
+    private Statement.Block blockStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.LEFT_BRACE);
@@ -366,10 +366,10 @@ public class Parser {
 
         this.tokens.consume(TokenKind.RIGHT_BRACE);
 
-        return new Statement.Block(statements).setLine(line);
+        return new Statement.Block(line, statements);
     }
 
-    private Statement ifStatement() {
+    private Statement.If ifStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.IF);
@@ -379,8 +379,8 @@ public class Parser {
         Statement thenBranch = this.blockStatement();
 
         if (this.tokens.getCurrent() != TokenKind.ELSE) {
-            Statement elseBranch = new Statement.Block();
-            return new Statement.If(condition, thenBranch, elseBranch).setLine(line);
+            Statement elseBranch = new Statement.Block(line);
+            return new Statement.If(line, condition, thenBranch, elseBranch);
         }
 
         this.tokens.consume(TokenKind.ELSE);
@@ -390,10 +390,10 @@ public class Parser {
             default -> this.blockStatement();
         };
 
-        return new Statement.If(condition, thenBranch, elseBranch).setLine(line);
+        return new Statement.If(line, condition, thenBranch, elseBranch);
     }
 
-    private Statement whileLoopStatement() {
+    private Statement.WhileLoop whileLoopStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.WHILE);
@@ -402,10 +402,10 @@ public class Parser {
 
         Statement block = this.blockStatement();
 
-        return new Statement.WhileLoop(condition, block).setLine(line);
+        return new Statement.WhileLoop(line, condition, block);
     }
 
-    private Statement forLoopStatement() {
+    private Statement.ForLoop forLoopStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.FOR);
@@ -422,7 +422,7 @@ public class Parser {
 
         Statement block = this.blockStatement();
 
-        return new Statement.ForLoop(variable, condition, increment, block).setLine(line);
+        return new Statement.ForLoop(line, variable, condition, increment, block);
     }
 
     private Statement statement() {

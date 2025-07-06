@@ -54,3 +54,45 @@ public class Main {
     }
 
 }
+
+    private Statement expressionStatement() {
+        int line = this.tokens.getLine();
+
+        Expression expression = this.expression();
+
+        return new Statement.Expr(expression).setLine(line);
+    }
+
+    private Statement variableStatement() {
+        int line = this.tokens.getLine();
+
+        Expression.Identifier left = this.identifier();
+        this.tokens.consume(TokenKind.COLON);
+
+        KaoriType type = this.type();
+
+        if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
+            Expression right = new Expression.Literal(type, null);
+            return new Statement.Variable(left, right, type).setLine(line);
+        }
+
+        this.tokens.consume(TokenKind.ASSIGN);
+
+        Expression right = this.expression();
+
+        return new Statement.Variable(left, right, type).setLine(line);
+    }
+
+private Statement printStatement() {
+    int line = this.tokens.getLine();
+
+    this.tokens.consume(TokenKind.PRINT);
+
+    this.tokens.consume(TokenKind.LEFT_PAREN);
+
+    Expression expression = this.expression();
+
+    this.tokens.consume(TokenKind.RIGHT_PAREN);
+
+    return new Statement.Print(expression).setLine(line);
+}

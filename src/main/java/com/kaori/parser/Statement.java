@@ -6,20 +6,10 @@ import java.util.List;
 import com.kaori.visitor.Visitor;
 
 public abstract class Statement {
-    private int line;
+    public final int line;
 
-    private Statement() {
+    private Statement(int line) {
         this.line = 0;
-    }
-
-    public int getLine() {
-        return line;
-    }
-
-    public Statement setLine(int line) {
-        this.line = line;
-
-        return this;
     }
 
     public abstract <T> void acceptVisitor(Visitor<T> visitor);
@@ -27,7 +17,8 @@ public abstract class Statement {
     public static class Print extends Statement {
         public final Expression expression;
 
-        public Print(Expression expression) {
+        public Print(int line, Expression expression) {
+            super(line);
             this.expression = expression;
         }
 
@@ -40,7 +31,8 @@ public abstract class Statement {
     public static class Expr extends Statement {
         public final Expression expression;
 
-        public Expr(Expression expression) {
+        public Expr(int line, Expression expression) {
+            super(line);
             this.expression = expression;
         }
 
@@ -55,7 +47,8 @@ public abstract class Statement {
         public final Expression right;
         public final KaoriType type;
 
-        public Variable(Expression.Identifier left, Expression right, KaoriType type) {
+        public Variable(int line, Expression.Identifier left, Expression right, KaoriType type) {
+            super(line);
             this.left = left;
             this.right = right;
             this.type = type;
@@ -71,11 +64,13 @@ public abstract class Statement {
     public static class Block extends Statement {
         public final List<Statement> statements;
 
-        public Block(List<Statement> statements) {
+        public Block(int line, List<Statement> statements) {
+            super(line);
             this.statements = statements;
         }
 
-        public Block() {
+        public Block(int line) {
+            super(line);
             this.statements = new ArrayList<>();
         }
 
@@ -90,7 +85,8 @@ public abstract class Statement {
         public final Statement thenBranch;
         public final Statement elseBranch;
 
-        public If(Expression condition, Statement thenBranch, Statement elseBranch) {
+        public If(int line, Expression condition, Statement thenBranch, Statement elseBranch) {
+            super(line);
             this.condition = condition;
             this.thenBranch = thenBranch;
             this.elseBranch = elseBranch;
@@ -107,7 +103,8 @@ public abstract class Statement {
         public final Expression condition;
         public final Statement block;
 
-        public WhileLoop(Expression condition, Statement block) {
+        public WhileLoop(int line, Expression condition, Statement block) {
+            super(line);
             this.condition = condition;
             this.block = block;
         }
@@ -124,7 +121,8 @@ public abstract class Statement {
         public final Statement increment;
         public final Statement block;
 
-        public ForLoop(Statement variable, Expression condition, Statement increment, Statement block) {
+        public ForLoop(int line, Statement variable, Expression condition, Statement increment, Statement block) {
+            super(line);
             this.variable = variable;
             this.condition = condition;
             this.increment = increment;
