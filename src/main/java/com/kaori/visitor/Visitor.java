@@ -10,10 +10,10 @@ public abstract class Visitor<T> {
     protected final List<Statement> statements;
     protected Environment<T> environment;
 
-    public Visitor(List<Statement> statements, Environment<T> environment) {
+    public Visitor(List<Statement> statements) {
         this.line = 1;
         this.statements = statements;
-        this.environment = environment;
+        this.environment = new Environment<>();
     }
 
     public void run() {

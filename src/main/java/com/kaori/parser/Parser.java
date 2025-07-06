@@ -38,7 +38,7 @@ public class Parser {
     private Expression parenthesis() {
         this.tokens.consume(TokenKind.LEFT_PAREN);
 
-        Expression expression = expression();
+        Expression expression = this.expression();
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
 
@@ -376,10 +376,10 @@ public class Parser {
 
         Expression condition = this.expression();
 
-        Statement thenBranch = this.blockStatement();
+        Statement.Block thenBranch = this.blockStatement();
 
         if (this.tokens.getCurrent() != TokenKind.ELSE) {
-            Statement elseBranch = new Statement.Block(line);
+            Statement.Block elseBranch = new Statement.Block(line);
             return new Statement.If(line, condition, thenBranch, elseBranch);
         }
 
@@ -400,7 +400,7 @@ public class Parser {
 
         Expression condition = this.expression();
 
-        Statement block = this.blockStatement();
+        Statement.Block block = this.blockStatement();
 
         return new Statement.WhileLoop(line, condition, block);
     }
@@ -410,7 +410,7 @@ public class Parser {
 
         this.tokens.consume(TokenKind.FOR);
 
-        Statement variable = this.variableStatement();
+        Statement.Variable variable = this.variableStatement();
 
         this.tokens.consume(TokenKind.SEMICOLON);
 
@@ -418,9 +418,9 @@ public class Parser {
 
         this.tokens.consume(TokenKind.SEMICOLON);
 
-        Statement increment = this.expressionStatement();
+        Expression increment = this.expression();
 
-        Statement block = this.blockStatement();
+        Statement.Block block = this.blockStatement();
 
         return new Statement.ForLoop(line, variable, condition, increment, block);
     }

@@ -83,9 +83,9 @@ public abstract class Statement {
     public static class If extends Statement {
         public final Expression condition;
         public final Statement.Block thenBranch;
-        public final Statement.Block elseBranch;
+        public final Statement elseBranch;
 
-        public If(int line, Expression condition, Statement.Block thenBranch, Statement.Block elseBranch) {
+        public If(int line, Expression condition, Statement.Block thenBranch, Statement elseBranch) {
             super(line);
             this.condition = condition;
             this.thenBranch = thenBranch;

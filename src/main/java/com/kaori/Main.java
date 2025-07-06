@@ -3,6 +3,7 @@ package com.kaori;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -16,6 +17,7 @@ import com.kaori.token.TokenStream;
 import com.kaori.visitor.Interpreter;
 import com.kaori.visitor.Resolver;
 import com.kaori.visitor.TypeChecker;
+import com.kaori.visitor.Visitor;
 
 public class Main {
     public static void main(String[] args) {
@@ -36,63 +38,19 @@ public class Main {
 
             List<Statement> ast = parser.parse();
 
-            Resolver resolver = new Resolver(ast);
-            resolver.run();
+            List<Visitor<?>> visitors = new ArrayList<>();
+            visitors.add(new Resolver(ast));
+            visitors.add(new TypeChecker(ast));
+            visitors.add(new Interpreter(ast));
 
-            TypeChecker typeChecker = new TypeChecker(ast);
-            typeChecker.run();
-
-            Interpreter interpreter = new Interpreter(ast);
-            interpreter.run();
+            for (Visitor<?> visitor : visitors) {
+                visitor.run();
+            }
 
         } catch (KaoriError error) {
             System.out.println(error);
         } catch (IOException error) {
             System.out.println(error);
         }
-
     }
-
-}
-
-    private Statement expressionStatement() {
-        int line = this.tokens.getLine();
-
-        Expression expression = this.expression();
-
-        return new Statement.Expr(expression).setLine(line);
-    }
-
-    private Statement variableStatement() {
-        int line = this.tokens.getLine();
-
-        Expression.Identifier left = this.identifier();
-        this.tokens.consume(TokenKind.COLON);
-
-        KaoriType type = this.type();
-
-        if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
-            Expression right = new Expression.Literal(type, null);
-            return new Statement.Variable(left, right, type).setLine(line);
-        }
-
-        this.tokens.consume(TokenKind.ASSIGN);
-
-        Expression right = this.expression();
-
-        return new Statement.Variable(left, right, type).setLine(line);
-    }
-
-private Statement printStatement() {
-    int line = this.tokens.getLine();
-
-    this.tokens.consume(TokenKind.PRINT);
-
-    this.tokens.consume(TokenKind.LEFT_PAREN);
-
-    Expression expression = this.expression();
-
-    this.tokens.consume(TokenKind.RIGHT_PAREN);
-
-    return new Statement.Print(expression).setLine(line);
 }

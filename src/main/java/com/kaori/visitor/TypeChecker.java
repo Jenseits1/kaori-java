@@ -9,7 +9,7 @@ import com.kaori.parser.Statement;
 
 public class TypeChecker extends Visitor<KaoriType> {
     public TypeChecker(List<Statement> statements) {
-        super(statements, new Environment<KaoriType>());
+        super(statements);
     }
 
     @Override
