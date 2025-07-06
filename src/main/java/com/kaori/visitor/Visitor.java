@@ -22,6 +22,7 @@ public abstract class Visitor<T> {
 
     protected void visitStatements(List<Statement> statements) {
         for (Statement statement : statements) {
+            System.out.println(statement.line);
             this.line = statement.line;
             statement.acceptVisitor(this);
         }

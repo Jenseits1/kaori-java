@@ -4,3 +4,7 @@
 a: str = "hello";
 
 print(a);
+
+{
+    a = 5;
+}

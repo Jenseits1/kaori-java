@@ -191,7 +191,9 @@ public class TypeChecker extends Visitor<KaoriType> {
 
     @Override
     public KaoriType visitIdentifier(Expression.Identifier node) {
-        return this.environment.get(node);
+        Environment<KaoriType> env = this.environment.find(node);
+
+        return env.get(node);
     }
 
     @Override

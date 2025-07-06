@@ -9,7 +9,7 @@ public abstract class Statement {
     public final int line;
 
     private Statement(int line) {
-        this.line = 0;
+        this.line = line;
     }
 
     public abstract <T> void acceptVisitor(Visitor<T> visitor);
