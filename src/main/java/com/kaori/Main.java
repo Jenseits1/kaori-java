@@ -14,6 +14,7 @@ import com.kaori.parser.Statement;
 import com.kaori.token.Token;
 import com.kaori.token.TokenStream;
 import com.kaori.visitor.Interpreter;
+import com.kaori.visitor.Resolver;
 import com.kaori.visitor.TypeChecker;
 
 public class Main {
@@ -34,6 +35,9 @@ public class Main {
             Parser parser = new Parser(tokenStream);
 
             List<Statement> ast = parser.parse();
+
+            Resolver resolver = new Resolver(ast);
+            resolver.run();
 
             TypeChecker typeChecker = new TypeChecker(ast);
             typeChecker.run();

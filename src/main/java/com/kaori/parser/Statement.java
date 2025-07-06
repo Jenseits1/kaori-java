@@ -51,11 +51,11 @@ public abstract class Statement {
     }
 
     public static class Variable extends Statement {
-        public final Expression left;
+        public final Expression.Identifier left;
         public final Expression right;
         public final KaoriType type;
 
-        public Variable(Expression left, Expression right, KaoriType type) {
+        public Variable(Expression.Identifier left, Expression right, KaoriType type) {
             this.left = left;
             this.right = right;
             this.type = type;

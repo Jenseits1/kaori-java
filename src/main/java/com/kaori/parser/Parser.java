@@ -16,7 +16,7 @@ public class Parser {
 
     /* Expressions */
     private Expression postfixUnary() {
-        Expression identifier = this.identifier();
+        Expression.Identifier identifier = this.identifier();
 
         return switch (this.tokens.getCurrent()) {
             case INCREMENT -> {
@@ -45,12 +45,11 @@ public class Parser {
         return expression;
     }
 
-    private Expression identifier() {
+    private Expression.Identifier identifier() {
         String lexeme = this.tokens.getLexeme();
         this.tokens.consume(TokenKind.IDENTIFIER);
-        Expression identifier = new Expression.Identifier(lexeme);
 
-        return identifier;
+        return new Expression.Identifier(lexeme);
     }
 
     private Expression primary() {
@@ -271,7 +270,7 @@ public class Parser {
     }
 
     private Expression assign() {
-        Expression left = this.identifier();
+        Expression.Identifier left = this.identifier();
         this.tokens.consume(TokenKind.ASSIGN);
         Expression right = this.expression();
 
@@ -322,7 +321,7 @@ public class Parser {
     private Statement variableStatement() {
         int line = this.tokens.getLine();
 
-        Expression left = this.identifier();
+        Expression.Identifier left = this.identifier();
         this.tokens.consume(TokenKind.COLON);
 
         KaoriType type = this.type();

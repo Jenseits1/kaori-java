@@ -236,9 +236,9 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType right = statement.right.acceptVisitor(this);
 
         if (left == right) {
-            this.environment.set((Expression.Identifier) statement.left, right);
+            this.environment.set(statement.left, right);
         } else {
-            throw KaoriError.TypeError("expected correct type in variable declaration", this.line);
+            throw KaoriError.TypeError("expected " + left + " type for " + statement.left.value, this.line);
         }
     }
 

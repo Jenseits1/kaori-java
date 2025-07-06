@@ -130,9 +130,9 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(Expression.Identifier node) {
-        Environment<Object> env = this.environment.find(node.value);
+        Environment<Object> env = this.environment.find(node);
 
-        if (env.get(node.value) == null) {
+        if (env.get(node) == null) {
             throw KaoriError.VariableError("expected " + node.value + " to be declared", this.line);
         }
 
@@ -169,13 +169,11 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitVariableStatement(Statement.Variable statement) {
-        Expression.Identifier identifier = (Expression.Identifier) statement.left;
-
-        if (this.environment.get(identifier.value) == null) {
+        if (this.environment.get(statement.left) == null) {
             statement.right.acceptVisitor(this);
-            this.environment.set(identifier.value, 1);
+            this.environment.set(statement.left, 1);
         } else {
-            throw KaoriError.VariableError(identifier.value + " is already declared", this.line);
+            throw KaoriError.VariableError(statement.left.value + " is already declared", this.line);
         }
     }
 

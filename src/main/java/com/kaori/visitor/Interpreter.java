@@ -133,7 +133,7 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(Expression.Assign node) {
         Object value = node.right.acceptVisitor(this);
 
-        this.environment.set((Expression.Identifier) node.left, value);
+        this.environment.set(node.left, value);
 
         return value;
     }
@@ -182,7 +182,7 @@ public class Interpreter extends Visitor<Object> {
     public void visitVariableStatement(Statement.Variable statement) {
         Object value = statement.right.acceptVisitor(this);
 
-        this.environment.set((Expression.Identifier) statement.left, value);
+        this.environment.set(statement.left, value);
     }
 
     @Override

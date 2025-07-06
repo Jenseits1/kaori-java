@@ -68,6 +68,7 @@ public class TokenStream {
             }
 
             Token token = tokens.get(j);
+
             if (token.kind != expected[i])
                 return false;
         }

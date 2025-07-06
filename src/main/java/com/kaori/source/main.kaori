@@ -1,6 +1,6 @@
 
 
-b = a;
-a: str = "hello";
 
-print(b);
+a: str = "hello";
+a = true;
+print(a);
