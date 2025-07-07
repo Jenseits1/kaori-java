@@ -135,4 +135,24 @@ public abstract class Statement {
             visitor.visitForLoopStatement(this);
         }
     }
+
+    public static class Function extends Statement {
+        public final Expression.Identifier name;
+        public final List<Statement.Variable> parameters;
+        public final Statement.Block block;
+
+        public Function(int line, Expression.Identifier name, List<Statement.Variable> parameters,
+                Statement.Block block) {
+            super(line);
+            this.name = name;
+            this.parameters = parameters;
+            this.block = block;
+        }
+
+        @Override
+        public <T> void acceptVisitor(Visitor<T> visitor) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'acceptVisitor'");
+        }
+    }
 }
