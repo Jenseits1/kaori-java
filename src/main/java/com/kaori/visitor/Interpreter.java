@@ -133,7 +133,8 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(Expression.Assign node) {
         Object value = node.right.acceptVisitor(this);
 
-        this.environment.set(node.left, value);
+        Environment<Object> env = this.environment.find(node.left);
+        env.set(node.left, value);
 
         return value;
     }
@@ -145,7 +146,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(Expression.Identifier node) {
-        return this.environment.get(node);
+        Environment<Object> env = this.environment.find(node);
+
+        return env.get(node);
     }
 
     @Override

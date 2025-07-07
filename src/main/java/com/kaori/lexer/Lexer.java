@@ -9,10 +9,9 @@ import com.kaori.token.TokenKind;
 
 public class Lexer {
     private final String source;
-    private int start;
+    private int index;
     private int current;
     private int line;
-    private char currentCharacter;
     private List<Token> tokens;
 
     public Lexer(String source) {
@@ -22,55 +21,52 @@ public class Lexer {
     private void advance() {
         this.current++;
 
-        if (this.current >= this.source.length()) {
-            this.currentCharacter = '\0';
-            return;
-        }
-
-        this.currentCharacter = this.source.charAt(this.current);
-
-        if (this.currentCharacter == '\n') {
+        if (!this.atEnd() && this.currentChar() == '\n') {
             this.line++;
         }
     }
 
-    private boolean fileAtEnd() {
+    private char currentChar() {
+        return this.source.charAt(this.current);
+    }
+
+    private boolean atEnd() {
         return this.current >= this.source.length();
     }
 
-    private void addToken(TokenKind type) {
-        Token token = new Token(type, this.line, this.start, this.current);
+    private void createToken(TokenKind kind) {
+        Token token = new Token(kind, this.line, this.index, this.current);
 
         this.tokens.add(token);
     }
 
-    private TokenKind number() {
-        while (!this.fileAtEnd() && Character.isDigit(this.currentCharacter)) {
+    private void scanNumber() {
+        while (!this.atEnd() && Character.isDigit(this.currentChar())) {
             this.advance();
         }
 
-        if (this.currentCharacter == '.') {
+        if (!this.atEnd() && this.currentChar() == '.') {
             this.advance();
         }
 
-        while (!this.fileAtEnd() && Character.isDigit(this.currentCharacter)) {
+        while (!this.atEnd() && Character.isDigit(this.currentChar())) {
             this.advance();
         }
 
-        return TokenKind.NUMBER_LITERAL;
+        this.createToken(TokenKind.NUMBER_LITERAL);
     }
 
-    private TokenKind identifierOrKeyword() {
-        while (!this.fileAtEnd() && Character.isAlphabetic(this.currentCharacter)) {
+    private void scanIdentifierOrKeyword() {
+        while (!this.atEnd() && Character.isAlphabetic(this.currentChar())) {
             this.advance();
         }
 
-        while (!this.fileAtEnd()
-                && (Character.isLetterOrDigit(this.currentCharacter) || this.currentCharacter == '_')) {
+        while (!this.atEnd()
+                && (Character.isLetterOrDigit(this.currentChar()) || this.currentChar() == '_')) {
             this.advance();
         }
 
-        return switch (this.source.substring(this.start, this.current)) {
+        TokenKind kind = switch (this.source.substring(this.index, this.current)) {
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;
@@ -83,16 +79,18 @@ public class Lexer {
             case "true", "false" -> TokenKind.BOOLEAN_LITERAL;
             default -> TokenKind.IDENTIFIER;
         };
+
+        this.createToken(kind);
     }
 
-    private TokenKind stringLiteral() {
+    private TokenKind scanStringLiteral() {
         this.advance();
 
-        while (!this.fileAtEnd() && this.currentCharacter != '"') {
+        while (!this.atEnd() && this.currentChar() != '"') {
             this.advance();
         }
 
-        if (this.currentCharacter != '"') {
+        if (!this.atEnd() && this.currentChar() != '"') {
             throw KaoriError.SyntaxError("expected closing quotation marks", this.line);
         }
 
@@ -101,7 +99,7 @@ public class Lexer {
         return TokenKind.STRING_LITERAL;
     }
 
-    private TokenKind symbol() {
+    private TokenKind scanSymbol() {
         String lookahead = this.source.substring(this.current);
 
         if (lookahead.startsWith("&&")) {
@@ -147,7 +145,7 @@ public class Lexer {
             return TokenKind.DECREMENT;
         }
 
-        TokenKind type = switch (this.currentCharacter) {
+        TokenKind kind = switch (this.currentChar()) {
             case '+' -> TokenKind.PLUS;
             case '-' -> TokenKind.MINUS;
             case '*' -> TokenKind.MULTIPLY;
@@ -171,36 +169,33 @@ public class Lexer {
 
         this.advance();
 
-        return type;
+        return kind;
     }
 
     private void reset() {
-        this.start = 0;
+        this.index = 0;
         this.current = 0;
         this.line = 1;
-        this.currentCharacter = this.source.charAt(0);
         this.tokens = new ArrayList<>();
     }
 
     private void start() {
-        while (!this.fileAtEnd()) {
-            if (Character.isWhitespace(this.currentCharacter)) {
+        while (!this.atEnd()) {
+            if (Character.isWhitespace(this.currentChar())) {
                 this.advance();
-            } else if (Character.isDigit(this.currentCharacter)) {
-                TokenKind type = number();
-                this.addToken(type);
-            } else if (Character.isLetter(this.currentCharacter)) {
-                TokenKind type = identifierOrKeyword();
-                this.addToken(type);
-            } else if (this.currentCharacter == '"') {
-                TokenKind type = stringLiteral();
-                this.addToken(type);
+            } else if (Character.isDigit(this.currentChar())) {
+                this.scanNumber();
+            } else if (Character.isLetter(this.currentChar())) {
+                this.scanIdentifierOrKeyword();
+
+            } else if (this.currentChar() == '"') {
+                this.scanStringLiteral();
+
             } else {
-                TokenKind type = symbol();
-                this.addToken(type);
+                this.scanSymbol();
             }
 
-            this.start = this.current;
+            this.index = this.current;
         }
     }
 
