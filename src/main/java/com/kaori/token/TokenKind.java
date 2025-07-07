@@ -25,7 +25,7 @@ public enum TokenKind {
     LESS("<"),
     LESS_EQUAL("<="),
 
-    // Punctuation
+    // Others
     ASSIGN("="),
     COMMA(","),
     SEMICOLON(";"),
