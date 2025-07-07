@@ -16,9 +16,9 @@ public abstract class KaoriType {
         }
 
         @Override
-        public boolean equals(KaoriType other) {
-            if (other instanceof Primitive o) {
-                return this.value == o.value;
+        public boolean equals(KaoriType type) {
+            if (type instanceof Primitive other) {
+                return this.value == other.value;
             }
 
             return false;
@@ -31,16 +31,33 @@ public abstract class KaoriType {
 
         public FunctionType(List<KaoriType> parameters, KaoriType returnType) {
             this.parameters = parameters;
-            this.returnType = parameters;
+            this.returnType = returnType;
         }
 
         @Override
-        public boolean equals(KaoriType other) {
-            if (other instanceof Primitive o) {
-                return this.value == o.value;
+        public boolean equals(KaoriType type) {
+            if (!(type instanceof FunctionType other)) {
+                return false;
             }
 
-            return false;
+            if (!this.returnType.equals(other.returnType)) {
+                return false;
+            }
+
+            if (this.parameters.size() != other.parameters.size()) {
+                return false;
+            }
+
+            for (int i = 0; i < this.parameters.size(); i++) {
+                KaoriType leftParameter = this.parameters.get(i);
+                KaoriType rightParameter = other.parameters.get(i);
+
+                if (!leftParameter.equals(rightParameter)) {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
