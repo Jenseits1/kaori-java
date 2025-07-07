@@ -425,6 +425,35 @@ public class Parser {
         return new Statement.ForLoop(line, variable, condition, increment, block);
     }
 
+    private Statement.Function functionStatement() {
+        int line = this.tokens.getLine();
+
+        this.tokens.consume(TokenKind.FUNCTION);
+
+        Expression.Identifier name = this.identifier();
+
+        this.tokens.consume(TokenKind.LEFT_PAREN);
+
+        List<Statement.Variable> parameters = new ArrayList<>();
+
+        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
+            Statement.Variable parameter = this.variableStatement();
+            parameters.add(parameter);
+
+            if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
+                break;
+            }
+
+            this.tokens.consume(TokenKind.COMMA);
+        }
+
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
+
+        Statement.Block block = this.blockStatement();
+
+        return new Statement.Function(line, name, parameters, block);
+    }
+
     private Statement statement() {
         Statement statement = switch (this.tokens.getCurrent()) {
             case PRINT -> this.printStatement();
@@ -432,6 +461,7 @@ public class Parser {
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
+            case FUNCTION -> this.functionStatement();
             default -> {
                 if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
                     yield this.variableStatement();
