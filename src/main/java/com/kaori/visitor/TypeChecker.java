@@ -18,11 +18,11 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.NUMBER;
         }
 
-        if (left == KaoriType.Primitive.STRING && right == KaoriType.Primitive.STRING) {
+        if (left.equals(KaoriType.Primitive.STRING) && right.equals(KaoriType.Primitive.STRING)) {
             return KaoriType.Primitive.STRING;
         }
 
@@ -34,7 +34,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.NUMBER;
         }
 
@@ -46,7 +46,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.NUMBER;
         }
 
@@ -58,7 +58,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.NUMBER;
         }
 
@@ -70,7 +70,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.NUMBER;
         }
 
@@ -82,7 +82,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.BOOLEAN && right == KaoriType.Primitive.BOOLEAN) {
+        if (left.equals(KaoriType.Primitive.BOOLEAN) && right.equals(KaoriType.Primitive.BOOLEAN)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -94,7 +94,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.BOOLEAN && right == KaoriType.Primitive.BOOLEAN) {
+        if (left.equals(KaoriType.Primitive.BOOLEAN) && right.equals(KaoriType.Primitive.BOOLEAN)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -106,7 +106,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == right) {
+        if (left.equals(right)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -118,7 +118,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == right) {
+        if (!left.equals(right)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -130,7 +130,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -142,7 +142,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -154,7 +154,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -166,7 +166,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER && right == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -178,7 +178,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = node.left.acceptVisitor(this);
         KaoriType right = node.right.acceptVisitor(this);
 
-        if (left == right) {
+        if (left.equals(right)) {
             return right;
         }
 
@@ -201,7 +201,7 @@ public class TypeChecker extends Visitor<KaoriType> {
     public KaoriType visitNot(Expression.Not node) {
         KaoriType value = node.left.acceptVisitor(this);
 
-        if (value == KaoriType.Primitive.BOOLEAN) {
+        if (value.equals(KaoriType.Primitive.BOOLEAN)) {
             return KaoriType.Primitive.BOOLEAN;
         }
 
@@ -212,7 +212,7 @@ public class TypeChecker extends Visitor<KaoriType> {
     public KaoriType visitNegation(Expression.Negation node) {
         KaoriType left = node.left.acceptVisitor(this);
 
-        if (left == KaoriType.Primitive.NUMBER) {
+        if (left.equals(KaoriType.Primitive.NUMBER)) {
             return KaoriType.Primitive.NUMBER;
         }
 
@@ -238,7 +238,7 @@ public class TypeChecker extends Visitor<KaoriType> {
         KaoriType left = statement.type;
         KaoriType right = statement.right.acceptVisitor(this);
 
-        if (left == right) {
+        if (left.equals(right)) {
             this.environment.set(statement.left, right);
         } else {
             throw KaoriError.TypeError("expected " + left + " type for " + statement.left.value, this.line);
@@ -254,7 +254,7 @@ public class TypeChecker extends Visitor<KaoriType> {
     public void visitIfStatement(Statement.If statement) {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
-        if (condition != KaoriType.Primitive.BOOLEAN) {
+        if (!condition.equals(KaoriType.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -267,7 +267,7 @@ public class TypeChecker extends Visitor<KaoriType> {
     public void visitWhileLoopStatement(Statement.WhileLoop statement) {
         KaoriType condition = statement.condition.acceptVisitor(this);
 
-        if (condition != KaoriType.Primitive.BOOLEAN) {
+        if (!condition.equals(KaoriType.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -280,7 +280,7 @@ public class TypeChecker extends Visitor<KaoriType> {
 
         KaoriType condition = statement.condition.acceptVisitor(this);
 
-        if (condition != KaoriType.Primitive.BOOLEAN) {
+        if (!condition.equals(KaoriType.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
