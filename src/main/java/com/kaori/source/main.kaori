@@ -1,15 +1,2 @@
-
-
-for i: f64 = 0; i < 10; i++ {
-    print(i);
-}
-
-while i < 15 {
-    print(i);
-    i++;
-}
-
-a: str = "hello world";
-b: bool = true;
-b = false;
-a = "abcd";
+i: f64;
+print(i);

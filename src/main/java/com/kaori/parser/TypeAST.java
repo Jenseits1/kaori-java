@@ -25,18 +25,18 @@ public abstract class TypeAST {
         }
     }
 
-    public static class FunctionType extends TypeAST {
+    public static class Function extends TypeAST {
         private final List<TypeAST> parameters;
         private final TypeAST returnType;
 
-        public FunctionType(List<TypeAST> parameters, TypeAST returnType) {
+        public Function(List<TypeAST> parameters, TypeAST returnType) {
             this.parameters = parameters;
             this.returnType = returnType;
         }
 
         @Override
         public boolean equals(TypeAST type) {
-            if (!(type instanceof FunctionType other)) {
+            if (!(type instanceof Function other)) {
                 return false;
             }
 
