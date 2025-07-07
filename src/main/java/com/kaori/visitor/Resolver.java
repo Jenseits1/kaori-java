@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.Expression;
+import com.kaori.parser.Expression.FunctionCall;
 import com.kaori.parser.Statement;
 
 public class Resolver extends Visitor<Object> {
@@ -208,6 +209,12 @@ public class Resolver extends Visitor<Object> {
     @Override
     public void visitFunctionStatement(Statement.Function statement) {
 
+    }
+
+    @Override
+    public Object visitFunctionCall(FunctionCall node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 
 }

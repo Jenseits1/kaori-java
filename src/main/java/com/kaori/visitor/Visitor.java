@@ -3,6 +3,7 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.parser.Expression;
+import com.kaori.parser.Expression.FunctionCall;
 import com.kaori.parser.Statement;
 
 public abstract class Visitor<T> {
@@ -60,9 +61,11 @@ public abstract class Visitor<T> {
 
     public abstract T visitNot(Expression.Not node);
 
-    public abstract T visitLiteral(Expression.Literal Literal);
+    public abstract T visitLiteral(Expression.Literal node);
 
     public abstract T visitIdentifier(Expression.Identifier node);
+
+    public abstract T visitFunctionCall(Expression.FunctionCall node);
 
     // Statements
     public abstract void visitExpressionStatement(Statement.Expr statement);

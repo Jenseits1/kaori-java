@@ -1,5 +1,7 @@
 package com.kaori.parser;
 
+import java.util.List;
+
 import com.kaori.visitor.Visitor;
 
 public abstract class Expression {
@@ -266,6 +268,21 @@ public abstract class Expression {
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitNegation(this);
+        }
+    }
+
+    public static class FunctionCall extends Expression {
+        public final Expression callee;
+        public final List<Expression> arguments;
+
+        public FunctionCall(Expression callee, List<Expression> arguments) {
+            this.callee = callee;
+            this.arguments = arguments;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            return visitor.visitFunctionCall(this);
         }
     }
 }

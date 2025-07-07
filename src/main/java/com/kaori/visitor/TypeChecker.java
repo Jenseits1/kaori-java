@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.Expression;
+import com.kaori.parser.Expression.FunctionCall;
 import com.kaori.parser.KaoriType;
 import com.kaori.parser.Statement;
 
@@ -291,6 +292,12 @@ public class TypeChecker extends Visitor<KaoriType> {
     public void visitFunctionStatement(Statement.Function statement) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public KaoriType visitFunctionCall(FunctionCall node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 
 }

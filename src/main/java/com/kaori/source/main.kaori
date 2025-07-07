@@ -1,5 +1,10 @@
 
 
-def sum(a: f64 = 5, b: f64) {
+def foo(a: f64, b: f64) {
+    bar(a + b);
+}
+
+def bar(a: f64 , b: f64) {
     print(a + b);
 }
+
