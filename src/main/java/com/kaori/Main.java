@@ -31,6 +31,8 @@ public class Main {
             Lexer lexer = new Lexer(source);
 
             List<Token> tokens = lexer.scan();
+
+            System.out.println(gson.toJson(tokens));
             TokenStream tokenStream = new TokenStream(tokens, source);
 
             Parser parser = new Parser(tokenStream);

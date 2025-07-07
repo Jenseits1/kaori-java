@@ -9,8 +9,8 @@ import com.kaori.token.TokenKind;
 
 public class Lexer {
     private final String source;
-    private int index;
-    private int current;
+    private int left;
+    private int right;
     private int line;
     private List<Token> tokens;
 
@@ -19,7 +19,7 @@ public class Lexer {
     }
 
     private void advance() {
-        this.current++;
+        this.right++;
 
         if (!this.atEnd() && this.currentChar() == '\n') {
             this.line++;
@@ -27,16 +27,16 @@ public class Lexer {
     }
 
     private char currentChar() {
-        return this.source.charAt(this.current);
+        return this.source.charAt(this.right);
     }
 
     private boolean atEnd() {
-        return this.current >= this.source.length();
+        return this.right >= this.source.length();
     }
 
     private boolean lookAhead(String expected) {
         for (int i = 0; i < expected.length(); i++) {
-            int j = this.current + i;
+            int j = this.left + i;
 
             if (j >= this.source.length()) {
                 return false;
@@ -51,9 +51,22 @@ public class Lexer {
     }
 
     private void createToken(TokenKind kind) {
-        Token token = new Token(kind, this.line, this.index, this.current);
+        int position = this.left;
+        int size = this.right - this.left;
+
+        Token token = new Token(kind, this.line, position, size);
 
         this.tokens.add(token);
+
+        this.left = this.right;
+    }
+
+    private void scanWhiteSpace() {
+        while (!this.atEnd() && Character.isWhitespace(this.currentChar())) {
+            this.advance();
+        }
+
+        this.left = this.right;
     }
 
     private void scanNumber() {
@@ -82,7 +95,7 @@ public class Lexer {
             this.advance();
         }
 
-        TokenKind kind = switch (this.source.substring(this.index, this.current)) {
+        TokenKind kind = switch (this.source.substring(this.left, this.right)) {
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;
@@ -247,8 +260,8 @@ public class Lexer {
     }
 
     private void reset() {
-        this.index = 0;
-        this.current = 0;
+        this.left = 0;
+        this.right = 0;
         this.line = 1;
         this.tokens = new ArrayList<>();
     }
@@ -256,20 +269,16 @@ public class Lexer {
     private void start() {
         while (!this.atEnd()) {
             if (Character.isWhitespace(this.currentChar())) {
-                this.advance();
+                this.scanWhiteSpace();
             } else if (Character.isDigit(this.currentChar())) {
                 this.scanNumber();
             } else if (Character.isLetter(this.currentChar())) {
                 this.scanIdentifierOrKeyword();
-
             } else if (this.currentChar() == '"') {
                 this.scanStringLiteral();
-
             } else {
                 this.scanSymbol();
             }
-
-            this.index = this.current;
         }
     }
 

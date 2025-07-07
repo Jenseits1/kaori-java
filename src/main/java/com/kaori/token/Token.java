@@ -3,13 +3,13 @@ package com.kaori.token;
 public class Token {
     public final TokenKind kind;
     public final int line;
-    public final int start;
-    public final int end;
+    public final int position;
+    public final int size;
 
-    public Token(TokenKind kind, int line, int start, int end) {
+    public Token(TokenKind kind, int line, int position, int size) {
         this.kind = kind;
         this.line = line;
-        this.start = start;
-        this.end = end;
+        this.position = position;
+        this.size = size;
     }
 }

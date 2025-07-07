@@ -1,6 +1,6 @@
 
 
-for (i: f64 = 0; i < 2; i++) {
+for i: f64 = 0; i < 2; i++ {
     print(i);
 }
 

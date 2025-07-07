@@ -28,10 +28,7 @@ public class TokenStream {
     }
 
     public String getLexeme() {
-        int start = this.current.start;
-        int end = this.current.end;
-
-        return this.source.substring(start, end);
+        return this.source.substring(this.current.position, this.current.position + this.current.size);
     }
 
     public boolean atEnd() {
@@ -48,8 +45,9 @@ public class TokenStream {
     }
 
     public void consume(TokenKind expected) {
-        if (current.kind != expected) {
-            throw KaoriError.SyntaxError("expected '" + expected + "' instead of '" + current.kind + "'", this.line);
+        if (this.current.kind != expected) {
+            throw KaoriError.SyntaxError("expected '" + expected + "' instead of '" + this.current.kind + "'",
+                    this.line);
         }
 
         this.advance();
@@ -67,7 +65,7 @@ public class TokenStream {
                 return false;
             }
 
-            Token token = tokens.get(j);
+            Token token = this.tokens.get(j);
 
             if (token.kind != expected[i])
                 return false;
