@@ -3,7 +3,7 @@ package com.kaori.visitor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.kaori.parser.Expression;
+import com.kaori.parser.ExpressionAST;
 
 public class Environment<T> {
     private final Environment<T> previous;
@@ -23,7 +23,7 @@ public class Environment<T> {
         return this.previous;
     }
 
-    public Environment<T> find(Expression.Identifier identifier) {
+    public Environment<T> find(ExpressionAST.Identifier identifier) {
         if (this.values.containsKey(identifier.value) || this.previous == null) {
             return this;
         } else {
@@ -31,11 +31,11 @@ public class Environment<T> {
         }
     }
 
-    public T get(Expression.Identifier identifier) {
+    public T get(ExpressionAST.Identifier identifier) {
         return this.values.get(identifier.value);
     }
 
-    public void set(Expression.Identifier identifier, T value) {
+    public void set(ExpressionAST.Identifier identifier, T value) {
         this.values.put(identifier.value, value);
     }
 

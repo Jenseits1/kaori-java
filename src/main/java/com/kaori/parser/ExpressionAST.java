@@ -1,17 +1,16 @@
 package com.kaori.parser;
 
 import java.util.List;
-
 import com.kaori.visitor.Visitor;
 
-public abstract class Expression {
+public abstract class ExpressionAST {
     public abstract <T> T acceptVisitor(Visitor<T> visitor);
 
-    public static class Literal extends Expression {
-        public final KaoriType type;
+    public static class Literal extends ExpressionAST {
+        public final TypeAST type;
         public final Object value;
 
-        public Literal(KaoriType type, Object value) {
+        public Literal(TypeAST type, Object value) {
             this.type = type;
             this.value = value;
         }
@@ -22,7 +21,7 @@ public abstract class Expression {
         }
     }
 
-    public static class Identifier extends Expression {
+    public static class Identifier extends ExpressionAST {
         public final String value;
 
         public Identifier(String value) {
@@ -35,11 +34,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Add extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Add extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Add(Expression left, Expression right) {
+        public Add(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -50,11 +49,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Subtract extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Subtract extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Subtract(Expression left, Expression right) {
+        public Subtract(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -65,11 +64,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Multiply extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Multiply extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Multiply(Expression left, Expression right) {
+        public Multiply(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -80,11 +79,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Divide extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Divide extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Divide(Expression left, Expression right) {
+        public Divide(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -95,11 +94,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Modulo extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Modulo extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Modulo(Expression left, Expression right) {
+        public Modulo(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -110,11 +109,11 @@ public abstract class Expression {
         }
     }
 
-    public static class And extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class And extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public And(Expression left, Expression right) {
+        public And(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -125,11 +124,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Or extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Or extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Or(Expression left, Expression right) {
+        public Or(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -140,11 +139,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Equal extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Equal extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Equal(Expression left, Expression right) {
+        public Equal(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -155,11 +154,11 @@ public abstract class Expression {
         }
     }
 
-    public static class NotEqual extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class NotEqual extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public NotEqual(Expression left, Expression right) {
+        public NotEqual(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -170,11 +169,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Greater extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Greater extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Greater(Expression left, Expression right) {
+        public Greater(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -185,11 +184,11 @@ public abstract class Expression {
         }
     }
 
-    public static class GreaterEqual extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class GreaterEqual extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public GreaterEqual(Expression left, Expression right) {
+        public GreaterEqual(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -200,11 +199,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Less extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class Less extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public Less(Expression left, Expression right) {
+        public Less(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -215,11 +214,11 @@ public abstract class Expression {
         }
     }
 
-    public static class LessEqual extends Expression {
-        public final Expression left;
-        public final Expression right;
+    public static class LessEqual extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
 
-        public LessEqual(Expression left, Expression right) {
+        public LessEqual(ExpressionAST left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -230,11 +229,11 @@ public abstract class Expression {
         }
     }
 
-    public static class Assign extends Expression {
-        public final Expression.Identifier left;
-        public final Expression right;
+    public static class Assign extends ExpressionAST {
+        public final Identifier left;
+        public final ExpressionAST right;
 
-        public Assign(Expression.Identifier left, Expression right) {
+        public Assign(Identifier left, ExpressionAST right) {
             this.left = left;
             this.right = right;
         }
@@ -245,10 +244,10 @@ public abstract class Expression {
         }
     }
 
-    public static class Not extends Expression {
-        public final Expression left;
+    public static class Not extends ExpressionAST {
+        public final ExpressionAST left;
 
-        public Not(Expression left) {
+        public Not(ExpressionAST left) {
             this.left = left;
         }
 
@@ -258,10 +257,10 @@ public abstract class Expression {
         }
     }
 
-    public static class Negation extends Expression {
-        public final Expression left;
+    public static class Negation extends ExpressionAST {
+        public final ExpressionAST left;
 
-        public Negation(Expression left) {
+        public Negation(ExpressionAST left) {
             this.left = left;
         }
 
@@ -271,11 +270,11 @@ public abstract class Expression {
         }
     }
 
-    public static class FunctionCall extends Expression {
-        public final Expression callee;
-        public final List<Expression> arguments;
+    public static class FunctionCall extends ExpressionAST {
+        public final ExpressionAST callee;
+        public final List<ExpressionAST> arguments;
 
-        public FunctionCall(Expression callee, List<Expression> arguments) {
+        public FunctionCall(ExpressionAST callee, List<ExpressionAST> arguments) {
             this.callee = callee;
             this.arguments = arguments;
         }

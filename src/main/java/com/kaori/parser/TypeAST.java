@@ -2,10 +2,10 @@ package com.kaori.parser;
 
 import java.util.List;
 
-public abstract class KaoriType {
-    public abstract boolean equals(KaoriType other);
+public abstract class TypeAST {
+    public abstract boolean equals(TypeAST other);
 
-    public static class Primitive extends KaoriType {
+    public static class Primitive extends TypeAST {
         private final String value;
         public static final Primitive STRING = new Primitive("string");
         public static final Primitive NUMBER = new Primitive("number");
@@ -16,7 +16,7 @@ public abstract class KaoriType {
         }
 
         @Override
-        public boolean equals(KaoriType type) {
+        public boolean equals(TypeAST type) {
             if (type instanceof Primitive other) {
                 return this.value == other.value;
             }
@@ -25,17 +25,17 @@ public abstract class KaoriType {
         }
     }
 
-    public static class FunctionType extends KaoriType {
-        private final List<KaoriType> parameters;
-        private final KaoriType returnType;
+    public static class FunctionType extends TypeAST {
+        private final List<TypeAST> parameters;
+        private final TypeAST returnType;
 
-        public FunctionType(List<KaoriType> parameters, KaoriType returnType) {
+        public FunctionType(List<TypeAST> parameters, TypeAST returnType) {
             this.parameters = parameters;
             this.returnType = returnType;
         }
 
         @Override
-        public boolean equals(KaoriType type) {
+        public boolean equals(TypeAST type) {
             if (!(type instanceof FunctionType other)) {
                 return false;
             }
@@ -49,8 +49,8 @@ public abstract class KaoriType {
             }
 
             for (int i = 0; i < this.parameters.size(); i++) {
-                KaoriType leftParameter = this.parameters.get(i);
-                KaoriType rightParameter = other.parameters.get(i);
+                TypeAST leftParameter = this.parameters.get(i);
+                TypeAST rightParameter = other.parameters.get(i);
 
                 if (!leftParameter.equals(rightParameter)) {
                     return false;

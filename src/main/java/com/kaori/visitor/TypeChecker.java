@@ -3,180 +3,180 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.error.KaoriError;
-import com.kaori.parser.Expression;
-import com.kaori.parser.Expression.FunctionCall;
-import com.kaori.parser.KaoriType;
-import com.kaori.parser.Statement;
+import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.ExpressionAST.FunctionCall;
+import com.kaori.parser.TypeAST;
+import com.kaori.parser.StatementAST;
 
-public class TypeChecker extends Visitor<KaoriType> {
-    public TypeChecker(List<Statement> statements) {
+public class TypeChecker extends Visitor<TypeAST> {
+    public TypeChecker(List<StatementAST> statements) {
         super(statements);
     }
 
     @Override
-    public KaoriType visitAdd(Expression.Add node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitAdd(ExpressionAST.Add node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.NUMBER;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.NUMBER;
         }
 
-        if (left.equals(KaoriType.Primitive.STRING) && right.equals(KaoriType.Primitive.STRING)) {
-            return KaoriType.Primitive.STRING;
+        if (left.equals(TypeAST.Primitive.STRING) && right.equals(TypeAST.Primitive.STRING)) {
+            return TypeAST.Primitive.STRING;
         }
 
         throw KaoriError.TypeError("expected number or string operands for '+'", this.line);
     }
 
     @Override
-    public KaoriType visitSubtract(Expression.Subtract node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitSubtract(ExpressionAST.Subtract node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.NUMBER;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '-'", this.line);
     }
 
     @Override
-    public KaoriType visitMultiply(Expression.Multiply node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitMultiply(ExpressionAST.Multiply node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.NUMBER;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '*'", this.line);
     }
 
     @Override
-    public KaoriType visitDivide(Expression.Divide node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitDivide(ExpressionAST.Divide node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.NUMBER;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '/'", this.line);
     }
 
     @Override
-    public KaoriType visitModulo(Expression.Modulo node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitModulo(ExpressionAST.Modulo node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.NUMBER;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected number operands for '%'", this.line);
     }
 
     @Override
-    public KaoriType visitAnd(Expression.And node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitAnd(ExpressionAST.And node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.BOOLEAN) && right.equals(KaoriType.Primitive.BOOLEAN)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (left.equals(TypeAST.Primitive.BOOLEAN) && right.equals(TypeAST.Primitive.BOOLEAN)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected boolean operands for '&&'", this.line);
     }
 
     @Override
-    public KaoriType visitOr(Expression.Or node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitOr(ExpressionAST.Or node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.BOOLEAN) && right.equals(KaoriType.Primitive.BOOLEAN)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (left.equals(TypeAST.Primitive.BOOLEAN) && right.equals(TypeAST.Primitive.BOOLEAN)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected boolean operands for '||'", this.line);
     }
 
     @Override
-    public KaoriType visitEqual(Expression.Equal node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitEqual(ExpressionAST.Equal node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
         if (left.equals(right)) {
-            return KaoriType.Primitive.BOOLEAN;
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected operands of same type for '=='", this.line);
     }
 
     @Override
-    public KaoriType visitNotEqual(Expression.NotEqual node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitNotEqual(ExpressionAST.NotEqual node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
         if (!left.equals(right)) {
-            return KaoriType.Primitive.BOOLEAN;
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected operands of same type for '!='", this.line);
     }
 
     @Override
-    public KaoriType visitGreater(Expression.Greater node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitGreater(ExpressionAST.Greater node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '>'", this.line);
     }
 
     @Override
-    public KaoriType visitGreaterEqual(Expression.GreaterEqual node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitGreaterEqual(ExpressionAST.GreaterEqual node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '>='", this.line);
     }
 
     @Override
-    public KaoriType visitLess(Expression.Less node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitLess(ExpressionAST.Less node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '<'", this.line);
     }
 
     @Override
-    public KaoriType visitLessEqual(Expression.LessEqual node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitLessEqual(ExpressionAST.LessEqual node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER) && right.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (left.equals(TypeAST.Primitive.NUMBER) && right.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected number operands for '<='", this.line);
     }
 
     @Override
-    public KaoriType visitAssign(Expression.Assign node) {
-        KaoriType left = node.left.acceptVisitor(this);
-        KaoriType right = node.right.acceptVisitor(this);
+    public TypeAST visitAssign(ExpressionAST.Assign node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
 
         if (left.equals(right)) {
             return right;
@@ -186,57 +186,54 @@ public class TypeChecker extends Visitor<KaoriType> {
     }
 
     @Override
-    public KaoriType visitLiteral(Expression.Literal node) {
+    public TypeAST visitLiteral(ExpressionAST.Literal node) {
         return node.type;
     }
 
     @Override
-    public KaoriType visitIdentifier(Expression.Identifier node) {
-        Environment<KaoriType> env = this.environment.find(node);
-
+    public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
+        Environment<TypeAST> env = this.environment.find(node);
         return env.get(node);
     }
 
     @Override
-    public KaoriType visitNot(Expression.Not node) {
-        KaoriType value = node.left.acceptVisitor(this);
+    public TypeAST visitNot(ExpressionAST.Not node) {
+        TypeAST value = node.left.acceptVisitor(this);
 
-        if (value.equals(KaoriType.Primitive.BOOLEAN)) {
-            return KaoriType.Primitive.BOOLEAN;
+        if (value.equals(TypeAST.Primitive.BOOLEAN)) {
+            return TypeAST.Primitive.BOOLEAN;
         }
 
         throw KaoriError.TypeError("expected boolean operand for '!'", this.line);
     }
 
     @Override
-    public KaoriType visitNegation(Expression.Negation node) {
-        KaoriType left = node.left.acceptVisitor(this);
+    public TypeAST visitNegation(ExpressionAST.Negation node) {
+        TypeAST left = node.left.acceptVisitor(this);
 
-        if (left.equals(KaoriType.Primitive.NUMBER)) {
-            return KaoriType.Primitive.NUMBER;
+        if (left.equals(TypeAST.Primitive.NUMBER)) {
+            return TypeAST.Primitive.NUMBER;
         }
 
         throw KaoriError.TypeError("expected float operand for unary '-'", this.line);
     }
 
     @Override
-    public void visitPrintStatement(Statement.Print statement) {
+    public void visitPrintStatement(StatementAST.Print statement) {
         statement.expression.acceptVisitor(this);
     }
 
     @Override
-    public void visitBlockStatement(Statement.Block statement) {
-        this.environment = new Environment<KaoriType>(environment);
-
+    public void visitBlockStatement(StatementAST.Block statement) {
+        this.environment = new Environment<>(environment);
         this.visitStatements(statement.statements);
-
         this.environment = environment.getPrevious();
     }
 
     @Override
-    public void visitVariableStatement(Statement.Variable statement) {
-        KaoriType left = statement.type;
-        KaoriType right = statement.right.acceptVisitor(this);
+    public void visitVariableStatement(StatementAST.Variable statement) {
+        TypeAST left = statement.type;
+        TypeAST right = statement.right.acceptVisitor(this);
 
         if (left.equals(right)) {
             this.environment.set(statement.left, right);
@@ -246,28 +243,27 @@ public class TypeChecker extends Visitor<KaoriType> {
     }
 
     @Override
-    public void visitExpressionStatement(Statement.Expr statement) {
+    public void visitExpressionStatement(StatementAST.Expr statement) {
         statement.expression.acceptVisitor(this);
     }
 
     @Override
-    public void visitIfStatement(Statement.If statement) {
-        KaoriType condition = statement.condition.acceptVisitor(this);
+    public void visitIfStatement(StatementAST.If statement) {
+        TypeAST condition = statement.condition.acceptVisitor(this);
 
-        if (!condition.equals(KaoriType.Primitive.BOOLEAN)) {
+        if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
         statement.thenBranch.acceptVisitor(this);
         statement.elseBranch.acceptVisitor(this);
-
     }
 
     @Override
-    public void visitWhileLoopStatement(Statement.WhileLoop statement) {
-        KaoriType condition = statement.condition.acceptVisitor(this);
+    public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
+        TypeAST condition = statement.condition.acceptVisitor(this);
 
-        if (!condition.equals(KaoriType.Primitive.BOOLEAN)) {
+        if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -275,12 +271,12 @@ public class TypeChecker extends Visitor<KaoriType> {
     }
 
     @Override
-    public void visitForLoopStatement(Statement.ForLoop statement) {
+    public void visitForLoopStatement(StatementAST.ForLoop statement) {
         statement.variable.acceptVisitor(this);
 
-        KaoriType condition = statement.condition.acceptVisitor(this);
+        TypeAST condition = statement.condition.acceptVisitor(this);
 
-        if (!condition.equals(KaoriType.Primitive.BOOLEAN)) {
+        if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError("expected boolean value for condition", this.line);
         }
 
@@ -289,15 +285,12 @@ public class TypeChecker extends Visitor<KaoriType> {
     }
 
     @Override
-    public void visitFunctionStatement(Statement.Function statement) {
+    public void visitFunctionStatement(StatementAST.Function statement) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
-    public KaoriType visitFunctionCall(FunctionCall node) {
-        // TODO Auto-generated method stub
+    public TypeAST visitFunctionCall(FunctionCall node) {
         throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
-
 }

@@ -3,134 +3,119 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.error.KaoriError;
-import com.kaori.parser.Expression;
-import com.kaori.parser.Expression.FunctionCall;
-import com.kaori.parser.Statement;
+import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.StatementAST;
 
 public class Resolver extends Visitor<Object> {
-    public Resolver(List<Statement> statements) {
+    public Resolver(List<StatementAST> statements) {
         super(statements);
     }
 
     @Override
-    public Object visitAdd(Expression.Add node) {
+    public Object visitAdd(ExpressionAST.Add node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitSubtract(Expression.Subtract node) {
+    public Object visitSubtract(ExpressionAST.Subtract node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitMultiply(Expression.Multiply node) {
+    public Object visitMultiply(ExpressionAST.Multiply node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitDivide(Expression.Divide node) {
+    public Object visitDivide(ExpressionAST.Divide node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitModulo(Expression.Modulo node) {
+    public Object visitModulo(ExpressionAST.Modulo node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitAnd(Expression.And node) {
+    public Object visitAnd(ExpressionAST.And node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitOr(Expression.Or node) {
+    public Object visitOr(ExpressionAST.Or node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitEqual(Expression.Equal node) {
+    public Object visitEqual(ExpressionAST.Equal node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitNotEqual(Expression.NotEqual node) {
+    public Object visitNotEqual(ExpressionAST.NotEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitGreater(Expression.Greater node) {
+    public Object visitGreater(ExpressionAST.Greater node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitGreaterEqual(Expression.GreaterEqual node) {
+    public Object visitGreaterEqual(ExpressionAST.GreaterEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitLess(Expression.Less node) {
+    public Object visitLess(ExpressionAST.Less node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitLessEqual(Expression.LessEqual node) {
+    public Object visitLessEqual(ExpressionAST.LessEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitAssign(Expression.Assign node) {
+    public Object visitAssign(ExpressionAST.Assign node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitLiteral(Expression.Literal node) {
+    public Object visitLiteral(ExpressionAST.Literal node) {
         return null;
     }
 
     @Override
-    public Object visitIdentifier(Expression.Identifier node) {
+    public Object visitIdentifier(ExpressionAST.Identifier node) {
         Environment<Object> env = this.environment.find(node);
 
         if (env.get(node) == null) {
@@ -141,35 +126,31 @@ public class Resolver extends Visitor<Object> {
     }
 
     @Override
-    public Object visitNot(Expression.Not node) {
+    public Object visitNot(ExpressionAST.Not node) {
         node.left.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public Object visitNegation(Expression.Negation node) {
+    public Object visitNegation(ExpressionAST.Negation node) {
         node.left.acceptVisitor(this);
-
         return null;
     }
 
     @Override
-    public void visitPrintStatement(Statement.Print statement) {
+    public void visitPrintStatement(StatementAST.Print statement) {
         statement.expression.acceptVisitor(this);
     }
 
     @Override
-    public void visitBlockStatement(Statement.Block statement) {
-        this.environment = new Environment<Object>(environment);
-
+    public void visitBlockStatement(StatementAST.Block statement) {
+        this.environment = new Environment<>(environment);
         this.visitStatements(statement.statements);
-
         this.environment = environment.getPrevious();
     }
 
     @Override
-    public void visitVariableStatement(Statement.Variable statement) {
+    public void visitVariableStatement(StatementAST.Variable statement) {
         if (this.environment.get(statement.left) == null) {
             statement.right.acceptVisitor(this);
             this.environment.set(statement.left, 1);
@@ -179,42 +160,38 @@ public class Resolver extends Visitor<Object> {
     }
 
     @Override
-    public void visitExpressionStatement(Statement.Expr statement) {
+    public void visitExpressionStatement(StatementAST.Expr statement) {
         statement.expression.acceptVisitor(this);
     }
 
     @Override
-    public void visitIfStatement(Statement.If statement) {
+    public void visitIfStatement(StatementAST.If statement) {
         statement.condition.acceptVisitor(this);
         statement.thenBranch.acceptVisitor(this);
         statement.elseBranch.acceptVisitor(this);
-
     }
 
     @Override
-    public void visitWhileLoopStatement(Statement.WhileLoop statement) {
+    public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
         statement.condition.acceptVisitor(this);
         statement.block.acceptVisitor(this);
     }
 
     @Override
-    public void visitForLoopStatement(Statement.ForLoop statement) {
+    public void visitForLoopStatement(StatementAST.ForLoop statement) {
         statement.variable.acceptVisitor(this);
         statement.condition.acceptVisitor(this);
         statement.block.acceptVisitor(this);
         statement.increment.acceptVisitor(this);
-
     }
 
     @Override
-    public void visitFunctionStatement(Statement.Function statement) {
-
+    public void visitFunctionStatement(StatementAST.Function statement) {
+        // Function resolution logic here, if applicable
     }
 
     @Override
-    public Object visitFunctionCall(FunctionCall node) {
-        // TODO Auto-generated method stub
+    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
         throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
-
 }

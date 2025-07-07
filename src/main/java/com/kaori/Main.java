@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 import com.kaori.parser.Parser;
-import com.kaori.parser.Statement;
+import com.kaori.parser.StatementAST;
 import com.kaori.token.Token;
 import com.kaori.token.TokenStream;
 import com.kaori.visitor.Interpreter;
@@ -36,7 +36,7 @@ public class Main {
 
             Parser parser = new Parser(tokenStream);
 
-            List<Statement> ast = parser.parse();
+            List<StatementAST> ast = parser.parse();
 
             List<Visitor<?>> visitors = new ArrayList<>();
             visitors.add(new Resolver(ast));

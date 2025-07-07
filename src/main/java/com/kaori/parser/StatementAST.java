@@ -5,19 +5,19 @@ import java.util.List;
 
 import com.kaori.visitor.Visitor;
 
-public abstract class Statement {
+public abstract class StatementAST {
     public final int line;
 
-    private Statement(int line) {
+    private StatementAST(int line) {
         this.line = line;
     }
 
     public abstract <T> void acceptVisitor(Visitor<T> visitor);
 
-    public static class Print extends Statement {
-        public final Expression expression;
+    public static class Print extends StatementAST {
+        public final ExpressionAST expression;
 
-        public Print(int line, Expression expression) {
+        public Print(int line, ExpressionAST expression) {
             super(line);
             this.expression = expression;
         }
@@ -28,10 +28,10 @@ public abstract class Statement {
         }
     }
 
-    public static class Expr extends Statement {
-        public final Expression expression;
+    public static class Expr extends StatementAST {
+        public final ExpressionAST expression;
 
-        public Expr(int line, Expression expression) {
+        public Expr(int line, ExpressionAST expression) {
             super(line);
             this.expression = expression;
         }
@@ -42,12 +42,12 @@ public abstract class Statement {
         }
     }
 
-    public static class Variable extends Statement {
-        public final Expression.Identifier left;
-        public final Expression right;
-        public final KaoriType type;
+    public static class Variable extends StatementAST {
+        public final ExpressionAST.Identifier left;
+        public final ExpressionAST right;
+        public final TypeAST type;
 
-        public Variable(int line, Expression.Identifier left, Expression right, KaoriType type) {
+        public Variable(int line, ExpressionAST.Identifier left, ExpressionAST right, TypeAST type) {
             super(line);
             this.left = left;
             this.right = right;
@@ -58,13 +58,12 @@ public abstract class Statement {
         public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitVariableStatement(this);
         }
-
     }
 
-    public static class Block extends Statement {
-        public final List<Statement> statements;
+    public static class Block extends StatementAST {
+        public final List<StatementAST> statements;
 
-        public Block(int line, List<Statement> statements) {
+        public Block(int line, List<StatementAST> statements) {
             super(line);
             this.statements = statements;
         }
@@ -80,12 +79,12 @@ public abstract class Statement {
         }
     }
 
-    public static class If extends Statement {
-        public final Expression condition;
-        public final Statement.Block thenBranch;
-        public final Statement elseBranch;
+    public static class If extends StatementAST {
+        public final ExpressionAST condition;
+        public final Block thenBranch;
+        public final StatementAST elseBranch;
 
-        public If(int line, Expression condition, Statement.Block thenBranch, Statement elseBranch) {
+        public If(int line, ExpressionAST condition, Block thenBranch, StatementAST elseBranch) {
             super(line);
             this.condition = condition;
             this.thenBranch = thenBranch;
@@ -96,14 +95,13 @@ public abstract class Statement {
         public <T> void acceptVisitor(Visitor<T> visitor) {
             visitor.visitIfStatement(this);
         }
-
     }
 
-    public static class WhileLoop extends Statement {
-        public final Expression condition;
-        public final Statement.Block block;
+    public static class WhileLoop extends StatementAST {
+        public final ExpressionAST condition;
+        public final Block block;
 
-        public WhileLoop(int line, Expression condition, Statement.Block block) {
+        public WhileLoop(int line, ExpressionAST condition, Block block) {
             super(line);
             this.condition = condition;
             this.block = block;
@@ -115,14 +113,13 @@ public abstract class Statement {
         }
     }
 
-    public static class ForLoop extends Statement {
-        public final Statement.Variable variable;
-        public final Expression condition;
-        public final Expression increment;
-        public final Statement.Block block;
+    public static class ForLoop extends StatementAST {
+        public final Variable variable;
+        public final ExpressionAST condition;
+        public final ExpressionAST increment;
+        public final Block block;
 
-        public ForLoop(int line, Statement.Variable variable, Expression condition, Expression increment,
-                Statement.Block block) {
+        public ForLoop(int line, Variable variable, ExpressionAST condition, ExpressionAST increment, Block block) {
             super(line);
             this.variable = variable;
             this.condition = condition;
@@ -136,13 +133,12 @@ public abstract class Statement {
         }
     }
 
-    public static class Function extends Statement {
-        public final Expression.Identifier name;
-        public final List<Statement.Variable> parameters;
-        public final Statement.Block block;
+    public static class Function extends StatementAST {
+        public final ExpressionAST.Identifier name;
+        public final List<Variable> parameters;
+        public final Block block;
 
-        public Function(int line, Expression.Identifier name, List<Statement.Variable> parameters,
-                Statement.Block block) {
+        public Function(int line, ExpressionAST.Identifier name, List<Variable> parameters, Block block) {
             super(line);
             this.name = name;
             this.parameters = parameters;

@@ -15,44 +15,44 @@ public class Parser {
     }
 
     /* Expressions */
-    private Expression postfixUnary() {
-        Expression.Identifier identifier = this.identifier();
+    private ExpressionAST postfixUnary() {
+        ExpressionAST.Identifier identifier = this.identifier();
 
         return switch (this.tokens.getCurrent()) {
             case INCREMENT -> {
-                Expression literal = new Expression.Literal(KaoriType.Primitive.NUMBER, 1.0);
-                Expression add = new Expression.Add(identifier, literal);
+                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
+                ExpressionAST add = new ExpressionAST.Add(identifier, literal);
                 this.tokens.consume();
-                yield new Expression.Assign(identifier, add);
+                yield new ExpressionAST.Assign(identifier, add);
             }
             case DECREMENT -> {
-                Expression literal = new Expression.Literal(KaoriType.Primitive.NUMBER, 1.0);
-                Expression subtract = new Expression.Subtract(identifier, literal);
+                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
+                ExpressionAST subtract = new ExpressionAST.Subtract(identifier, literal);
                 this.tokens.consume();
-                yield new Expression.Assign(identifier, subtract);
+                yield new ExpressionAST.Assign(identifier, subtract);
             }
             default -> identifier;
         };
     }
 
-    private Expression parenthesis() {
+    private ExpressionAST parenthesis() {
         this.tokens.consume(TokenKind.LEFT_PAREN);
 
-        Expression expression = this.expression();
+        ExpressionAST expression = this.expression();
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
 
         return expression;
     }
 
-    private Expression.Identifier identifier() {
+    private ExpressionAST.Identifier identifier() {
         String lexeme = this.tokens.getLexeme();
         this.tokens.consume(TokenKind.IDENTIFIER);
 
-        return new Expression.Identifier(lexeme);
+        return new ExpressionAST.Identifier(lexeme);
     }
 
-    private Expression primary() {
+    private ExpressionAST primary() {
         if (this.tokens.atEnd()) {
             throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
         }
@@ -60,15 +60,15 @@ public class Parser {
         return switch (this.tokens.getCurrent()) {
             case BOOLEAN_LITERAL -> {
                 boolean value = Boolean.parseBoolean(this.tokens.getLexeme());
-                Expression literal = new Expression.Literal(KaoriType.Primitive.BOOLEAN, value);
+                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.BOOLEAN, value);
                 this.tokens.consume();
 
                 yield literal;
             }
             case STRING_LITERAL -> {
                 String value = this.tokens.getLexeme();
-                KaoriType type = KaoriType.Primitive.STRING;
-                Expression literal = new Expression.Literal(type,
+                TypeAST type = TypeAST.Primitive.STRING;
+                ExpressionAST literal = new ExpressionAST.Literal(type,
                         value.substring(1, value.length() - 1));
                 this.tokens.consume();
 
@@ -76,8 +76,8 @@ public class Parser {
             }
             case NUMBER_LITERAL -> {
                 Double value = Double.parseDouble(this.tokens.getLexeme());
-                KaoriType type = KaoriType.Primitive.NUMBER;
-                Expression literal = new Expression.Literal(type, value);
+                TypeAST type = TypeAST.Primitive.NUMBER;
+                ExpressionAST literal = new ExpressionAST.Literal(type, value);
                 this.tokens.consume();
 
                 yield literal;
@@ -88,15 +88,15 @@ public class Parser {
         };
     }
 
-    private Expression prefixUnary() {
+    private ExpressionAST prefixUnary() {
         return switch (this.tokens.getCurrent()) {
             case MINUS -> {
                 this.tokens.consume();
-                yield new Expression.Negation(this.prefixUnary());
+                yield new ExpressionAST.Negation(this.prefixUnary());
             }
             case NOT -> {
                 this.tokens.consume();
-                yield new Expression.Not(this.prefixUnary());
+                yield new ExpressionAST.Not(this.prefixUnary());
             }
             case PLUS -> {
                 this.tokens.consume();
@@ -108,8 +108,8 @@ public class Parser {
         };
     }
 
-    private Expression factor() {
-        Expression left = this.prefixUnary();
+    private ExpressionAST factor() {
+        ExpressionAST left = this.prefixUnary();
 
         while (!this.tokens.atEnd()) {
             TokenKind operator = this.tokens.getCurrent();
@@ -117,18 +117,18 @@ public class Parser {
             switch (operator) {
                 case MULTIPLY -> {
                     this.tokens.consume();
-                    Expression right = this.prefixUnary();
-                    left = new Expression.Multiply(left, right);
+                    ExpressionAST right = this.prefixUnary();
+                    left = new ExpressionAST.Multiply(left, right);
                 }
                 case DIVIDE -> {
                     this.tokens.consume();
-                    Expression right = this.prefixUnary();
-                    left = new Expression.Divide(left, right);
+                    ExpressionAST right = this.prefixUnary();
+                    left = new ExpressionAST.Divide(left, right);
                 }
                 case MODULO -> {
                     this.tokens.consume();
-                    Expression right = this.prefixUnary();
-                    left = new Expression.Modulo(left, right);
+                    ExpressionAST right = this.prefixUnary();
+                    left = new ExpressionAST.Modulo(left, right);
                 }
                 default -> {
                     return left;
@@ -139,8 +139,8 @@ public class Parser {
         return left;
     }
 
-    private Expression term() {
-        Expression left = this.factor();
+    private ExpressionAST term() {
+        ExpressionAST left = this.factor();
 
         while (!this.tokens.atEnd()) {
             TokenKind operator = this.tokens.getCurrent();
@@ -148,13 +148,13 @@ public class Parser {
             switch (operator) {
                 case PLUS -> {
                     this.tokens.consume();
-                    Expression right = this.factor();
-                    left = new Expression.Add(left, right);
+                    ExpressionAST right = this.factor();
+                    left = new ExpressionAST.Add(left, right);
                 }
                 case MINUS -> {
                     this.tokens.consume();
-                    Expression right = this.factor();
-                    left = new Expression.Subtract(left, right);
+                    ExpressionAST right = this.factor();
+                    left = new ExpressionAST.Subtract(left, right);
                 }
                 default -> {
                     return left;
@@ -165,8 +165,8 @@ public class Parser {
         return left;
     }
 
-    private Expression comparison() {
-        Expression left = this.term();
+    private ExpressionAST comparison() {
+        ExpressionAST left = this.term();
 
         while (!this.tokens.atEnd()) {
             TokenKind operator = this.tokens.getCurrent();
@@ -174,23 +174,23 @@ public class Parser {
             switch (operator) {
                 case GREATER -> {
                     this.tokens.consume();
-                    Expression right = this.term();
-                    left = new Expression.Greater(left, right);
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.Greater(left, right);
                 }
                 case GREATER_EQUAL -> {
                     this.tokens.consume();
-                    Expression right = this.term();
-                    left = new Expression.GreaterEqual(left, right);
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.GreaterEqual(left, right);
                 }
                 case LESS -> {
                     this.tokens.consume();
-                    Expression right = this.term();
-                    left = new Expression.Less(left, right);
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.Less(left, right);
                 }
                 case LESS_EQUAL -> {
                     this.tokens.consume();
-                    Expression right = this.term();
-                    left = new Expression.LessEqual(left, right);
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.LessEqual(left, right);
                 }
                 default -> {
                     return left;
@@ -201,8 +201,8 @@ public class Parser {
         return left;
     }
 
-    private Expression equality() {
-        Expression left = this.comparison();
+    private ExpressionAST equality() {
+        ExpressionAST left = this.comparison();
 
         while (!this.tokens.atEnd()) {
             TokenKind operator = this.tokens.getCurrent();
@@ -210,13 +210,13 @@ public class Parser {
             switch (operator) {
                 case EQUAL -> {
                     this.tokens.consume();
-                    Expression right = this.comparison();
-                    left = new Expression.Equal(left, right);
+                    ExpressionAST right = this.comparison();
+                    left = new ExpressionAST.Equal(left, right);
                 }
                 case NOT_EQUAL -> {
                     this.tokens.consume();
-                    Expression right = this.comparison();
-                    left = new Expression.NotEqual(left, right);
+                    ExpressionAST right = this.comparison();
+                    left = new ExpressionAST.NotEqual(left, right);
                 }
                 default -> {
                     return left;
@@ -227,8 +227,8 @@ public class Parser {
         return left;
     }
 
-    private Expression and() {
-        Expression left = this.equality();
+    private ExpressionAST and() {
+        ExpressionAST left = this.equality();
 
         while (!this.tokens.atEnd()) {
             TokenKind operator = this.tokens.getCurrent();
@@ -236,8 +236,8 @@ public class Parser {
             switch (operator) {
                 case AND -> {
                     this.tokens.consume();
-                    Expression right = this.equality();
-                    left = new Expression.And(left, right);
+                    ExpressionAST right = this.equality();
+                    left = new ExpressionAST.And(left, right);
                 }
                 default -> {
                     return left;
@@ -248,8 +248,8 @@ public class Parser {
         return left;
     }
 
-    private Expression or() {
-        Expression left = this.and();
+    private ExpressionAST or() {
+        ExpressionAST left = this.and();
 
         while (!this.tokens.atEnd()) {
             TokenKind operator = this.tokens.getCurrent();
@@ -257,8 +257,8 @@ public class Parser {
             switch (operator) {
                 case OR -> {
                     this.tokens.consume();
-                    Expression right = this.and();
-                    left = new Expression.Or(left, right);
+                    ExpressionAST right = this.and();
+                    left = new ExpressionAST.Or(left, right);
                 }
                 default -> {
                     return left;
@@ -269,15 +269,15 @@ public class Parser {
         return left;
     }
 
-    private Expression assign() {
-        Expression.Identifier left = this.identifier();
+    private ExpressionAST assign() {
+        ExpressionAST.Identifier left = this.identifier();
         this.tokens.consume(TokenKind.ASSIGN);
-        Expression right = this.expression();
+        ExpressionAST right = this.expression();
 
-        return new Expression.Assign(left, right);
+        return new ExpressionAST.Assign(left, right);
     }
 
-    private Expression expression() {
+    private ExpressionAST expression() {
         if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.ASSIGN)) {
             return assign();
         }
@@ -286,8 +286,8 @@ public class Parser {
     }
 
     /* Types */
-    private KaoriType type() {
-        KaoriType type = switch (this.tokens.getCurrent()) {
+    private TypeAST type() {
+        TypeAST type = switch (this.tokens.getCurrent()) {
             case IDENTIFIER -> this.primitiveType();
             default -> throw KaoriError.SyntaxError("expected valid type", this.tokens.getLine());
         };
@@ -295,14 +295,14 @@ public class Parser {
         return type;
     }
 
-    private KaoriType primitiveType() {
+    private TypeAST primitiveType() {
         String lexeme = this.tokens.getLexeme();
         this.tokens.consume(TokenKind.IDENTIFIER);
 
-        KaoriType type = switch (lexeme) {
-            case "str" -> KaoriType.Primitive.STRING;
-            case "bool" -> KaoriType.Primitive.BOOLEAN;
-            case "f64" -> KaoriType.Primitive.NUMBER;
+        TypeAST type = switch (lexeme) {
+            case "str" -> TypeAST.Primitive.STRING;
+            case "bool" -> TypeAST.Primitive.BOOLEAN;
+            case "f64" -> TypeAST.Primitive.NUMBER;
             default -> throw KaoriError.SyntaxError("expected primitive types", this.tokens.getLine());
         };
 
@@ -310,134 +310,134 @@ public class Parser {
     }
 
     /* Statements */
-    private Statement.Expr expressionStatement() {
+    private StatementAST.Expr expressionStatement() {
         int line = this.tokens.getLine();
 
-        Expression expression = this.expression();
+        ExpressionAST expression = this.expression();
 
-        return new Statement.Expr(line, expression);
+        return new StatementAST.Expr(line, expression);
     }
 
-    private Statement.Variable variableStatement() {
+    private StatementAST.Variable variableStatement() {
         int line = this.tokens.getLine();
 
-        Expression.Identifier left = this.identifier();
+        ExpressionAST.Identifier left = this.identifier();
         this.tokens.consume(TokenKind.COLON);
 
-        KaoriType type = this.type();
+        TypeAST type = this.type();
 
         if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
-            Expression right = new Expression.Literal(type, null);
-            return new Statement.Variable(line, left, right, type);
+            ExpressionAST right = new ExpressionAST.Literal(type, null);
+            return new StatementAST.Variable(line, left, right, type);
         }
 
         this.tokens.consume(TokenKind.ASSIGN);
 
-        Expression right = this.expression();
+        ExpressionAST right = this.expression();
 
-        return new Statement.Variable(line, left, right, type);
+        return new StatementAST.Variable(line, left, right, type);
     }
 
-    private Statement.Print printStatement() {
+    private StatementAST.Print printStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.PRINT);
 
         this.tokens.consume(TokenKind.LEFT_PAREN);
 
-        Expression expression = this.expression();
+        ExpressionAST expression = this.expression();
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
 
-        return new Statement.Print(line, expression);
+        return new StatementAST.Print(line, expression);
     }
 
-    private Statement.Block blockStatement() {
+    private StatementAST.Block blockStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.LEFT_BRACE);
 
-        List<Statement> statements = new ArrayList<>();
+        List<StatementAST> statements = new ArrayList<>();
 
         while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_BRACE) {
-            Statement statement = this.statement();
+            StatementAST statement = this.statement();
             statements.add(statement);
         }
 
         this.tokens.consume(TokenKind.RIGHT_BRACE);
 
-        return new Statement.Block(line, statements);
+        return new StatementAST.Block(line, statements);
     }
 
-    private Statement.If ifStatement() {
+    private StatementAST.If ifStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.IF);
 
-        Expression condition = this.expression();
+        ExpressionAST condition = this.expression();
 
-        Statement.Block thenBranch = this.blockStatement();
+        StatementAST.Block thenBranch = this.blockStatement();
 
         if (this.tokens.getCurrent() != TokenKind.ELSE) {
-            Statement.Block elseBranch = new Statement.Block(line);
-            return new Statement.If(line, condition, thenBranch, elseBranch);
+            StatementAST.Block elseBranch = new StatementAST.Block(line);
+            return new StatementAST.If(line, condition, thenBranch, elseBranch);
         }
 
         this.tokens.consume(TokenKind.ELSE);
 
-        Statement elseBranch = switch (this.tokens.getCurrent()) {
+        StatementAST elseBranch = switch (this.tokens.getCurrent()) {
             case IF -> this.ifStatement();
             default -> this.blockStatement();
         };
 
-        return new Statement.If(line, condition, thenBranch, elseBranch);
+        return new StatementAST.If(line, condition, thenBranch, elseBranch);
     }
 
-    private Statement.WhileLoop whileLoopStatement() {
+    private StatementAST.WhileLoop whileLoopStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.WHILE);
 
-        Expression condition = this.expression();
+        ExpressionAST condition = this.expression();
 
-        Statement.Block block = this.blockStatement();
+        StatementAST.Block block = this.blockStatement();
 
-        return new Statement.WhileLoop(line, condition, block);
+        return new StatementAST.WhileLoop(line, condition, block);
     }
 
-    private Statement.ForLoop forLoopStatement() {
+    private StatementAST.ForLoop forLoopStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.FOR);
 
-        Statement.Variable variable = this.variableStatement();
+        StatementAST.Variable variable = this.variableStatement();
 
         this.tokens.consume(TokenKind.SEMICOLON);
 
-        Expression condition = this.expression();
+        ExpressionAST condition = this.expression();
 
         this.tokens.consume(TokenKind.SEMICOLON);
 
-        Expression increment = this.expression();
+        ExpressionAST increment = this.expression();
 
-        Statement.Block block = this.blockStatement();
+        StatementAST.Block block = this.blockStatement();
 
-        return new Statement.ForLoop(line, variable, condition, increment, block);
+        return new StatementAST.ForLoop(line, variable, condition, increment, block);
     }
 
-    private Statement.Function functionStatement() {
+    private StatementAST.Function functionStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.FUNCTION);
 
-        Expression.Identifier name = this.identifier();
+        ExpressionAST.Identifier name = this.identifier();
 
         this.tokens.consume(TokenKind.LEFT_PAREN);
 
-        List<Statement.Variable> parameters = new ArrayList<>();
+        List<StatementAST.Variable> parameters = new ArrayList<>();
 
         while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
-            Statement.Variable parameter = this.variableStatement();
+            StatementAST.Variable parameter = this.variableStatement();
             parameters.add(parameter);
 
             if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
@@ -449,13 +449,13 @@ public class Parser {
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
 
-        Statement.Block block = this.blockStatement();
+        StatementAST.Block block = this.blockStatement();
 
-        return new Statement.Function(line, name, parameters, block);
+        return new StatementAST.Function(line, name, parameters, block);
     }
 
-    private Statement statement() {
-        Statement statement = switch (this.tokens.getCurrent()) {
+    private StatementAST statement() {
+        StatementAST statement = switch (this.tokens.getCurrent()) {
             case PRINT -> this.printStatement();
             case LEFT_BRACE -> this.blockStatement();
             case IF -> this.ifStatement();
@@ -471,19 +471,19 @@ public class Parser {
             }
         };
 
-        if (statement instanceof Statement.Expr || statement instanceof Statement.Variable
-                || statement instanceof Statement.Print) {
+        if (statement instanceof StatementAST.Expr || statement instanceof StatementAST.Variable
+                || statement instanceof StatementAST.Print) {
             this.tokens.consume(TokenKind.SEMICOLON);
         }
 
         return statement;
     }
 
-    private List<Statement> start() {
-        List<Statement> statements = new ArrayList<>();
+    private List<StatementAST> start() {
+        List<StatementAST> statements = new ArrayList<>();
 
         while (!this.tokens.atEnd()) {
-            Statement statement = this.statement();
+            StatementAST statement = this.statement();
             statements.add(statement);
 
         }
@@ -491,8 +491,8 @@ public class Parser {
         return statements;
     }
 
-    public List<Statement> parse() {
-        List<Statement> statements = start();
+    public List<StatementAST> parse() {
+        List<StatementAST> statements = start();
 
         return statements;
     }
