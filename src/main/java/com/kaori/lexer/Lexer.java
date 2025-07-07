@@ -254,7 +254,6 @@ public class Lexer {
                 this.advance();
                 this.createToken(TokenKind.DOLLAR);
             }
-
             default -> throw KaoriError.SyntaxError("unexpected token " + this.currentChar(), this.line);
         }
     }
