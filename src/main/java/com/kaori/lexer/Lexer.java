@@ -34,6 +34,22 @@ public class Lexer {
         return this.current >= this.source.length();
     }
 
+    private boolean lookAhead(String expected) {
+        for (int i = 0; i < expected.length(); i++) {
+            int j = this.current + i;
+
+            if (j >= this.source.length()) {
+                return false;
+            }
+
+            if (expected.charAt(i) != this.source.charAt(j)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void createToken(TokenKind kind) {
         Token token = new Token(kind, this.line, this.index, this.current);
 
@@ -83,93 +99,151 @@ public class Lexer {
         this.createToken(kind);
     }
 
-    private TokenKind scanStringLiteral() {
+    private void scanStringLiteral() {
         this.advance();
 
         while (!this.atEnd() && this.currentChar() != '"') {
             this.advance();
         }
 
-        if (!this.atEnd() && this.currentChar() != '"') {
-            throw KaoriError.SyntaxError("expected closing quotation marks", this.line);
+        if (this.atEnd() || this.currentChar() != '"') {
+            throw KaoriError.SyntaxError("expected " + '"' + " for string literals", this.line);
         }
 
         this.advance();
 
-        return TokenKind.STRING_LITERAL;
+        this.createToken(TokenKind.STRING_LITERAL);
     }
 
-    private TokenKind scanSymbol() {
-        String lookahead = this.source.substring(this.current);
+    private void scanSymbol() {
+        switch (this.currentChar()) {
+            case '+' -> {
+                if (this.lookAhead("++")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.INCREMENT);
+                } else {
+                    this.advance();
+                    this.createToken(TokenKind.PLUS);
 
-        if (lookahead.startsWith("&&")) {
-            this.advance();
-            this.advance();
-            return TokenKind.AND;
-        }
-        if (lookahead.startsWith("||")) {
-            this.advance();
-            this.advance();
-            return TokenKind.OR;
-        }
-        if (lookahead.startsWith("!=")) {
-            this.advance();
-            this.advance();
-            return TokenKind.NOT_EQUAL;
-        }
-        if (lookahead.startsWith("==")) {
-            this.advance();
-            this.advance();
-            return TokenKind.EQUAL;
-        }
-        if (lookahead.startsWith(">=")) {
-            this.advance();
-            this.advance();
-            return TokenKind.GREATER_EQUAL;
-        }
-        if (lookahead.startsWith("<=")) {
-            this.advance();
-            this.advance();
-            return TokenKind.LESS_EQUAL;
-        }
+                }
+            }
+            case '-' -> {
+                if (this.lookAhead("--")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.DECREMENT);
+                } else {
+                    this.advance();
+                    this.createToken(TokenKind.MINUS);
 
-        if (lookahead.startsWith("++")) {
-            this.advance();
-            this.advance();
-            return TokenKind.INCREMENT;
+                }
+            }
+            case '&' -> {
+                if (this.lookAhead("&&")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.AND);
+                } else {
+                    throw KaoriError.SyntaxError("unexpected '&'", this.line);
+                }
+            }
+            case '|' -> {
+                if (this.lookAhead("||")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.OR);
+                } else {
+                    throw KaoriError.SyntaxError("unexpected '|'", this.line);
+                }
+            }
+            case '!' -> {
+                if (this.lookAhead("!=")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.NOT_EQUAL);
+                } else {
+                    this.advance();
+                    this.createToken(TokenKind.NOT);
+                }
+            }
+            case '=' -> {
+                if (this.lookAhead("==")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.EQUAL);
+                } else {
+                    this.advance();
+                    this.createToken(TokenKind.ASSIGN);
+                }
+            }
+            case '>' -> {
+                if (this.lookAhead(">=")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.GREATER_EQUAL);
+                } else {
+                    this.advance();
+                    this.createToken(TokenKind.GREATER);
+                }
+            }
+            case '<' -> {
+                if (this.lookAhead("<=")) {
+                    this.advance();
+                    this.advance();
+                    this.createToken(TokenKind.LESS_EQUAL);
+                } else {
+                    this.advance();
+                    this.createToken(TokenKind.LESS);
+                }
+            }
+            case '*' -> {
+                this.advance();
+                this.createToken(TokenKind.MULTIPLY);
+            }
+            case '/' -> {
+                this.advance();
+                this.createToken(TokenKind.DIVIDE);
+            }
+            case '%' -> {
+                this.advance();
+                this.createToken(TokenKind.MODULO);
+            }
+            case '(' -> {
+                this.advance();
+                this.createToken(TokenKind.LEFT_PAREN);
+            }
+            case ')' -> {
+                this.advance();
+                this.createToken(TokenKind.RIGHT_PAREN);
+            }
+            case '{' -> {
+                this.advance();
+                this.createToken(TokenKind.LEFT_BRACE);
+            }
+            case '}' -> {
+                this.advance();
+                this.createToken(TokenKind.RIGHT_BRACE);
+            }
+            case ',' -> {
+                this.advance();
+                this.createToken(TokenKind.COMMA);
+            }
+            case ';' -> {
+                this.advance();
+                this.createToken(TokenKind.SEMICOLON);
+            }
+            case ':' -> {
+                this.advance();
+                this.createToken(TokenKind.COLON);
+            }
+            case '$' -> {
+                this.advance();
+                this.createToken(TokenKind.DOLLAR);
+            }
+
+            default -> throw KaoriError.SyntaxError("unexpected token " + this.currentChar(), this.line);
         }
-
-        if (lookahead.startsWith("--")) {
-            this.advance();
-            this.advance();
-            return TokenKind.DECREMENT;
-        }
-
-        TokenKind kind = switch (this.currentChar()) {
-            case '+' -> TokenKind.PLUS;
-            case '-' -> TokenKind.MINUS;
-            case '*' -> TokenKind.MULTIPLY;
-            case '/' -> TokenKind.DIVIDE;
-            case '%' -> TokenKind.MODULO;
-            case '(' -> TokenKind.LEFT_PAREN;
-            case ')' -> TokenKind.RIGHT_PAREN;
-            case '{' -> TokenKind.LEFT_BRACE;
-            case '}' -> TokenKind.RIGHT_BRACE;
-            case ',' -> TokenKind.COMMA;
-            case ';' -> TokenKind.SEMICOLON;
-            case ':' -> TokenKind.COLON;
-            case '$' -> TokenKind.DOLLAR;
-            case '!' -> TokenKind.NOT;
-            case '=' -> TokenKind.ASSIGN;
-            case '>' -> TokenKind.GREATER;
-            case '<' -> TokenKind.LESS;
-
-            default -> throw KaoriError.SyntaxError("unexpected token", this.line);
-        };
-
-        this.advance();
-
-        return kind;
     }
 
     private void reset() {

@@ -1,13 +1,6 @@
 
 
-
-a: str = "hello";
-
-print(a);
-
-{
-    a = "c";
-    print(a);
+for (i: f64 = 0; i < 2; i++) {
+    print(i);
 }
 
-print(a);

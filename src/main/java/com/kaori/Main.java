@@ -31,7 +31,6 @@ public class Main {
             Lexer lexer = new Lexer(source);
 
             List<Token> tokens = lexer.scan();
-
             TokenStream tokenStream = new TokenStream(tokens, source);
 
             Parser parser = new Parser(tokenStream);
