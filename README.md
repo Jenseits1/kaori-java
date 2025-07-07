@@ -2,7 +2,7 @@
 
 **Kaori** is an interpreted statically typed programming language built with **Java 17**
 
-## ✨ Features ✨
+## Features
 
 -   **Statically Typed**  
     Enforces type safety for predictable, and faster runtimes
@@ -27,12 +27,12 @@
     -   [ ] Bytecode generation
     -   [ ] Classes and inheritance
 
-## 🛠️ Technologies Used 🛠️
+## Technologies Used
 
 -   **Java 17** — The entire interpreter is written in modern Java
 -   **Maven / Gradle** — Dependency and build management
 
-## 📜 Grammar
+## Grammar
 
 ```text
 program                  -> statement* EOF
@@ -83,14 +83,14 @@ primary                  -> number | string | boolean | postfix_unary | "(" expr
 postfix_unary            -> identifier ("++" | "--")?
 ```
 
-## 🚀 Getting Started 🚀
+## Getting Started
 
-### 📋 Prerequisites
+### Prerequisites
 
 -   Java 17+
 -   Maven or Gradle (recommended for building)
 
-### ⬇️ Installation
+### Installation
 
 1. Clone the repository:
 
@@ -117,7 +117,7 @@ postfix_unary            -> identifier ("++" | "--")?
     java -jar target/kaori.jar
     ```
 
-## 🧪 Running Scripts
+## Running Scripts
 
 To run a `.kaori` script:
 
@@ -131,9 +131,9 @@ To enter the interactive mode (REPL):
 java -jar target/kaori.jar
 ```
 
-## 🤝 Contributing 🤝
+## Contributing
 
-Kaori is a passion project, and contributions are warmly welcome!
+Contributions are warmly welcome!
 
 ### Ways to Contribute:
 
@@ -163,7 +163,7 @@ Kaori is a passion project, and contributions are warmly welcome!
 
 The name Kaori is inspired by the character Kaori Miyazono from the anime Your Lie in April. She represents inspiration, motivation, and the desire to create something different from the standard — the same spirit behind creating this language
 
-## 📄 License 📄
+## License
 
 Kaori is released under the **MIT License**.  
-See the [`LICENSE`](LICENSE) file for more details.
+See the [`LICENSE`](LICENSE) file for more details
