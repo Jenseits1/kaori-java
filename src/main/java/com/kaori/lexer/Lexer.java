@@ -103,7 +103,7 @@ public class Lexer {
             case "break" -> TokenKind.BREAK;
             case "continue" -> TokenKind.CONTINUE;
             case "return" -> TokenKind.RETURN;
-            case "fun" -> TokenKind.FUNCTION;
+            case "def" -> TokenKind.FUNCTION;
             case "print" -> TokenKind.PRINT;
             case "true", "false" -> TokenKind.BOOLEAN_LITERAL;
             default -> TokenKind.IDENTIFIER;

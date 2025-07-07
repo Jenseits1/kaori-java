@@ -235,4 +235,9 @@ public class Interpreter extends Visitor<Object> {
         }
     }
 
+    @Override
+    public void visitFunctionStatement(Statement.Function statement) {
+
+    }
+
 }

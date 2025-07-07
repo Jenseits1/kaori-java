@@ -79,4 +79,6 @@ public abstract class Visitor<T> {
 
     public abstract void visitForLoopStatement(Statement.ForLoop statement);
 
+    public abstract void visitFunctionStatement(Statement.Function statement);
+
 }

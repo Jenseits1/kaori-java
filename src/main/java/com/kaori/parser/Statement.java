@@ -151,8 +151,7 @@ public abstract class Statement {
 
         @Override
         public <T> void acceptVisitor(Visitor<T> visitor) {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'acceptVisitor'");
+            visitor.visitFunctionStatement(this);
         }
     }
 }

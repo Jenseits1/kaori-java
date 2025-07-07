@@ -1,6 +1,5 @@
 
 
-for i: f64 = 0; i < 2; i++ {
-    print(i);
+def sum(a: f64 = 5, b: f64) {
+    print(a + b);
 }
-

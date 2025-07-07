@@ -285,6 +285,11 @@ public class TypeChecker extends Visitor<KaoriType> {
 
         statement.block.acceptVisitor(this);
         statement.increment.acceptVisitor(this);
+    }
+
+    @Override
+    public void visitFunctionStatement(Statement.Function statement) {
+        // TODO Auto-generated method stub
 
     }
 

@@ -205,4 +205,9 @@ public class Resolver extends Visitor<Object> {
 
     }
 
+    @Override
+    public void visitFunctionStatement(Statement.Function statement) {
+
+    }
+
 }
