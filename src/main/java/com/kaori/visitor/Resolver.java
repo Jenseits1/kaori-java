@@ -6,146 +6,153 @@ import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
 
-public class Resolver extends Visitor<Resolver.Defined> {
+public class Resolver extends Visitor<Resolver.ResolutionState> {
     public Resolver(List<StatementAST> statements) {
         super(statements);
     }
 
-    static public enum Defined {
-        TRUE,
-        FALSE
+    static public enum ResolutionState {
+        UNDECLARED,
+        DECLARED,
+        INITIALIZED,
+
     }
 
     @Override
-    public Defined visitAdd(ExpressionAST.Add node) {
+    public ResolutionState visitAdd(ExpressionAST.Add node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitSubtract(ExpressionAST.Subtract node) {
+    public ResolutionState visitSubtract(ExpressionAST.Subtract node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitMultiply(ExpressionAST.Multiply node) {
+    public ResolutionState visitMultiply(ExpressionAST.Multiply node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitDivide(ExpressionAST.Divide node) {
+    public ResolutionState visitDivide(ExpressionAST.Divide node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitModulo(ExpressionAST.Modulo node) {
+    public ResolutionState visitModulo(ExpressionAST.Modulo node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitAnd(ExpressionAST.And node) {
+    public ResolutionState visitAnd(ExpressionAST.And node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitOr(ExpressionAST.Or node) {
+    public ResolutionState visitOr(ExpressionAST.Or node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitEqual(ExpressionAST.Equal node) {
+    public ResolutionState visitEqual(ExpressionAST.Equal node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitNotEqual(ExpressionAST.NotEqual node) {
+    public ResolutionState visitNotEqual(ExpressionAST.NotEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitGreater(ExpressionAST.Greater node) {
+    public ResolutionState visitGreater(ExpressionAST.Greater node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitGreaterEqual(ExpressionAST.GreaterEqual node) {
+    public ResolutionState visitGreaterEqual(ExpressionAST.GreaterEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitLess(ExpressionAST.Less node) {
+    public ResolutionState visitLess(ExpressionAST.Less node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitLessEqual(ExpressionAST.LessEqual node) {
+    public ResolutionState visitLessEqual(ExpressionAST.LessEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitAssign(ExpressionAST.Assign node) {
+    public ResolutionState visitAssign(ExpressionAST.Assign node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitLiteral(ExpressionAST.Literal node) {
+    public ResolutionState visitLiteral(ExpressionAST.Literal node) {
         if (node.value == null) {
-            return Defined.FALSE;
+            return ResolutionState.DECLARED;
         }
 
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitIdentifier(ExpressionAST.Identifier node) {
-        Environment<Defined> env = this.environment.find(node);
+    public ResolutionState visitIdentifier(ExpressionAST.Identifier node) {
+        Environment<ResolutionState> env = this.environment.find(node);
 
-        if (env.get(node) == null) {
+        ResolutionState value = env.get(node);
+
+        if (value == null)
+            value = ResolutionState.UNDECLARED;
+
+        if (value == ResolutionState.UNDECLARED) {
             throw KaoriError.VariableError("expected " + node.value + " to be declared", this.line);
-        } else if (env.get(node) == Defined.FALSE) {
-            throw KaoriError.VariableError("expected " + node.value + " to be defined", this.line);
+        } else if (value == ResolutionState.DECLARED) {
+            throw KaoriError.VariableError("expected " + node.value + " to be initialized", this.line);
         }
 
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitNot(ExpressionAST.Not node) {
+    public ResolutionState visitNot(ExpressionAST.Not node) {
         node.left.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
-    public Defined visitNegation(ExpressionAST.Negation node) {
+    public ResolutionState visitNegation(ExpressionAST.Negation node) {
         node.left.acceptVisitor(this);
-        return Defined.TRUE;
+        return ResolutionState.INITIALIZED;
     }
 
     @Override
@@ -162,8 +169,13 @@ public class Resolver extends Visitor<Resolver.Defined> {
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        if (this.environment.get(statement.left) == null) {
-            Defined right = statement.right.acceptVisitor(this);
+        ResolutionState value = this.environment.get(statement.left);
+
+        if (value == null)
+            value = ResolutionState.UNDECLARED;
+
+        if (value == ResolutionState.UNDECLARED) {
+            ResolutionState right = statement.right.acceptVisitor(this);
 
             this.environment.set(statement.left, right);
         } else {
@@ -203,7 +215,7 @@ public class Resolver extends Visitor<Resolver.Defined> {
     }
 
     @Override
-    public Defined visitFunctionCall(ExpressionAST.FunctionCall node) {
+    public ResolutionState visitFunctionCall(ExpressionAST.FunctionCall node) {
         throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 }
