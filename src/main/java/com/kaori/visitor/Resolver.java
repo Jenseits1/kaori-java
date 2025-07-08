@@ -5,6 +5,9 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.parser.TypeAST;
+import com.kaori.visitor.memory.Environment;
+import com.kaori.visitor.memory.FunctionObject;
 
 public class Resolver extends Visitor<Resolver.ResolutionState> {
     public Resolver(List<StatementAST> statements) {
@@ -130,9 +133,7 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
         Environment<ResolutionState> env = this.environment.find(node);
 
         ResolutionState value = env.get(node);
-
-        if (value == null)
-            value = ResolutionState.UNDECLARED;
+        value = value == null ? ResolutionState.UNDECLARED : value;
 
         if (value == ResolutionState.UNDECLARED) {
             throw KaoriError.VariableError("expected " + node.value + " to be declared", this.line);
@@ -170,9 +171,7 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
         ResolutionState value = this.environment.get(statement.left);
-
-        if (value == null)
-            value = ResolutionState.UNDECLARED;
+        value = value == null ? ResolutionState.UNDECLARED : value;
 
         if (value == ResolutionState.UNDECLARED) {
             ResolutionState right = statement.right.acceptVisitor(this);
@@ -216,7 +215,11 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
         if (value == null) value = ResolutionState.UNDECLARED;
 
         if (value == ResolutionState.UNDECLARED) {
-            this.environment.set(, value);
+            TypeAST parametersType = statement.parameters.stream().map((parameter) -> parameter.type);
+
+            TypeAST.Function type = new TypeAST.Function(statement.parameters.stream().map((parameter) -> parameter.type), null)
+            FunctionObject functionObject = new FunctionObject(statement.parameters, statement.block, null);
+            
         }
     }
 

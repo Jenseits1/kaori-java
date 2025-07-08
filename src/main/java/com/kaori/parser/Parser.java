@@ -448,10 +448,13 @@ public class Parser {
         }
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
+        this.tokens.consume(TokenKind.COLON);
+
+        TypeAST returnType = this.type();
 
         StatementAST.Block block = this.blockStatement();
 
-        return new StatementAST.Function(line, name, parameters, block);
+        return new StatementAST.Function(line, name, parameters, returnType, block);
     }
 
     private StatementAST statement() {

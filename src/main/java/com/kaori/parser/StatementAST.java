@@ -136,12 +136,15 @@ public abstract class StatementAST {
     public static class Function extends StatementAST {
         public final ExpressionAST.Identifier name;
         public final List<Variable> parameters;
+        public final TypeAST returnType;
         public final Block block;
 
-        public Function(int line, ExpressionAST.Identifier name, List<Variable> parameters, Block block) {
+        public Function(int line, ExpressionAST.Identifier name, List<Variable> parameters, TypeAST returnType,
+                Block block) {
             super(line);
             this.name = name;
             this.parameters = parameters;
+            this.returnType = returnType;
             this.block = block;
         }
 
