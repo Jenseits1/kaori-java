@@ -211,7 +211,13 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        // Function resolution logic here, if applicable
+        ResolutionState value = this.environment.get(statement.name);
+
+        if (value == null) value = ResolutionState.UNDECLARED;
+
+        if (value == ResolutionState.UNDECLARED) {
+            this.environment.set(, value);
+        }
     }
 
     @Override

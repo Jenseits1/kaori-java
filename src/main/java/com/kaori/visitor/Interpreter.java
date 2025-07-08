@@ -199,8 +199,10 @@ public class Interpreter extends Visitor<Object> {
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
-            if (!(Boolean) condition)
+
+            if ((Boolean) condition == false)
                 break;
+
             statement.block.acceptVisitor(this);
         }
     }
@@ -211,8 +213,10 @@ public class Interpreter extends Visitor<Object> {
 
         while (true) {
             Object condition = statement.condition.acceptVisitor(this);
-            if (!(Boolean) condition)
+
+            if ((Boolean) condition == false)
                 break;
+
             statement.block.acceptVisitor(this);
             statement.increment.acceptVisitor(this);
         }
