@@ -1,4 +1,4 @@
-package com.kaori.visitor;
+package com.kaori.visitor.memory;
 
 import java.util.HashMap;
 import java.util.Map;

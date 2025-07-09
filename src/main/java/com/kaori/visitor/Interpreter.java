@@ -5,6 +5,7 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.visitor.memory.Environment;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {

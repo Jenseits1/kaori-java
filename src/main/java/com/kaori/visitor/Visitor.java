@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.visitor.memory.Environment;
 
 public abstract class Visitor<T> {
     protected int line;

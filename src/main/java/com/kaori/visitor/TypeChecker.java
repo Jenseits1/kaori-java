@@ -5,6 +5,7 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.ExpressionAST.FunctionCall;
+import com.kaori.visitor.memory.Environment;
 import com.kaori.parser.TypeAST;
 import com.kaori.parser.StatementAST;
 

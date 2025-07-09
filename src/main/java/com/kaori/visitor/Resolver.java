@@ -1,17 +1,22 @@
 package com.kaori.visitor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.TypeAST;
+
 import com.kaori.visitor.memory.Environment;
-import com.kaori.visitor.memory.FunctionObject;
 
 public class Resolver extends Visitor<Resolver.ResolutionState> {
+    public final Stack<HashMap<String, StatementAST.Function>> functionsTable;
+
     public Resolver(List<StatementAST> statements) {
         super(statements);
+        this.functionsTable = new Stack<>();
+        this.functionsTable.add(new HashMap<>());
     }
 
     static public enum ResolutionState {
@@ -25,98 +30,99 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
     public ResolutionState visitAdd(ExpressionAST.Add node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+
+        return null;
     }
 
     @Override
     public ResolutionState visitSubtract(ExpressionAST.Subtract node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitMultiply(ExpressionAST.Multiply node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitDivide(ExpressionAST.Divide node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitModulo(ExpressionAST.Modulo node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitAnd(ExpressionAST.And node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitOr(ExpressionAST.Or node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitEqual(ExpressionAST.Equal node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitNotEqual(ExpressionAST.NotEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitGreater(ExpressionAST.Greater node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitGreaterEqual(ExpressionAST.GreaterEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitLess(ExpressionAST.Less node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitLessEqual(ExpressionAST.LessEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitAssign(ExpressionAST.Assign node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
@@ -125,7 +131,7 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
             return ResolutionState.DECLARED;
         }
 
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
@@ -141,19 +147,19 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
             throw KaoriError.VariableError("expected " + node.value + " to be initialized", this.line);
         }
 
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitNot(ExpressionAST.Not node) {
         node.left.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
     public ResolutionState visitNegation(ExpressionAST.Negation node) {
         node.left.acceptVisitor(this);
-        return ResolutionState.INITIALIZED;
+        return null;
     }
 
     @Override
@@ -211,15 +217,10 @@ public class Resolver extends Visitor<Resolver.ResolutionState> {
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
         ResolutionState value = this.environment.get(statement.name);
-
-        if (value == null) value = ResolutionState.UNDECLARED;
+        value = value == null ? ResolutionState.UNDECLARED : value;
 
         if (value == ResolutionState.UNDECLARED) {
-            TypeAST parametersType = statement.parameters.stream().map((parameter) -> parameter.type);
-
-            TypeAST.Function type = new TypeAST.Function(statement.parameters.stream().map((parameter) -> parameter.type), null)
-            FunctionObject functionObject = new FunctionObject(statement.parameters, statement.block, null);
-            
+            this.environment.set(statement.name, ResolutionState.DECLARED);
         }
     }
 

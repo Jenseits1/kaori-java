@@ -1,2 +1,16 @@
-i: f64 = 0;
-print(i);
+
+
+def foo(a: f64, b: f64): f64 {
+    def bar(a: f64 , b: f64): f64 {
+        print(a + b);
+    }
+
+    bar(a + b);
+}
+
+def bar(a: f64 , b: f64): f64 {
+    print(a + b);
+}
+
+
+foo(1, 2);
