@@ -5,13 +5,43 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.ExpressionAST.FunctionCall;
-import com.kaori.visitor.memory.Environment;
 import com.kaori.parser.TypeAST;
+import com.kaori.visitor.memory.StackFrame;
 import com.kaori.parser.StatementAST;
 
 public class TypeChecker extends Visitor<TypeAST> {
     public TypeChecker(List<StatementAST> statements) {
         super(statements);
+    }
+
+    @Override
+    protected void declare(ExpressionAST.Identifier node) {
+        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
+        String identifier = node.value;
+
+        currentFrame.declare(identifier);
+    }
+
+    @Override
+    protected void define(ExpressionAST.Identifier node, TypeAST value) {
+        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
+        StackFrame<TypeAST> mainFrame = this.callStack.mainFrame();
+        String identifier = node.value;
+
+        if (currentFrame.find(identifier)) {
+            currentFrame.define(identifier, value);
+        } else if (mainFrame.find(identifier)) {
+            mainFrame.define(identifier, value);
+        }
+    }
+
+    @Override
+    protected TypeAST get(ExpressionAST.Identifier node) {
+        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
+        StackFrame<TypeAST> mainFrame = this.callStack.mainFrame();
+        String identifier = node.value;
+
+        return currentFrame.get(identifier) == null ? mainFrame.get(identifier) : null;
     }
 
     @Override
@@ -193,8 +223,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
-        Environment<TypeAST> env = this.environment.find(node);
-        return env.get(node);
+        return this.get(node);
     }
 
     @Override
@@ -226,9 +255,11 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.environment = new Environment<>(environment);
+        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
+
+        currentFrame.enterScope();
         this.visitStatements(statement.statements);
-        this.environment = environment.getPrevious();
+        currentFrame.leaveScope();
     }
 
     @Override
@@ -237,7 +268,8 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST right = statement.right.acceptVisitor(this);
 
         if (left.equals(right)) {
-            this.environment.set(statement.left, right);
+            this.declare(statement.left);
+            this.define(statement.left, right);
         } else {
             throw KaoriError.TypeError("expected " + left + " type for " + statement.left.value, this.line);
         }

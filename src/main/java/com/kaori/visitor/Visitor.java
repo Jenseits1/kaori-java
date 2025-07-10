@@ -1,25 +1,33 @@
 package com.kaori.visitor;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.Environment;
+import com.kaori.visitor.memory.CallStack;
+import com.kaori.visitor.memory.StackFrame;
 
 public abstract class Visitor<T> {
     protected int line;
     protected final List<StatementAST> statements;
-    protected Environment<T> environment;
+    protected CallStack<T> callStack;
 
     public Visitor(List<StatementAST> statements) {
         this.line = 1;
         this.statements = statements;
-        this.environment = new Environment<>();
+        this.callStack = new CallStack<>();
     }
 
     public void run() {
-        visitStatements(this.statements);
+        this.visitStatements(this.statements);
     }
+
+    protected abstract void declare(ExpressionAST.Identifier node);
+
+    protected abstract void define(ExpressionAST.Identifier node, T value);
+
+    protected abstract T get(ExpressionAST.Identifier node);
 
     protected void visitStatements(List<StatementAST> statements) {
         for (StatementAST statement : statements) {
@@ -72,7 +80,7 @@ public abstract class Visitor<T> {
 
     public abstract void visitPrintStatement(StatementAST.Print statement);
 
-    public abstract void visitVariableStatement(StatementAST.Variable variable);
+    public abstract void visitVariableStatement(StatementAST.Variable statement);
 
     public abstract void visitBlockStatement(StatementAST.Block statement);
 

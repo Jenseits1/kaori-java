@@ -5,11 +5,41 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.Environment;
+import com.kaori.visitor.memory.StackFrame;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {
         super(statements);
+    }
+
+    @Override
+    protected void declare(ExpressionAST.Identifier node) {
+        StackFrame<Object> currentFrame = this.callStack.currentFrame();
+        String identifier = node.value;
+
+        currentFrame.declare(identifier);
+    }
+
+    @Override
+    protected void define(ExpressionAST.Identifier node, Object value) {
+        StackFrame<Object> currentFrame = this.callStack.currentFrame();
+        StackFrame<Object> mainFrame = this.callStack.mainFrame();
+        String identifier = node.value;
+
+        if (currentFrame.find(identifier)) {
+            currentFrame.define(identifier, value);
+        } else if (mainFrame.find(identifier)) {
+            mainFrame.define(identifier, value);
+        }
+    }
+
+    @Override
+    protected Object get(ExpressionAST.Identifier node) {
+        StackFrame<Object> currentFrame = this.callStack.currentFrame();
+        StackFrame<Object> mainFrame = this.callStack.mainFrame();
+        String identifier = node.value;
+
+        return currentFrame.get(identifier) == null ? mainFrame.get(identifier) : null;
     }
 
     @Override
@@ -132,8 +162,7 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(ExpressionAST.Assign node) {
         Object value = node.right.acceptVisitor(this);
 
-        Environment<Object> env = this.environment.find(node.left);
-        env.set(node.left, value);
+        this.define(node.left, value);
 
         return value;
     }
@@ -145,8 +174,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier node) {
-        Environment<Object> env = this.environment.find(node);
-        return env.get(node);
+        return this.get(node);
     }
 
     @Override
@@ -169,15 +197,18 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.environment = new Environment<>(environment);
+        StackFrame<Object> currentFrame = this.callStack.currentFrame();
+
+        currentFrame.enterScope();
         this.visitStatements(statement.statements);
-        this.environment = environment.getPrevious();
+        currentFrame.leaveScope();
     }
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
         Object value = statement.right.acceptVisitor(this);
-        this.environment.set(statement.left, value);
+        this.declare(statement.left);
+        this.define(statement.left, value);
     }
 
     @Override

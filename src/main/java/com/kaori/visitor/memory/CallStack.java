@@ -3,23 +3,29 @@ package com.kaori.visitor.memory;
 import java.util.Stack;
 
 public class CallStack<T> {
-    private final Stack<Environment<T>> frames;
+    private final Stack<StackFrame<T>> frames;
 
     public CallStack() {
+        this.frames = new Stack<>();
 
+        this.push();
     }
 
-    Environment<T> global() {
+    public StackFrame<T> mainFrame() {
         return this.frames.firstElement();
     }
 
-    void pushFrame() {
-        Environment<T> environment = new Environment<>();
-        this.frames.add(environment);
-
+    public StackFrame<T> currentFrame() {
+        return this.frames.peek();
     }
 
-    void popFrame() {
+    public void push() {
+        StackFrame<T> frame = new StackFrame<>();
+
+        this.frames.add(frame);
+    }
+
+    public void pop() {
         this.frames.pop();
     }
 }
