@@ -1,12 +1,10 @@
 package com.kaori.visitor;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
 import com.kaori.visitor.memory.CallStack;
-import com.kaori.visitor.memory.StackFrame;
 
 public abstract class Visitor<T> {
     protected int line;
@@ -25,7 +23,7 @@ public abstract class Visitor<T> {
 
     protected abstract void declare(ExpressionAST.Identifier node);
 
-    protected abstract void define(ExpressionAST.Identifier node, T value);
+    protected abstract T define(ExpressionAST.Identifier node, T value);
 
     protected abstract T get(ExpressionAST.Identifier node);
 

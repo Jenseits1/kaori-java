@@ -6,7 +6,6 @@ import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.ExpressionAST.FunctionCall;
 import com.kaori.parser.TypeAST;
-import com.kaori.visitor.memory.StackFrame;
 import com.kaori.parser.StatementAST;
 
 public class TypeChecker extends Visitor<TypeAST> {
@@ -16,32 +15,23 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     protected void declare(ExpressionAST.Identifier node) {
-        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
         String identifier = node.value;
 
-        currentFrame.declare(identifier);
+        this.callStack.declare(identifier);
     }
 
     @Override
-    protected void define(ExpressionAST.Identifier node, TypeAST value) {
-        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
-        StackFrame<TypeAST> mainFrame = this.callStack.mainFrame();
+    protected TypeAST define(ExpressionAST.Identifier node, TypeAST value) {
         String identifier = node.value;
 
-        if (currentFrame.find(identifier)) {
-            currentFrame.define(identifier, value);
-        } else if (mainFrame.find(identifier)) {
-            mainFrame.define(identifier, value);
-        }
+        return this.callStack.define(identifier, value);
     }
 
     @Override
     protected TypeAST get(ExpressionAST.Identifier node) {
-        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
-        StackFrame<TypeAST> mainFrame = this.callStack.mainFrame();
         String identifier = node.value;
 
-        return currentFrame.get(identifier) == null ? mainFrame.get(identifier) : null;
+        return this.callStack.get(identifier);
     }
 
     @Override
@@ -255,11 +245,9 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        StackFrame<TypeAST> currentFrame = this.callStack.currentFrame();
 
-        currentFrame.enterScope();
         this.visitStatements(statement.statements);
-        currentFrame.leaveScope();
+
     }
 
     @Override

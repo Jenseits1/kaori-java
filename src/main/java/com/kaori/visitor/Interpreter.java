@@ -5,7 +5,6 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.StackFrame;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {
@@ -14,32 +13,23 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     protected void declare(ExpressionAST.Identifier node) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
         String identifier = node.value;
 
-        currentFrame.declare(identifier);
+        this.callStack.declare(identifier);
     }
 
     @Override
-    protected void define(ExpressionAST.Identifier node, Object value) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
-        StackFrame<Object> mainFrame = this.callStack.mainFrame();
+    protected Object define(ExpressionAST.Identifier node, Object value) {
         String identifier = node.value;
 
-        if (currentFrame.find(identifier)) {
-            currentFrame.define(identifier, value);
-        } else if (mainFrame.find(identifier)) {
-            mainFrame.define(identifier, value);
-        }
+        return this.callStack.define(identifier, value);
     }
 
     @Override
     protected Object get(ExpressionAST.Identifier node) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
-        StackFrame<Object> mainFrame = this.callStack.mainFrame();
         String identifier = node.value;
 
-        return currentFrame.get(identifier) == null ? mainFrame.get(identifier) : null;
+        return this.callStack.get(identifier);
     }
 
     @Override
@@ -197,11 +187,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
 
-        currentFrame.enterScope();
         this.visitStatements(statement.statements);
-        currentFrame.leaveScope();
+
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.StackFrame;
+import com.kaori.visitor.memory.FunctionFrame;
 
 public class Resolver extends Visitor<Object> {
 
@@ -15,26 +15,21 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     protected void declare(ExpressionAST.Identifier node) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
         String identifier = node.value;
 
-        if (currentFrame.isDeclared(identifier)) {
+        if (this.callStack.declared(identifier)) {
             throw KaoriError.VariableError(identifier + " is already declared", this.line);
         }
 
-        currentFrame.declare(identifier);
+        this.callStack.declare(identifier);
     }
 
     @Override
-    protected void define(ExpressionAST.Identifier node, Object value) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
-        StackFrame<Object> mainFrame = this.callStack.mainFrame();
+    protected Object define(ExpressionAST.Identifier node, Object value) {
         String identifier = node.value;
 
-        if (currentFrame.find(identifier)) {
-            currentFrame.define(identifier, value);
-        } else if (mainFrame.find(identifier)) {
-            mainFrame.define(identifier, value);
+        if (this.callStack.find(identifier)) {
+            return this.callStack.define(identifier, value);
         } else {
             throw KaoriError.VariableError(identifier + " is not defined", this.line);
         }
@@ -42,14 +37,10 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     protected Object get(ExpressionAST.Identifier node) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
-        StackFrame<Object> mainFrame = this.callStack.mainFrame();
         String identifier = node.value;
 
-        if (currentFrame.find(identifier)) {
-            return currentFrame.get(identifier);
-        } else if (mainFrame.find(identifier)) {
-            return mainFrame.get(identifier);
+        if (this.callStack.find(identifier)) {
+            return this.callStack.get(identifier);
         } else {
             throw KaoriError.VariableError(identifier + " is not declared", this.line);
         }
@@ -152,9 +143,7 @@ public class Resolver extends Visitor<Object> {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
 
-        this.define(node.left, null);
-
-        return null;
+        return this.define(node.left, null);
     }
 
     @Override
@@ -164,7 +153,11 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier node) {
-        this.get(node);
+        Object value = this.get(node);
+
+        if (value == null) {
+            throw KaoriError.VariableError(node.value + " is not defined", this.line);
+        }
         return null;
     }
 
@@ -187,7 +180,7 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        StackFrame<Object> currentFrame = this.callStack.currentFrame();
+        FunctionFrame<Object> currentFrame = this.callStack.currentFrame();
 
         currentFrame.enterScope();
         this.visitStatements(statement.statements);
