@@ -18,6 +18,16 @@ public class CallStack<T> {
         return this.frames.peek();
     }
 
+    public void enterScope() {
+        HashMap<String, T> scope = new HashMap<>();
+
+        this.currentFrame().scopes.add(scope);
+    }
+
+    public void leaveScope() {
+        this.currentFrame().scopes.pop();
+    }
+
     public void push() {
         FunctionFrame<T> frame = new FunctionFrame<>();
         this.frames.add(frame);

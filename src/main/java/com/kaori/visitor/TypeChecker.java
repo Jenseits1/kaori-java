@@ -245,9 +245,9 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-
+        this.callStack.enterScope();
         this.visitStatements(statement.statements);
-
+        this.callStack.leaveScope();
     }
 
     @Override
