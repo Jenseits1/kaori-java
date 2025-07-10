@@ -5,7 +5,6 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.FunctionFrame;
 
 public class Resolver extends Visitor<Object> {
 
@@ -31,7 +30,7 @@ public class Resolver extends Visitor<Object> {
         if (this.callStack.find(identifier)) {
             return this.callStack.define(identifier, value);
         } else {
-            throw KaoriError.VariableError(identifier + " is not defined", this.line);
+            throw KaoriError.VariableError(identifier + " is not declared", this.line);
         }
     }
 
@@ -143,7 +142,7 @@ public class Resolver extends Visitor<Object> {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
 
-        return this.define(node.left, null);
+        return this.define(node.left, node.right);
     }
 
     @Override
@@ -180,18 +179,16 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        FunctionFrame<Object> currentFrame = this.callStack.currentFrame();
-
-        currentFrame.enterScope();
         this.visitStatements(statement.statements);
-        currentFrame.leaveScope();
+
     }
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
         statement.right.acceptVisitor(this);
+
         this.declare(statement.left);
-        this.define(statement.left, null);
+        this.define(statement.left, statement.right);
     }
 
     @Override

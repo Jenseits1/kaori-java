@@ -18,7 +18,10 @@ public abstract class Visitor<T> {
     }
 
     public void run() {
+        this.callStack.push();
         this.visitStatements(this.statements);
+        this.callStack.pop();
+
     }
 
     protected abstract void declare(ExpressionAST.Identifier node);
