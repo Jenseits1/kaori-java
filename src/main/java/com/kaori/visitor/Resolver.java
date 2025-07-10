@@ -204,6 +204,7 @@ public class Resolver extends Visitor<Object> {
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
         Object right = statement.right.acceptVisitor(this);
+
         this.declare(statement.left);
 
         if (right == null) {

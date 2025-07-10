@@ -59,7 +59,8 @@ public class TokenStream {
 
     public void consume(TokenKind expected) {
         if (this.getCurrent() != expected) {
-            throw KaoriError.SyntaxError("expected '" + expected + "' instead of '" + this.getCurrent() + "'",
+
+            throw KaoriError.SyntaxError(String.format("expected %s instead of %s", expected, this.getCurrent()),
                     this.line);
         }
 

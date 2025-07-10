@@ -66,7 +66,8 @@ public class Interpreter extends Visitor<Object> {
         Object right = node.right.acceptVisitor(this);
 
         if ((Double) right == 0.0f) {
-            throw KaoriError.DivisionByZero("can not do division by zero", this.line);
+            throw KaoriError.DivisionByZero(String.format("invalid / operation between %s and %s", left, right),
+                    this.line);
         }
 
         return (Double) left / (Double) right;
@@ -78,7 +79,8 @@ public class Interpreter extends Visitor<Object> {
         Object right = node.right.acceptVisitor(this);
 
         if ((Double) right == 0.0f) {
-            throw KaoriError.DivisionByZero("can not do division by zero", this.line);
+            throw KaoriError.DivisionByZero(String.format("invalid % operation between %s and %s", left, right),
+                    this.line);
         }
 
         return (Double) left % (Double) right;

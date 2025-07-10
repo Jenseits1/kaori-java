@@ -23,6 +23,11 @@ public abstract class TypeAST {
 
             return false;
         }
+
+        @Override
+        public String toString() {
+            return String.format("%s type", this.value);
+        }
     }
 
     public static class Function extends TypeAST {

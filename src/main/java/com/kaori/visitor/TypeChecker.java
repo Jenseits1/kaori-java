@@ -47,7 +47,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.STRING;
         }
 
-        throw KaoriError.TypeError("expected number or string operands for '+'", this.line);
+        throw KaoriError.TypeError(String.format("invalid + operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '-'", this.line);
+        throw KaoriError.TypeError(String.format("invalid - operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '*'", this.line);
+        throw KaoriError.TypeError(String.format("invalid * operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '/'", this.line);
+        throw KaoriError.TypeError(String.format("invalid / operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected number operands for '%'", this.line);
+        throw KaoriError.TypeError(String.format("invalid % operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected boolean operands for '&&'", this.line);
+        throw KaoriError.TypeError(String.format("invalid && operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected boolean operands for '||'", this.line);
+        throw KaoriError.TypeError(String.format("invalid || operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected operands of same type for '=='", this.line);
+        throw KaoriError.TypeError(String.format("invalid == operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected operands of same type for '!='", this.line);
+        throw KaoriError.TypeError(String.format("invalid != operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '>'", this.line);
+        throw KaoriError.TypeError(String.format("invalid > operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '>='", this.line);
+        throw KaoriError.TypeError(String.format("invalid >= operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -179,7 +179,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '<'", this.line);
+        throw KaoriError.TypeError(String.format("invalid < operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected number operands for '<='", this.line);
+        throw KaoriError.TypeError(String.format("invalid <= operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return right;
         }
 
-        throw KaoriError.TypeError("expected the same type on variable assignment", this.line);
+        throw KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right), this.line);
     }
 
     @Override
@@ -218,13 +218,13 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitNot(ExpressionAST.Not node) {
-        TypeAST value = node.left.acceptVisitor(this);
+        TypeAST left = node.left.acceptVisitor(this);
 
-        if (value.equals(TypeAST.Primitive.BOOLEAN)) {
+        if (left.equals(TypeAST.Primitive.BOOLEAN)) {
             return TypeAST.Primitive.BOOLEAN;
         }
 
-        throw KaoriError.TypeError("expected boolean operand for '!'", this.line);
+        throw KaoriError.TypeError(String.format("invalid ! operation for", left), this.line);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             return TypeAST.Primitive.NUMBER;
         }
 
-        throw KaoriError.TypeError("expected float operand for unary '-'", this.line);
+        throw KaoriError.TypeError(String.format("invalid - operation for", left), this.line);
     }
 
     @Override
@@ -259,7 +259,8 @@ public class TypeChecker extends Visitor<TypeAST> {
             this.declare(statement.left);
             this.define(statement.left, right);
         } else {
-            throw KaoriError.TypeError("expected " + left + " type for " + statement.left.value, this.line);
+            KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right),
+                    this.line);
         }
     }
 
@@ -273,7 +274,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST condition = statement.condition.acceptVisitor(this);
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
-            throw KaoriError.TypeError("expected boolean value for condition", this.line);
+            throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
         statement.thenBranch.acceptVisitor(this);
@@ -285,7 +286,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST condition = statement.condition.acceptVisitor(this);
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
-            throw KaoriError.TypeError("expected boolean value for condition", this.line);
+            throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
         statement.block.acceptVisitor(this);
@@ -298,7 +299,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST condition = statement.condition.acceptVisitor(this);
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
-            throw KaoriError.TypeError("expected boolean value for condition", this.line);
+            throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
         statement.block.acceptVisitor(this);
