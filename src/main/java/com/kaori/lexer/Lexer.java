@@ -113,6 +113,8 @@ public class Lexer {
     }
 
     private void scanStringLiteral() {
+        int line = this.line;
+
         this.advance();
 
         while (!this.atEnd() && this.currentChar() != '"') {
@@ -120,7 +122,7 @@ public class Lexer {
         }
 
         if (this.atEnd() || this.currentChar() != '"') {
-            throw KaoriError.SyntaxError("expected " + '"' + " for string literals", this.line);
+            throw KaoriError.SyntaxError("missing closing quotation marks for string literal", line);
         }
 
         this.advance();
@@ -158,7 +160,7 @@ public class Lexer {
                     this.advance();
                     this.createToken(TokenKind.AND);
                 } else {
-                    throw KaoriError.SyntaxError("unexpected '&'", this.line);
+                    throw KaoriError.SyntaxError(String.format("invalid token %s", this.currentChar()), this.line);
                 }
             }
             case '|' -> {
@@ -167,7 +169,7 @@ public class Lexer {
                     this.advance();
                     this.createToken(TokenKind.OR);
                 } else {
-                    throw KaoriError.SyntaxError("unexpected '|'", this.line);
+                    throw KaoriError.SyntaxError(String.format("invalid token %s", this.currentChar()), this.line);
                 }
             }
             case '!' -> {
@@ -254,7 +256,7 @@ public class Lexer {
                 this.advance();
                 this.createToken(TokenKind.DOLLAR);
             }
-            default -> throw KaoriError.SyntaxError("unexpected token " + this.currentChar(), this.line);
+            default -> throw KaoriError.SyntaxError(String.format("invalid token %s", this.currentChar()), this.line);
         }
     }
 

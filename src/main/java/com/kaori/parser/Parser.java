@@ -54,7 +54,7 @@ public class Parser {
 
     private ExpressionAST primary() {
         if (this.tokens.atEnd()) {
-            throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
+            throw KaoriError.SyntaxError("expected a valid operand", this.tokens.getLine());
         }
 
         return switch (this.tokens.getCurrent()) {
@@ -84,7 +84,9 @@ public class Parser {
             }
             case IDENTIFIER -> this.postfixUnary();
             case LEFT_PAREN -> this.parenthesis();
-            default -> throw KaoriError.SyntaxError("expected valid operand", this.tokens.getLine());
+            default -> throw KaoriError.SyntaxError(
+                    String.format("expected valid operand instead of %s", this.tokens.getCurrent()),
+                    this.tokens.getLine());
         };
     }
 
