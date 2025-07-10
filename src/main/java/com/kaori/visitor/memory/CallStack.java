@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Stack;
 
 public class CallStack<T> {
-    private final Stack<FunctionFrame<T>> frames;
+    private final Stack<Frame<T>> frames;
 
     public CallStack() {
         this.frames = new Stack<>();
     }
 
-    private FunctionFrame<T> mainFrame() {
+    private Frame<T> mainFrame() {
         return this.frames.firstElement();
     }
 
-    private FunctionFrame<T> currentFrame() {
+    private Frame<T> currentFrame() {
         return this.frames.peek();
     }
 
@@ -29,7 +29,8 @@ public class CallStack<T> {
     }
 
     public void push() {
-        FunctionFrame<T> frame = new FunctionFrame<>();
+        Frame<T> frame = new Frame<>();
+
         this.frames.add(frame);
     }
 
@@ -50,7 +51,7 @@ public class CallStack<T> {
     }
 
     public T define(String identifier, T value) {
-        FunctionFrame<T> currentFrame = this.currentFrame();
+        Frame<T> currentFrame = this.currentFrame();
 
         int index = currentFrame.scopes.size() - 1;
 
@@ -65,7 +66,7 @@ public class CallStack<T> {
             index--;
         }
 
-        FunctionFrame<T> mainFrame = this.mainFrame();
+        Frame<T> mainFrame = this.mainFrame();
 
         index = mainFrame.scopes.size() - 1;
 
@@ -84,7 +85,7 @@ public class CallStack<T> {
     }
 
     public T get(String identifier) {
-        FunctionFrame<T> currentFrame = this.currentFrame();
+        Frame<T> currentFrame = this.currentFrame();
 
         int index = currentFrame.scopes.size() - 1;
 
@@ -98,7 +99,7 @@ public class CallStack<T> {
             index--;
         }
 
-        FunctionFrame<T> mainFrame = this.mainFrame();
+        Frame<T> mainFrame = this.mainFrame();
 
         index = mainFrame.scopes.size() - 1;
 
@@ -116,7 +117,7 @@ public class CallStack<T> {
     }
 
     public boolean find(String identifier) {
-        FunctionFrame<T> currentFrame = this.currentFrame();
+        Frame<T> currentFrame = this.currentFrame();
 
         int index = currentFrame.scopes.size() - 1;
 
@@ -131,7 +132,7 @@ public class CallStack<T> {
 
         }
 
-        FunctionFrame<T> mainFrame = this.mainFrame();
+        Frame<T> mainFrame = this.mainFrame();
 
         index = mainFrame.scopes.size() - 1;
 

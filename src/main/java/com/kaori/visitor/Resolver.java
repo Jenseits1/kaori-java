@@ -50,91 +50,103 @@ public class Resolver extends Visitor<Object> {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
 
-        return null;
+        return node;
     }
 
     @Override
     public Object visitSubtract(ExpressionAST.Subtract node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitMultiply(ExpressionAST.Multiply node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitDivide(ExpressionAST.Divide node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitModulo(ExpressionAST.Modulo node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitAnd(ExpressionAST.And node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitOr(ExpressionAST.Or node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitEqual(ExpressionAST.Equal node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitNotEqual(ExpressionAST.NotEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitGreater(ExpressionAST.Greater node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitGreaterEqual(ExpressionAST.GreaterEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitLess(ExpressionAST.Less node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
     public Object visitLessEqual(ExpressionAST.LessEqual node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
-        return null;
+
+        return node;
     }
 
     @Override
@@ -147,7 +159,11 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public Object visitLiteral(ExpressionAST.Literal node) {
-        return null;
+        if (node.value == null) {
+            return null;
+        }
+
+        return node;
     }
 
     @Override
@@ -157,19 +173,19 @@ public class Resolver extends Visitor<Object> {
         if (value == null) {
             throw KaoriError.VariableError(node.value + " is not defined", this.line);
         }
-        return null;
+        return node;
     }
 
     @Override
     public Object visitNot(ExpressionAST.Not node) {
         node.left.acceptVisitor(this);
-        return null;
+        return node;
     }
 
     @Override
     public Object visitNegation(ExpressionAST.Negation node) {
         node.left.acceptVisitor(this);
-        return null;
+        return node;
     }
 
     @Override
@@ -187,9 +203,13 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        statement.right.acceptVisitor(this);
-
+        Object right = statement.right.acceptVisitor(this);
         this.declare(statement.left);
+
+        if (right == null) {
+            return;
+        }
+
         this.define(statement.left, statement.right);
     }
 
