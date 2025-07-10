@@ -379,6 +379,7 @@ public class Parser {
         StatementAST.Block thenBranch = this.blockStatement();
 
         if (this.tokens.getCurrent() != TokenKind.ELSE) {
+
             StatementAST.Block elseBranch = new StatementAST.Block(line);
             return new StatementAST.If(line, condition, thenBranch, elseBranch);
         }

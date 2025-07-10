@@ -53,7 +53,10 @@ public enum TokenKind {
     IDENTIFIER("identifier"),
     STRING_LITERAL("string"),
     NUMBER_LITERAL("number"),
-    BOOLEAN_LITERAL("boolean");
+    BOOLEAN_LITERAL("boolean"),
+
+    // End of File
+    EOF("end of file");
 
     public final String label;
 

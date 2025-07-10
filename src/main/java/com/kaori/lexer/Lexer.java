@@ -279,6 +279,7 @@ public class Lexer {
                 this.scanSymbol();
             }
         }
+
     }
 
     public List<Token> scan() {

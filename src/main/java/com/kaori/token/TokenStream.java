@@ -18,6 +18,10 @@ public class TokenStream {
     }
 
     public TokenKind getCurrent() {
+        if (this.atEnd()) {
+            return TokenKind.EOF;
+        }
+
         Token token = this.tokens.get(this.index);
 
         return token.kind;
@@ -59,7 +63,6 @@ public class TokenStream {
 
     public void consume(TokenKind expected) {
         if (this.getCurrent() != expected) {
-
             throw KaoriError.SyntaxError(String.format("expected %s instead of %s", expected, this.getCurrent()),
                     this.line);
         }
