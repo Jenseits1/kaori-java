@@ -60,23 +60,25 @@ public class Parser {
 
         return switch (this.tokens.getCurrent()) {
             case BOOLEAN_LITERAL -> {
-                boolean value = Boolean.parseBoolean(this.tokens.getLexeme());
+                String lexeme = this.tokens.getLexeme();
+                boolean value = Boolean.parseBoolean(lexeme);
                 ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.BOOLEAN, value);
                 this.tokens.consume();
 
                 yield literal;
             }
             case STRING_LITERAL -> {
-                String value = this.tokens.getLexeme();
+                String lexeme = this.tokens.getLexeme();
+                String value = lexeme.substring(1, lexeme.length() - 1);
                 TypeAST type = TypeAST.Primitive.STRING;
-                ExpressionAST literal = new ExpressionAST.Literal(type,
-                        value.substring(1, value.length() - 1));
+                ExpressionAST literal = new ExpressionAST.Literal(type, value);
                 this.tokens.consume();
 
                 yield literal;
             }
             case NUMBER_LITERAL -> {
-                Double value = Double.parseDouble(this.tokens.getLexeme());
+                String lexeme = this.tokens.getLexeme();
+                Double value = Double.parseDouble(lexeme);
                 TypeAST type = TypeAST.Primitive.NUMBER;
                 ExpressionAST literal = new ExpressionAST.Literal(type, value);
                 this.tokens.consume();

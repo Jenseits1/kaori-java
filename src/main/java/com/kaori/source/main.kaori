@@ -21,11 +21,6 @@ j: f64 = 0;
 while j < 5 {
     j++;
 }
-    
-if a > b {
-    print("bigger");
-} else if b == a {
-    print("equal");
-}
 
-print(c == b * "a");
+e = 5;
+print(e);

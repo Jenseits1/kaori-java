@@ -33,10 +33,11 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        Object left = node.left.acceptVisitor(this); // already‑evaluated values
+        Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
+        ExpressionAST.Operator operator = node.operator;
 
-        return switch (node.operator) {
+        return switch (operator) {
             case PLUS -> (Double) left + (Double) right;
             case MINUS -> (Double) left - (Double) right;
             case MULTIPLY -> (Double) left * (Double) right;
@@ -58,8 +59,9 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
         Object left = node.left.acceptVisitor(this);
+        ExpressionAST.Operator operator = node.operator;
 
-        return switch (node.operator) {
+        return switch (operator) {
             case MINUS -> -(Double) left;
             case NOT -> !(Boolean) left;
             default -> null;
@@ -74,6 +76,11 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier node) {
         return this.get(node);
+    }
+
+    @Override
+    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
+        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 
     @Override
@@ -142,10 +149,5 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
         // Future implementation
-    }
-
-    @Override
-    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 }

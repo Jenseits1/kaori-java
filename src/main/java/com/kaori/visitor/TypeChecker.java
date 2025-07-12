@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.ExpressionAST.FunctionCall;
 import com.kaori.parser.TypeAST;
 import com.kaori.parser.StatementAST;
 
@@ -130,6 +129,11 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
+    public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
+        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
+    }
+
+    @Override
     public void visitPrintStatement(StatementAST.Print statement) {
         statement.expression.acceptVisitor(this);
     }
@@ -200,10 +204,5 @@ public class TypeChecker extends Visitor<TypeAST> {
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public TypeAST visitFunctionCall(FunctionCall node) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 }

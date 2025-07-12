@@ -7,7 +7,6 @@ import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
 
 public class Resolver extends Visitor<Object> {
-
     public Resolver(List<StatementAST> statements) {
         super(statements);
     }
@@ -76,7 +75,13 @@ public class Resolver extends Visitor<Object> {
         if (value == null) {
             throw KaoriError.VariableError(node.value + " is not defined", this.line);
         }
+
         return node;
+    }
+
+    @Override
+    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
+        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 
     @Override
@@ -134,10 +139,5 @@ public class Resolver extends Visitor<Object> {
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
 
-    }
-
-    @Override
-    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
     }
 }

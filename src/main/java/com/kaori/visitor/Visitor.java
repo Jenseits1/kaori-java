@@ -3,6 +3,7 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.ExpressionAST.Assign;
 import com.kaori.parser.StatementAST;
 import com.kaori.visitor.memory.CallStack;
 
@@ -41,6 +42,8 @@ public abstract class Visitor<T> {
     public abstract T visitBinaryOperator(ExpressionAST.BinaryOperator node);
 
     public abstract T visitUnaryOperator(ExpressionAST.UnaryOperator node);
+
+    public abstract T visitAssign(ExpressionAST.Assign node);
 
     public abstract T visitLiteral(ExpressionAST.Literal node);
 
