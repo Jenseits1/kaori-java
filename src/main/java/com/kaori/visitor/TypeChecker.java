@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.ExpressionAST.BinaryOperator;
 import com.kaori.parser.ExpressionAST.FunctionCall;
 import com.kaori.parser.TypeAST;
 import com.kaori.parser.StatementAST;
@@ -39,16 +38,27 @@ public class TypeChecker extends Visitor<TypeAST> {
     public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
         TypeAST left = node.left.acceptVisitor(this);
         TypeAST right = node.right.acceptVisitor(this);
+        ExpressionAST.Operator operator = node.operator;
 
-        return switch (node.operator) {
-            case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> {
+        return switch (operator) {
+            case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO -> {
                 if (left.equals(TypeAST.Primitive.NUMBER) &&
                         right.equals(TypeAST.Primitive.NUMBER)) {
                     yield TypeAST.Primitive.NUMBER;
                 }
 
                 throw KaoriError.TypeError(
-                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        String.format("invalid %s operation between %s and %s", operator, left, right),
+                        this.line);
+            }
+            case GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> {
+                if (left.equals(TypeAST.Primitive.NUMBER) &&
+                        right.equals(TypeAST.Primitive.NUMBER)) {
+                    yield TypeAST.Primitive.BOOLEAN;
+                }
+
+                throw KaoriError.TypeError(
+                        String.format("invalid %s operation between %s and %s", operator, left, right),
                         this.line);
             }
             case AND, OR -> {
@@ -58,7 +68,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                 }
 
                 throw KaoriError.TypeError(
-                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        String.format("invalid %s operation between %s and %s", operator, left, right),
                         this.line);
             }
             case EQUAL, NOT_EQUAL -> {
@@ -67,7 +77,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                 }
 
                 throw KaoriError.TypeError(
-                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        String.format("invalid %s operation between %s and %s", operator, left, right),
                         this.line);
             }
             case ASSIGN -> {
@@ -76,7 +86,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                 }
 
                 throw KaoriError.TypeError(
-                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        String.format("invalid %s operation between %s and %s", operator, left, right),
                         this.line);
             }
             default -> null;
@@ -86,14 +96,15 @@ public class TypeChecker extends Visitor<TypeAST> {
     @Override
     public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator node) {
         TypeAST left = node.left.acceptVisitor(this);
+        ExpressionAST.Operator operator = node.operator;
 
-        return switch (node.operator) {
+        return switch (operator) {
             case MINUS -> {
                 if (left.equals(TypeAST.Primitive.BOOLEAN)) {
                     yield TypeAST.Primitive.BOOLEAN;
                 }
 
-                throw KaoriError.TypeError(String.format("invalid %s operation for %s", node.operator, left),
+                throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
                         this.line);
             }
             case NOT -> {
@@ -101,7 +112,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                     yield TypeAST.Primitive.BOOLEAN;
                 }
 
-                throw KaoriError.TypeError(String.format("invalid %s operation for %s", node.operator, left),
+                throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
                         this.line);
             }
             default -> null;
@@ -116,28 +127,6 @@ public class TypeChecker extends Visitor<TypeAST> {
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
         return this.get(node);
-    }
-
-    @Override
-    public TypeAST visitNot(ExpressionAST.Not node) {
-        TypeAST left = node.left.acceptVisitor(this);
-
-        if (left.equals(TypeAST.Primitive.BOOLEAN)) {
-            return TypeAST.Primitive.BOOLEAN;
-        }
-
-        throw KaoriError.TypeError(String.format("invalid ! operation for", left), this.line);
-    }
-
-    @Override
-    public TypeAST visitNegation(ExpressionAST.Negation node) {
-        TypeAST left = node.left.acceptVisitor(this);
-
-        if (left.equals(TypeAST.Primitive.NUMBER)) {
-            return TypeAST.Primitive.NUMBER;
-        }
-
-        throw KaoriError.TypeError(String.format("invalid - operation for", left), this.line);
     }
 
     @Override

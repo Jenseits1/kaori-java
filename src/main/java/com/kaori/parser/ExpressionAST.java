@@ -104,32 +104,6 @@ public abstract class ExpressionAST {
         }
     }
 
-    public static class Not extends ExpressionAST {
-        public final ExpressionAST left;
-
-        public Not(ExpressionAST left) {
-            this.left = left;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitNot(this);
-        }
-    }
-
-    public static class Negation extends ExpressionAST {
-        public final ExpressionAST left;
-
-        public Negation(ExpressionAST left) {
-            this.left = left;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitNegation(this);
-        }
-    }
-
     public static class FunctionCall extends ExpressionAST {
         public final ExpressionAST callee;
         public final List<ExpressionAST> arguments;

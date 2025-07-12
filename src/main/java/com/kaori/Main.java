@@ -54,33 +54,3 @@ public class Main {
         }
     }
 }
-
-public static class Add extends ExpressionAST {
-    public final ExpressionAST left;
-    public final ExpressionAST right;
-
-    public Add(ExpressionAST left, ExpressionAST right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    @Override
-    public <T> T acceptVisitor(Visitor<T> visitor) {
-        return visitor.visitAdd(this);
-    }
-}
-
-public static class Subtract extends ExpressionAST {
-    public final ExpressionAST left;
-    public final ExpressionAST right;
-
-    public Subtract(ExpressionAST left, ExpressionAST right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    @Override
-    public <T> T acceptVisitor(Visitor<T> visitor) {
-        return visitor.visitSubtract(this);
-    }
-}

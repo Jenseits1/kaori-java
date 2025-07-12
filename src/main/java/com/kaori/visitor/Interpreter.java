@@ -77,18 +77,6 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitNot(ExpressionAST.Not node) {
-        Object value = node.left.acceptVisitor(this);
-        return !(Boolean) value;
-    }
-
-    @Override
-    public Object visitNegation(ExpressionAST.Negation node) {
-        Object left = node.left.acceptVisitor(this);
-        return -(Double) left;
-    }
-
-    @Override
     public void visitPrintStatement(StatementAST.Print statement) {
         Object expression = statement.expression.acceptVisitor(this);
         System.out.println(expression);

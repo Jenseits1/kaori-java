@@ -1,6 +1,31 @@
 
 
 
-if (" a)
+def foo(a: f64, b: f64): f64 {
+    a + b;
+}
 
+a: f64 = 5;
+b: f64 = 7;
+c: bool = true;
+d: str = "hello world";
+e: bool;
 
+print("hi");
+
+for i: f64 = 0; i < 5; i++ {
+}
+
+j: f64 = 0;
+
+while j < 5 {
+    j++;
+}
+    
+if a > b {
+    print("bigger");
+} else if b == a {
+    print("equal");
+}
+
+print(c == b * "a");

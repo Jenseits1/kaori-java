@@ -42,10 +42,6 @@ public abstract class Visitor<T> {
 
     public abstract T visitUnaryOperator(ExpressionAST.UnaryOperator node);
 
-    public abstract T visitNegation(ExpressionAST.Negation node);
-
-    public abstract T visitNot(ExpressionAST.Not node);
-
     public abstract T visitLiteral(ExpressionAST.Literal node);
 
     public abstract T visitIdentifier(ExpressionAST.Identifier node);

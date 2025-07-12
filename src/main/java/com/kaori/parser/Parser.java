@@ -95,15 +95,14 @@ public class Parser {
         return switch (this.tokens.getCurrent()) {
             case MINUS -> {
                 this.tokens.consume();
-                yield new ExpressionAST.Negation(this.prefixUnary());
+                yield new ExpressionAST.UnaryOperator(this.prefixUnary(), ExpressionAST.Operator.MINUS);
             }
             case NOT -> {
                 this.tokens.consume();
-                yield new ExpressionAST.Not(this.prefixUnary());
+                yield new ExpressionAST.UnaryOperator(this.prefixUnary(), ExpressionAST.Operator.NOT);
             }
             case PLUS -> {
                 this.tokens.consume();
-
                 yield this.prefixUnary();
 
             }

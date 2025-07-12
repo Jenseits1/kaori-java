@@ -5,7 +5,6 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.TypeAST;
 
 public class Resolver extends Visitor<Object> {
 
@@ -77,18 +76,6 @@ public class Resolver extends Visitor<Object> {
         if (value == null) {
             throw KaoriError.VariableError(node.value + " is not defined", this.line);
         }
-        return node;
-    }
-
-    @Override
-    public Object visitNot(ExpressionAST.Not node) {
-        node.left.acceptVisitor(this);
-        return node;
-    }
-
-    @Override
-    public Object visitNegation(ExpressionAST.Negation node) {
-        node.left.acceptVisitor(this);
         return node;
     }
 
