@@ -46,29 +46,40 @@ public class TypeChecker extends Visitor<TypeAST> {
                         right.equals(TypeAST.Primitive.NUMBER)) {
                     yield TypeAST.Primitive.NUMBER;
                 }
-                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+
+                throw KaoriError.TypeError(
+                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        this.line);
             }
             case AND, OR -> {
                 if (left.equals(TypeAST.Primitive.BOOLEAN) &&
                         right.equals(TypeAST.Primitive.BOOLEAN)) {
                     yield TypeAST.Primitive.BOOLEAN;
                 }
-                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+
+                throw KaoriError.TypeError(
+                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        this.line);
             }
             case EQUAL, NOT_EQUAL -> {
                 if (left.equals(right)) {
                     yield TypeAST.Primitive.BOOLEAN;
                 }
-                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+
+                throw KaoriError.TypeError(
+                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        this.line);
             }
             case ASSIGN -> {
                 if (left.equals(right)) {
                     yield left;
                 }
 
-                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+                throw KaoriError.TypeError(
+                        String.format("invalid %s operation for %s and %s", node.operator, left, right),
+                        this.line);
             }
-            default -> throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+            default -> null;
         };
     }
 
