@@ -145,6 +145,7 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-
+        this.declare(statement.name);
+        this.define(statement.name, statement);
     }
 }

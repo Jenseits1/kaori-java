@@ -16,17 +16,17 @@ public abstract class TypeAST {
         }
 
         @Override
+        public String toString() {
+            return this.value;
+        }
+
+        @Override
         public boolean equals(TypeAST type) {
             if (type instanceof Primitive other) {
                 return this.value == other.value;
             }
 
             return false;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s type", this.value);
         }
     }
 
@@ -37,6 +37,14 @@ public abstract class TypeAST {
         public Function(List<TypeAST> parameters, TypeAST returnType) {
             this.parameters = parameters;
             this.returnType = returnType;
+        }
+
+        @Override
+        public String toString() {
+            String parameters = String.join(", ",
+                    this.parameters.stream().map(parameter -> parameter.toString()).toList());
+
+            return String.format("(%s) => %s", parameters, returnType);
         }
 
         @Override

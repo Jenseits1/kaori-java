@@ -206,6 +206,11 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        // TODO Auto-generated method stub
+        List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
+        TypeAST returnType = statement.returnType;
+        TypeAST functionType = new TypeAST.Function(parameters, returnType);
+
+        this.declare(statement.name);
+        this.define(statement.name, functionType);
     }
 }

@@ -154,6 +154,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        // Future implementation
+        this.declare(statement.name);
+        this.define(statement.name, statement);
     }
 }

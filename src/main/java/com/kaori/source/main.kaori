@@ -23,7 +23,8 @@ while j < 5 {
     j++;
 }
 
+def bar(a: f64, b: str, c: bool): f64 {
+    a + b;
+}
 
-
-e = e;
-print(e);
+foo = bar;
