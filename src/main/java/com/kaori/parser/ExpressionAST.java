@@ -20,8 +20,7 @@ public abstract class ExpressionAST {
         GREATER(">"),
         GREATER_EQUAL(">="),
         LESS("<"),
-        LESS_EQUAL("<="),
-        ASSIGN("=");
+        LESS_EQUAL("<=");
 
         public final String label;
 

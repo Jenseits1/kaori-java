@@ -51,7 +51,6 @@ public class Interpreter extends Visitor<Object> {
             case OR -> (Boolean) left || (Boolean) right;
             case EQUAL -> left.equals(right);
             case NOT_EQUAL -> !left.equals(right);
-            case ASSIGN -> this.define((ExpressionAST.Identifier) node.left, right);
             default -> null;
         };
     }
@@ -66,6 +65,13 @@ public class Interpreter extends Visitor<Object> {
             case NOT -> !(Boolean) left;
             default -> null;
         };
+    }
+
+    @Override
+    public Object visitAssign(ExpressionAST.Assign node) {
+        Object value = node.right.acceptVisitor(this);
+
+        return this.define(node.left, value);
     }
 
     @Override

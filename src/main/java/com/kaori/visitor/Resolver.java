@@ -60,6 +60,13 @@ public class Resolver extends Visitor<Object> {
     }
 
     @Override
+    public Object visitAssign(ExpressionAST.Assign node) {
+        node.right.acceptVisitor(this);
+
+        return this.define(node.left, node.right);
+    }
+
+    @Override
     public Object visitLiteral(ExpressionAST.Literal node) {
         if (node.value == null) {
             return null;

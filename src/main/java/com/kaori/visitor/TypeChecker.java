@@ -79,15 +79,6 @@ public class TypeChecker extends Visitor<TypeAST> {
                         String.format("invalid %s operation between %s and %s", operator, left, right),
                         this.line);
             }
-            case ASSIGN -> {
-                if (left.equals(right)) {
-                    yield left;
-                }
-
-                throw KaoriError.TypeError(
-                        String.format("invalid %s operation between %s and %s", operator, left, right),
-                        this.line);
-            }
             default -> null;
         };
     }
@@ -116,6 +107,18 @@ public class TypeChecker extends Visitor<TypeAST> {
             }
             default -> null;
         };
+    }
+
+    @Override
+    public TypeAST visitAssign(ExpressionAST.Assign node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
+
+        if (left.equals(right)) {
+            return right;
+        }
+
+        throw KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right), this.line);
     }
 
     @Override
