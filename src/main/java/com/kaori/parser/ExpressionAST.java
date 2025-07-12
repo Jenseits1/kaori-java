@@ -89,6 +89,21 @@ public abstract class ExpressionAST {
         }
     }
 
+    public static class UnaryOperator extends ExpressionAST {
+        public final ExpressionAST left;
+        public final Operator operator;
+
+        public UnaryOperator(ExpressionAST left, Operator operator) {
+            this.left = left;
+            this.operator = operator;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            return visitor.visitUnaryOperator(this);
+        }
+    }
+
     public static class Not extends ExpressionAST {
         public final ExpressionAST left;
 

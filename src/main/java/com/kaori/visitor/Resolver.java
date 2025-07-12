@@ -5,7 +5,6 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.TypeAST;
 
 public class Resolver extends Visitor<Object> {
 

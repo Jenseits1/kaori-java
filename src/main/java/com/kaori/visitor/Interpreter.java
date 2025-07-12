@@ -2,10 +2,8 @@ package com.kaori.visitor;
 
 import java.util.List;
 
-import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.TypeAST;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {
@@ -55,6 +53,12 @@ public class Interpreter extends Visitor<Object> {
             case ASSIGN -> this.define((ExpressionAST.Identifier) node.left, right);
             default -> null;
         };
+    }
+
+    @Override
+    public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
+        Object value = node.left.acceptVisitor(this);
+        return !(Boolean) value;
     }
 
     @Override

@@ -41,8 +41,6 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST right = node.right.acceptVisitor(this);
 
         return switch (node.operator) {
-
-            /* ───── Arithmetic ─────────────────────────────────────────── */
             case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> {
                 if (left.equals(TypeAST.Primitive.NUMBER) &&
                         right.equals(TypeAST.Primitive.NUMBER)) {
@@ -50,8 +48,6 @@ public class TypeChecker extends Visitor<TypeAST> {
                 }
                 throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
             }
-
-            /* ───── Logical ────────────────────────────────────────────── */
             case AND, OR -> {
                 if (left.equals(TypeAST.Primitive.BOOLEAN) &&
                         right.equals(TypeAST.Primitive.BOOLEAN)) {
@@ -59,25 +55,19 @@ public class TypeChecker extends Visitor<TypeAST> {
                 }
                 throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
             }
-
-            /* ───── Equality / Inequality ─────────────────────────────── */
             case EQUAL, NOT_EQUAL -> {
                 if (left.equals(right)) {
                     yield TypeAST.Primitive.BOOLEAN;
                 }
                 throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
             }
-
-            /* ───── Assignment ─────────────────────────────────────────── */
             case ASSIGN -> {
                 if (left.equals(right)) {
-                    yield left; // or `right`, they are equal at this point
+                    yield left;
                 }
 
                 throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
             }
-
-            /* ───── (Unary operators are checked elsewhere) ────────────── */
             default -> throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
         };
     }
