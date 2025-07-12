@@ -50,21 +50,6 @@ public abstract class ExpressionAST {
         }
     }
 
-    public static class Assign extends ExpressionAST {
-        public final Identifier left;
-        public final ExpressionAST right;
-
-        public Assign(Identifier left, ExpressionAST right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitAssign(this);
-        }
-    }
-
     public static class UnaryOperator extends ExpressionAST {
         public final ExpressionAST left;
         public final Operator operator;
@@ -77,6 +62,21 @@ public abstract class ExpressionAST {
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitUnaryOperator(this);
+        }
+    }
+
+    public static class Assign extends ExpressionAST {
+        public final Identifier left;
+        public final ExpressionAST right;
+
+        public Assign(Identifier left, ExpressionAST right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            return visitor.visitAssign(this);
         }
     }
 

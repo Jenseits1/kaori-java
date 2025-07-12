@@ -12,7 +12,8 @@
 
 -   **Implemented Language Features**
 
-    -   [x] Variable assign operator (`x: int = 10;`)
+    -   [x] Variable declaration (`x: f64 = 10;`, `x: bool = true;`, `x: str = "Hello world";`)
+    -   [x] Assign operators (`x = 5;`)
     -   [x] Logical operators (`&&`, `||`, `!`)
     -   [x] Arithmetic operators (`+`, `-`, `*`, `/`)
     -   [x] Comparison operators (`==`, `!=`, `<`, `>`, `<=`, `>=`)

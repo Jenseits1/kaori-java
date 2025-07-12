@@ -14,6 +14,7 @@ e: bool;
 print("hi");
 
 for i: f64 = 0; i < 5; i++ {
+    print(i);
 }
 
 j: f64 = 0;
@@ -22,5 +23,7 @@ while j < 5 {
     j++;
 }
 
-e = true;
+
+
+e = e;
 print(e);

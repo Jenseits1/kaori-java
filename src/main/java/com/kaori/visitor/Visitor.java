@@ -3,7 +3,6 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.ExpressionAST.Assign;
 import com.kaori.parser.StatementAST;
 import com.kaori.visitor.memory.CallStack;
 
