@@ -3,6 +3,7 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.ExpressionAST.BinaryOperator;
 import com.kaori.parser.StatementAST;
 import com.kaori.visitor.memory.CallStack;
 
@@ -38,6 +39,8 @@ public abstract class Visitor<T> {
     }
 
     // Expressions
+    public abstract T visitBinaryOperator(BinaryOperator node);
+
     public abstract T visitAdd(ExpressionAST.Add node);
 
     public abstract T visitSubtract(ExpressionAST.Subtract node);
@@ -92,4 +95,5 @@ public abstract class Visitor<T> {
     public abstract void visitForLoopStatement(StatementAST.ForLoop statement);
 
     public abstract void visitFunctionStatement(StatementAST.Function statement);
+
 }

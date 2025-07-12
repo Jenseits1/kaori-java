@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.ExpressionAST.BinaryOperator;
 import com.kaori.parser.ExpressionAST.FunctionCall;
 import com.kaori.parser.TypeAST;
 import com.kaori.parser.StatementAST;
@@ -32,6 +33,53 @@ public class TypeChecker extends Visitor<TypeAST> {
         String identifier = node.value;
 
         return this.callStack.get(identifier);
+    }
+
+    @Override
+    public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
+        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST right = node.right.acceptVisitor(this);
+
+        return switch (node.operator) {
+
+            /* ───── Arithmetic ─────────────────────────────────────────── */
+            case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO, GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> {
+                if (left.equals(TypeAST.Primitive.NUMBER) &&
+                        right.equals(TypeAST.Primitive.NUMBER)) {
+                    yield TypeAST.Primitive.NUMBER;
+                }
+                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+            }
+
+            /* ───── Logical ────────────────────────────────────────────── */
+            case AND, OR -> {
+                if (left.equals(TypeAST.Primitive.BOOLEAN) &&
+                        right.equals(TypeAST.Primitive.BOOLEAN)) {
+                    yield TypeAST.Primitive.BOOLEAN;
+                }
+                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+            }
+
+            /* ───── Equality / Inequality ─────────────────────────────── */
+            case EQUAL, NOT_EQUAL -> {
+                if (left.equals(right)) {
+                    yield TypeAST.Primitive.BOOLEAN;
+                }
+                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+            }
+
+            /* ───── Assignment ─────────────────────────────────────────── */
+            case ASSIGN -> {
+                if (left.equals(right)) {
+                    yield left; // or `right`, they are equal at this point
+                }
+
+                throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+            }
+
+            /* ───── (Unary operators are checked elsewhere) ────────────── */
+            default -> throw KaoriError.TypeError("Arithmetic operators require two numbers", this.line);
+        };
     }
 
     @Override

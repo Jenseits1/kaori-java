@@ -6,6 +6,44 @@ import com.kaori.visitor.Visitor;
 public abstract class ExpressionAST {
     public abstract <T> T acceptVisitor(Visitor<T> visitor);
 
+    public static enum Operator {
+        // Arithmetic operators
+        PLUS("+"),
+        MINUS("-"),
+        MULTIPLY("*"),
+        DIVIDE("/"),
+        MODULO("%"),
+
+        // Unary arithmetic operators
+        INCREMENT("++"),
+        DECREMENT("--"),
+
+        // Logical operators
+        AND("&&"),
+        OR("||"),
+        NOT("!"),
+
+        // Comparison
+        NOT_EQUAL("!="),
+        EQUAL("=="),
+        GREATER(">"),
+        GREATER_EQUAL(">="),
+        LESS("<"),
+        LESS_EQUAL("<="),
+
+        ASSIGN("=");
+
+        public final String label;
+
+        private Operator(String label) {
+            this.label = label;
+        }
+
+        public String toString() {
+            return this.label;
+        }
+    }
+
     public static class Literal extends ExpressionAST {
         public final TypeAST type;
         public final Object value;
@@ -31,6 +69,23 @@ public abstract class ExpressionAST {
         @Override
         public <T> T acceptVisitor(Visitor<T> visitor) {
             return visitor.visitIdentifier(this);
+        }
+    }
+
+    public static class BinaryOperator extends ExpressionAST {
+        public final ExpressionAST left;
+        public final ExpressionAST right;
+        public final Operator operator;
+
+        public BinaryOperator(ExpressionAST left, ExpressionAST right, Operator operator) {
+            this.left = left;
+            this.right = right;
+            this.operator = operator;
+        }
+
+        @Override
+        public <T> T acceptVisitor(Visitor<T> visitor) {
+            return visitor.visitBinaryOperator(this);
         }
     }
 
