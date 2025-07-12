@@ -153,11 +153,16 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST left = statement.type;
         TypeAST right = statement.right.acceptVisitor(this);
 
+        if (left.equals(TypeAST.Primitive.VOID)) {
+            throw KaoriError.TypeError(String.format("invalid %s type in variable declaration", left, right),
+                    this.line);
+        }
+
         if (left.equals(right)) {
             this.declare(statement.left);
             this.define(statement.left, right);
         } else {
-            KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right),
+            throw KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right),
                     this.line);
         }
     }

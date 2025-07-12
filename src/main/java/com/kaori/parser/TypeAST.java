@@ -10,6 +10,7 @@ public abstract class TypeAST {
         public static final Primitive STRING = new Primitive("string");
         public static final Primitive NUMBER = new Primitive("number");
         public static final Primitive BOOLEAN = new Primitive("boolean");
+        public static final Primitive VOID = new Primitive("void");
 
         private Primitive(String value) {
             this.value = value;

@@ -307,6 +307,7 @@ public class Parser {
             case "str" -> TypeAST.Primitive.STRING;
             case "bool" -> TypeAST.Primitive.BOOLEAN;
             case "f64" -> TypeAST.Primitive.NUMBER;
+            case "void" -> TypeAST.Primitive.VOID;
             default -> throw KaoriError.SyntaxError("expected primitive types", this.tokens.getLine());
         };
 

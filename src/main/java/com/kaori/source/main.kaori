@@ -23,8 +23,8 @@ while j < 5 {
     j++;
 }
 
-def bar(a: f64, b: str, c: bool): f64 {
+def bar(a: f64, b: str, c: bool): void {
     a + b;
 }
 
-foo = bar;
+print(bar == foo);

@@ -37,6 +37,7 @@ public class Interpreter extends Visitor<Object> {
         Object right = node.right.acceptVisitor(this);
         ExpressionAST.Operator operator = node.operator;
 
+        System.out.println(left);
         return switch (operator) {
             case PLUS -> (Double) left + (Double) right;
             case MINUS -> (Double) left - (Double) right;
@@ -105,6 +106,7 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
         Object value = statement.right.acceptVisitor(this);
+
         this.declare(statement.left);
         this.define(statement.left, value);
     }
