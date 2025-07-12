@@ -57,8 +57,13 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        Object value = node.left.acceptVisitor(this);
-        return !(Boolean) value;
+        Object left = node.left.acceptVisitor(this);
+
+        return switch (node.operator) {
+            case MINUS -> -(Double) left;
+            case NOT -> !(Boolean) left;
+            default -> null;
+        };
     }
 
     @Override

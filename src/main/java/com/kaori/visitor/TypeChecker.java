@@ -73,6 +73,31 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
+    public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator node) {
+        TypeAST left = node.left.acceptVisitor(this);
+
+        return switch (node.operator) {
+            case MINUS -> {
+                if (left.equals(TypeAST.Primitive.BOOLEAN)) {
+                    yield TypeAST.Primitive.BOOLEAN;
+                }
+
+                throw KaoriError.TypeError(String.format("invalid %s operation for %s", node.operator, left),
+                        this.line);
+            }
+            case NOT -> {
+                if (left.equals(TypeAST.Primitive.BOOLEAN)) {
+                    yield TypeAST.Primitive.BOOLEAN;
+                }
+
+                throw KaoriError.TypeError(String.format("invalid %s operation for %s", node.operator, left),
+                        this.line);
+            }
+            default -> null;
+        };
+    }
+
+    @Override
     public TypeAST visitLiteral(ExpressionAST.Literal node) {
         return node.type;
     }
