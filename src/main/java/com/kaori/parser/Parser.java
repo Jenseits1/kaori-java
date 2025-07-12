@@ -21,15 +21,16 @@ public class Parser {
         return switch (this.tokens.getCurrent()) {
             case INCREMENT -> {
                 ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
-                ExpressionAST add = new ExpressionAST.Add(identifier, literal);
+                ExpressionAST add = new ExpressionAST.BinaryOperator(identifier, literal, ExpressionAST.Operator.PLUS);
                 this.tokens.consume();
-                yield new ExpressionAST.Assign(identifier, add);
+                yield new ExpressionAST.BinaryOperator(identifier, add, ExpressionAST.Operator.ASSIGN);
             }
             case DECREMENT -> {
                 ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
-                ExpressionAST subtract = new ExpressionAST.Subtract(identifier, literal);
+                ExpressionAST subtract = new ExpressionAST.BinaryOperator(identifier, literal,
+                        ExpressionAST.Operator.MINUS);
                 this.tokens.consume();
-                yield new ExpressionAST.Assign(identifier, subtract);
+                yield new ExpressionAST.BinaryOperator(identifier, subtract, ExpressionAST.Operator.ASSIGN);
             }
             default -> identifier;
         };
