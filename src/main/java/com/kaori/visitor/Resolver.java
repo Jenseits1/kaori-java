@@ -5,6 +5,7 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.parser.TypeAST;
 
 public class Resolver extends Visitor<Object> {
 
@@ -43,6 +44,14 @@ public class Resolver extends Visitor<Object> {
         } else {
             throw KaoriError.VariableError(identifier + " is not declared", this.line);
         }
+    }
+
+    @Override
+    public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
+        node.left.acceptVisitor(this);
+        node.right.acceptVisitor(this);
+
+        return node;
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.parser.TypeAST;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {
@@ -30,6 +31,30 @@ public class Interpreter extends Visitor<Object> {
         String identifier = node.value;
 
         return this.callStack.get(identifier);
+    }
+
+    @Override
+    public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
+        Object left = node.left.acceptVisitor(this); // already‑evaluated values
+        Object right = node.right.acceptVisitor(this);
+
+        return switch (node.operator) {
+            case PLUS -> (Double) left + (Double) right;
+            case MINUS -> (Double) left - (Double) right;
+            case MULTIPLY -> (Double) left * (Double) right;
+            case DIVIDE -> (Double) left / (Double) right;
+            case MODULO -> (Double) left % (Double) right;
+            case GREATER -> (Double) left > (Double) right;
+            case GREATER_EQUAL -> (Double) left >= (Double) right;
+            case LESS -> (Double) left < (Double) right;
+            case LESS_EQUAL -> (Double) left <= (Double) right;
+            case AND -> (Boolean) left && (Boolean) right;
+            case OR -> (Boolean) left || (Boolean) right;
+            case EQUAL -> left.equals(right);
+            case NOT_EQUAL -> !left.equals(right);
+            case ASSIGN -> this.define((ExpressionAST.Identifier) node.left, right);
+            default -> null;
+        };
     }
 
     @Override
