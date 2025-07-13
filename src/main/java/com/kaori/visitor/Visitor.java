@@ -4,23 +4,20 @@ import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.CallStack;
 
 public abstract class Visitor<T> {
     protected int line;
     protected final List<StatementAST> statements;
-    protected CallStack<T> callStack;
 
     public Visitor(List<StatementAST> statements) {
         this.line = 1;
         this.statements = statements;
-        this.callStack = new CallStack<>();
+
     }
 
     public void run() {
-        this.callStack.push();
+
         this.visitStatements(this.statements);
-        this.callStack.pop();
 
     }
 

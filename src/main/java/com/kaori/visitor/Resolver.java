@@ -160,5 +160,8 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public void visitFunctionStatement(StatementAST.Function statement) {
         this.declare(statement.name);
         this.define(statement.name, ResolverState.DEFINED);
+
+        String identifier = statement.name.value;
+        this.functions.peek().put(identifier, statement);
     }
 }
