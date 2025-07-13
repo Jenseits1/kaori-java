@@ -1,9 +1,4 @@
-let a = [];
-
+foo();
 function foo() {
-	return a;
+	console.log(2 * 3 /* 5 */ * 4);
 }
-
-console.log(foo().push(5));
-
-console.log(a);

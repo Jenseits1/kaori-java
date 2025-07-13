@@ -6,9 +6,16 @@ import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
 
-public class Resolver extends Visitor<Object> {
+public class Resolver extends Visitor<Resolver.ResolverState> {
     public Resolver(List<StatementAST> statements) {
         super(statements);
+
+    }
+
+    public static enum ResolverState {
+        UNDECLARED,
+        DECLARED,
+        DEFINED
     }
 
     @Override
@@ -23,7 +30,7 @@ public class Resolver extends Visitor<Object> {
     }
 
     @Override
-    protected Object define(ExpressionAST.Identifier node, Object value) {
+    protected ResolverState define(ExpressionAST.Identifier node, ResolverState value) {
         String identifier = node.value;
 
         if (this.callStack.find(identifier)) {
@@ -34,7 +41,7 @@ public class Resolver extends Visitor<Object> {
     }
 
     @Override
-    protected Object get(ExpressionAST.Identifier node) {
+    protected ResolverState get(ExpressionAST.Identifier node) {
         String identifier = node.value;
 
         if (this.callStack.find(identifier)) {
@@ -45,50 +52,52 @@ public class Resolver extends Visitor<Object> {
     }
 
     @Override
-    public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
+    public ResolverState visitBinaryOperator(ExpressionAST.BinaryOperator node) {
         node.left.acceptVisitor(this);
         node.right.acceptVisitor(this);
 
-        return node;
+        return ResolverState.DEFINED;
     }
 
     @Override
-    public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
+    public ResolverState visitUnaryOperator(ExpressionAST.UnaryOperator node) {
         node.left.acceptVisitor(this);
 
-        return node;
+        return ResolverState.DEFINED;
     }
 
     @Override
-    public Object visitAssign(ExpressionAST.Assign node) {
+    public ResolverState visitAssign(ExpressionAST.Assign node) {
         node.right.acceptVisitor(this);
 
-        return this.define(node.left, node.right);
+        return this.define(node.left, ResolverState.DEFINED);
     }
 
     @Override
-    public Object visitLiteral(ExpressionAST.Literal node) {
+    public ResolverState visitLiteral(ExpressionAST.Literal node) {
         if (node.value == null) {
-            return null;
+            return ResolverState.DECLARED;
         }
 
-        return node;
+        return ResolverState.DEFINED;
     }
 
     @Override
-    public Object visitIdentifier(ExpressionAST.Identifier node) {
-        Object value = this.get(node);
+    public ResolverState visitIdentifier(ExpressionAST.Identifier node) {
+        ResolverState state = this.get(node);
 
-        if (value == null) {
+        if (state == ResolverState.DECLARED) {
             throw KaoriError.VariableError(node.value + " is not defined", this.line);
         }
 
-        return node;
+        return state;
     }
 
     @Override
-    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
+    public ResolverState visitFunctionCall(ExpressionAST.FunctionCall node) {
+        node.callee.acceptVisitor(this);
+
+        return ResolverState.DEFINED;
     }
 
     @Override
@@ -106,15 +115,10 @@ public class Resolver extends Visitor<Object> {
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        Object right = statement.right.acceptVisitor(this);
+        ResolverState right = statement.right.acceptVisitor(this);
 
         this.declare(statement.left);
-
-        if (right == null) {
-            return;
-        }
-
-        this.define(statement.left, statement.right);
+        this.define(statement.left, right);
     }
 
     @Override
@@ -146,6 +150,6 @@ public class Resolver extends Visitor<Object> {
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
         this.declare(statement.name);
-        this.define(statement.name, statement);
+        this.define(statement.name, ResolverState.DEFINED);
     }
 }

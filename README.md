@@ -38,16 +38,19 @@
 ```text
 program                  -> statement* EOF
 
+type                     -> function_type | "bool" | "f64" | "str"
+function_type            -> "(" (type ("," type)*)? ")" "=>" type
+
 statement                -> expr_stmt
                          | print_stmt
                          | block_stmt
                          | if_stmt
                          | while_stmt
                          | for_stmt
-                         | return_stmt
                          | variable_stmt
+                         | function_stmt
 
-function_stmt            -> "def" identifier "(" we ";"
+function_stmt            -> "def" identifier "(" variable_stmt* ")" ":" type block_stmt
 
 expr_stmt                -> expression ";"
 

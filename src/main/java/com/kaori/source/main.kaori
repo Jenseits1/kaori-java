@@ -1,29 +1,15 @@
 
 
 
-def foo(a: f64, b: f64): f64 {
-    a + b;
+n: f64;
+
+def foo(): f64 {
+    bar;
 }
 
-a: f64 = 5;
-b: f64 = 7;
-c: bool = true;
-d: str = "hello world";
-e: bool;
-
-print("hi");
-
-for i: f64 = 0; i < 5; i++ {
-    print(i);
-}
-
-j: f64 = 0;
-
-while j < 5 {
-    j++;
-}
 
 def bar(a: f64, b: str, c: bool): void {
-    a + b;
+    a + b + c;
 }
 
+print(n);

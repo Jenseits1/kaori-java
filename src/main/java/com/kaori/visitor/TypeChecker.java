@@ -128,12 +128,14 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
-        return this.get(node);
+        TypeAST type = this.get(node);
+
+        return type;
     }
 
     @Override
     public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
+        return node.callee.acceptVisitor(this);
     }
 
     @Override

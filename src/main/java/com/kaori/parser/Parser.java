@@ -58,7 +58,6 @@ public class Parser {
                 yield new ExpressionAST.Assign(identifier, subtract);
             }
             case LEFT_PAREN -> this.functionCall(identifier);
-
             default -> identifier;
         };
     }
