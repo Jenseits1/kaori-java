@@ -1,14 +1,21 @@
 package com.kaori.visitor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
 
 public class Resolver extends Visitor<Resolver.ResolverState> {
+    private final Stack<HashMap<String, StatementAST.Function>> functions;
+
     public Resolver(List<StatementAST> statements) {
         super(statements);
+
+        this.functions = new Stack<>();
+        this.functions.add(new HashMap<>());
 
     }
 
@@ -108,8 +115,10 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
         this.callStack.enterScope();
+        this.functions.add(new HashMap<>());
         this.visitStatements(statement.statements);
         this.callStack.leaveScope();
+        this.functions.pop();
 
     }
 

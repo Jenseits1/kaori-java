@@ -1,6 +1,7 @@
 package com.kaori.visitor.memory;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class CallStack<T> {
@@ -19,7 +20,7 @@ public class CallStack<T> {
     }
 
     public void enterScope() {
-        HashMap<String, T> scope = new HashMap<>();
+        Map<String, T> scope = new HashMap<>();
 
         this.currentFrame().scopes.add(scope);
     }
@@ -39,13 +40,13 @@ public class CallStack<T> {
     }
 
     public boolean declared(String identifier) {
-        HashMap<String, T> currentScope = this.currentFrame().scopes.peek();
+        Map<String, T> currentScope = this.currentFrame().scopes.peek();
 
         return currentScope.containsKey(identifier);
     }
 
     public void declare(String identifier) {
-        HashMap<String, T> currentScope = this.currentFrame().scopes.peek();
+        Map<String, T> currentScope = this.currentFrame().scopes.peek();
 
         currentScope.put(identifier, null);
     }
@@ -53,32 +54,23 @@ public class CallStack<T> {
     public T define(String identifier, T value) {
         Frame<T> currentFrame = this.currentFrame();
 
-        int index = currentFrame.scopes.size() - 1;
-
-        while (index >= 0) {
-            HashMap<String, T> currentScope = currentFrame.scopes.get(index);
-
+        for (int index = currentFrame.scopes.size() - 1; index >= 0; index--) {
+            Map<String, T> currentScope = currentFrame.scopes.get(index);
             if (currentScope.containsKey(identifier)) {
                 currentScope.put(identifier, value);
                 return value;
             }
-
-            index--;
         }
 
         Frame<T> mainFrame = this.mainFrame();
 
-        index = mainFrame.scopes.size() - 1;
-
-        while (index >= 0) {
-            HashMap<String, T> currentScope = mainFrame.scopes.get(index);
+        for (int index = mainFrame.scopes.size() - 1; index >= 0; index--) {
+            Map<String, T> currentScope = mainFrame.scopes.get(index);
 
             if (currentScope.containsKey(identifier)) {
                 currentScope.put(identifier, value);
                 return value;
             }
-
-            index--;
         }
 
         return null;
@@ -87,30 +79,22 @@ public class CallStack<T> {
     public T get(String identifier) {
         Frame<T> currentFrame = this.currentFrame();
 
-        int index = currentFrame.scopes.size() - 1;
-
-        while (index >= 0) {
-            HashMap<String, T> currentScope = currentFrame.scopes.get(index);
+        for (int index = currentFrame.scopes.size() - 1; index >= 0; index--) {
+            Map<String, T> currentScope = currentFrame.scopes.get(index);
 
             if (currentScope.containsKey(identifier)) {
                 return currentScope.get(identifier);
             }
-
-            index--;
         }
 
         Frame<T> mainFrame = this.mainFrame();
 
-        index = mainFrame.scopes.size() - 1;
-
-        while (index >= 0) {
-            HashMap<String, T> currentScope = mainFrame.scopes.get(index);
+        for (int index = mainFrame.scopes.size() - 1; index >= 0; index--) {
+            Map<String, T> currentScope = mainFrame.scopes.get(index);
 
             if (currentScope.containsKey(identifier)) {
                 return currentScope.get(identifier);
             }
-
-            index--;
         }
 
         return null;
@@ -119,31 +103,22 @@ public class CallStack<T> {
     public boolean find(String identifier) {
         Frame<T> currentFrame = this.currentFrame();
 
-        int index = currentFrame.scopes.size() - 1;
-
-        while (index >= 0) {
-            HashMap<String, T> currentScope = currentFrame.scopes.get(index);
+        for (int index = currentFrame.scopes.size() - 1; index >= 0; index--) {
+            Map<String, T> currentScope = currentFrame.scopes.get(index);
 
             if (currentScope.containsKey(identifier)) {
                 return true;
             }
-
-            index--;
-
         }
 
         Frame<T> mainFrame = this.mainFrame();
 
-        index = mainFrame.scopes.size() - 1;
-
-        while (index >= 0) {
-            HashMap<String, T> currentScope = mainFrame.scopes.get(index);
+        for (int index = mainFrame.scopes.size() - 1; index >= 0; index--) {
+            Map<String, T> currentScope = mainFrame.scopes.get(index);
 
             if (currentScope.containsKey(identifier)) {
                 return true;
             }
-
-            index--;
         }
 
         return false;
