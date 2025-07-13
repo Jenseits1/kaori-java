@@ -47,7 +47,9 @@ statement                -> expr_stmt
                          | return_stmt
                          | variable_stmt
 
-expr_stmt                -> expression | variable_stmt ";"
+function_stmt            -> "def" identifier "(" we ";"
+
+expr_stmt                -> expression ";"
 
 block_stmt               -> "{" statement* "}"
 
@@ -55,19 +57,19 @@ variable_stmt            -> identifier ":" type = expression ";"
 
 print_stmt               -> "print" "(" expression ")" ";"
 
-if_stmt                  -> "if" "(" expression ")" block_stmt ("else" (if_stmt | block_stmt))?
+if_stmt                  -> "if" expression block_stmt ("else" (if_stmt | block_stmt))?
 
-while_stmt               -> "while" "(" expression ")" block_stmt
+while_stmt               -> "while" expression block_stmt
 
-for_stmt                 -> "for" "(" variable_stmt ";" expression ";" expression ")" block_stmt
+for_stmt                 -> "for" variable_stmt ";" expression ";" expression block_stmt
 
-expression               -> assign ";"
+expression               -> assign | or ";"
 
-assign                   -> identifier "=" assignment | logic_or
+assign                   -> identifier "=" assignment
 
-logic_or                 -> logic_and ("or" logic_and)*
+logic_or                 -> logic_and ("||" logic_and)*
 
-logic_and                -> equality ("and" equality)*
+logic_and                -> equality ("&&" equality)*
 
 equality                 -> comparison (("!=" | "==") comparison)*
 

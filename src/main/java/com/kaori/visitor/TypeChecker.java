@@ -158,13 +158,13 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        if (left.equals(right)) {
-            this.declare(statement.left);
-            this.define(statement.left, right);
-        } else {
+        if (!left.equals(right)) {
             throw KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right),
                     this.line);
         }
+
+        this.declare(statement.left);
+        this.define(statement.left, right);
     }
 
     @Override

@@ -27,4 +27,3 @@ def bar(a: f64, b: str, c: bool): void {
     a + b;
 }
 
-print(bar == foo);

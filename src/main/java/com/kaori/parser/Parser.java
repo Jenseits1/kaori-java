@@ -15,9 +15,34 @@ public class Parser {
     }
 
     /* Expressions */
-    private ExpressionAST postfixUnary() {
-        ExpressionAST.Identifier identifier = this.identifier();
+    private ExpressionAST functionCall(ExpressionAST callee) {
+        if (this.tokens.getCurrent() != TokenKind.LEFT_PAREN) {
+            return callee;
+        }
 
+        this.tokens.consume(TokenKind.LEFT_PAREN);
+
+        List<ExpressionAST> arguments = new ArrayList<>();
+
+        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
+            ExpressionAST argument = this.expression();
+            arguments.add(argument);
+
+            if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
+                break;
+            }
+
+            this.tokens.consume(TokenKind.COMMA);
+        }
+
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
+
+        ExpressionAST call = new ExpressionAST.FunctionCall(callee, arguments);
+
+        return this.functionCall(call);
+    }
+
+    private ExpressionAST postfixUnary(ExpressionAST.Identifier identifier) {
         return switch (this.tokens.getCurrent()) {
             case INCREMENT -> {
                 ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
@@ -32,6 +57,8 @@ public class Parser {
                 this.tokens.consume();
                 yield new ExpressionAST.Assign(identifier, subtract);
             }
+            case LEFT_PAREN -> this.functionCall(identifier);
+
             default -> identifier;
         };
     }
@@ -85,7 +112,12 @@ public class Parser {
 
                 yield literal;
             }
-            case IDENTIFIER -> this.postfixUnary();
+            case IDENTIFIER -> {
+                ExpressionAST.Identifier identifier = this.identifier();
+                yield this.postfixUnary(identifier);
+
+            }
+
             case LEFT_PAREN -> this.parenthesis();
             default -> throw KaoriError.SyntaxError(
                     String.format("expected valid operand instead of %s", this.tokens.getCurrent()),

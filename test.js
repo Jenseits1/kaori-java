@@ -1,14 +1,9 @@
-{
-	let b = 7;
-	function foo() {
-		let a = 7;
-		{
-			let a = 5;
-			console.log(a);
-		}
+let a = [];
 
-		function bar() {}
-	}
+function foo() {
+	return a;
 }
 
-bar();
+console.log(foo().push(5));
+
+console.log(a);
