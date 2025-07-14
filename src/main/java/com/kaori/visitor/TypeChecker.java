@@ -198,13 +198,28 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
+        String identifier = statement.name.value;
         List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
-        String identifier = statement.name.value;
+        if (statement.block == null) {
+            this.environment.declare(identifier);
+            return;
+        }
 
         this.environment.declare(identifier);
         this.environment.define(identifier, functionType);
+
+        this.environment.enterScope();
+
+        for (StatementAST.Variable parameter : statement.parameters) {
+            parameter.acceptVisitor(this);
+        }
+
+        List<StatementAST> statements = statement.block.statements;
+        this.visitStatements(statements);
+
+        this.environment.exitScope();
     }
 }

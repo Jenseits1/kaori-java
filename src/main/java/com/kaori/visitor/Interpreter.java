@@ -11,27 +11,6 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    protected void declare(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-
-        this.callStack.declare(identifier);
-    }
-
-    @Override
-    protected Object define(ExpressionAST.Identifier node, Object value) {
-        String identifier = node.value;
-
-        return this.callStack.define(identifier, value);
-    }
-
-    @Override
-    protected Object get(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-
-        return this.callStack.get(identifier);
-    }
-
-    @Override
     public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
         Object left = node.left.acceptVisitor(this);
         Object right = node.right.acceptVisitor(this);
@@ -71,7 +50,7 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(ExpressionAST.Assign node) {
         Object value = node.right.acceptVisitor(this);
 
-        return this.define(node.left, value);
+        return value;
     }
 
     @Override
@@ -81,7 +60,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier node) {
-        return this.get(node);
+        return null;
     }
 
     @Override
@@ -106,8 +85,6 @@ public class Interpreter extends Visitor<Object> {
     public void visitVariableStatement(StatementAST.Variable statement) {
         Object value = statement.right.acceptVisitor(this);
 
-        this.declare(statement.left);
-        this.define(statement.left, value);
     }
 
     @Override
@@ -155,7 +132,6 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        this.declare(statement.name);
-        this.define(statement.name, statement);
+
     }
 }

@@ -462,7 +462,7 @@ public class Parser {
         return new StatementAST.ForLoop(line, variable, condition, increment, block);
     }
 
-    private StatementAST.Function functionStatement() {
+    private StatementAST functionStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.FUNCTION);
@@ -490,10 +490,10 @@ public class Parser {
         TypeAST returnType = this.type();
 
         if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
-            StatementAST.Function function = new StatementAST.Function(line, name, parameters, returnType, null);
+            StatementAST.FunctionDecl functionDecl = new StatementAST.FunctionDecl(line, name, parameters, returnType);
             this.tokens.consume(TokenKind.SEMICOLON);
 
-            return function;
+            return functionDecl;
         }
 
         StatementAST.Block block = this.blockStatement();

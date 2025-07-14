@@ -153,4 +153,22 @@ public abstract class StatementAST {
             visitor.visitFunctionStatement(this);
         }
     }
+
+    public static class FunctionDecl extends StatementAST {
+        public final ExpressionAST.Identifier name;
+        public final List<Variable> parameters;
+        public final TypeAST returnType;
+
+        public FunctionDecl(int line, ExpressionAST.Identifier name, List<Variable> parameters, TypeAST returnType) {
+            super(line);
+            this.name = name;
+            this.parameters = parameters;
+            this.returnType = returnType;
+        }
+
+        @Override
+        public <T> void acceptVisitor(Visitor<T> visitor) {
+            visitor.visitFunctionDeclStatement(this);
+        }
+    }
 }

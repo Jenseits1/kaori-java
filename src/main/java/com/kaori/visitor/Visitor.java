@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.parser.StatementAST.FunctionDecl;
 
 public abstract class Visitor<T> {
     protected int line;
@@ -57,5 +58,7 @@ public abstract class Visitor<T> {
     public abstract void visitForLoopStatement(StatementAST.ForLoop statement);
 
     public abstract void visitFunctionStatement(StatementAST.Function statement);
+
+    public abstract void visitFunctionDeclStatement(StatementAST.FunctionDecl statement);
 
 }

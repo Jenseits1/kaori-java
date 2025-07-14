@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Stack;
 
 public class Environment<T> {
-    Stack<Map<String, T>> environments;
+    public final Stack<Map<String, T>> environments;
 
     public Environment() {
         this.environments = new Stack<>();
@@ -18,7 +18,7 @@ public class Environment<T> {
         environment.put(identifier, null);
     }
 
-    public boolean declared(String identifier) {
+    public boolean isDeclared(String identifier) {
         Map<String, T> environment = environments.peek();
 
         return environment.containsKey(identifier);
