@@ -13,11 +13,6 @@ public class Environment<T> {
         this.environments.push(environment);
     }
 
-    public void declare(String identifier, T value) {
-        Map<String, T> environment = environments.peek();
-        environment.put(identifier, value);
-    }
-
     public T get(String identifier, int distance) {
         int current = this.environments.size() - 1;
         Map<String, T> environment = environments.get(current - distance);
@@ -25,7 +20,12 @@ public class Environment<T> {
         return environment.get(identifier);
     }
 
-    public void define(String identifier, T value, int distance) {
+    public void put(String identifier, T value) {
+        Map<String, T> environment = environments.peek();
+        environment.put(identifier, value);
+    }
+
+    public void put(String identifier, T value, int distance) {
         int current = this.environments.size() - 1;
         Map<String, T> environment = environments.get(current - distance);
 

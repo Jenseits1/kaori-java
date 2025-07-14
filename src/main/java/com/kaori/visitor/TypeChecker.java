@@ -7,6 +7,7 @@ import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.TypeAST;
 import com.kaori.visitor.memory.Environment;
 import com.kaori.parser.StatementAST;
+import com.kaori.parser.StatementAST.FunctionDecl;
 
 public class TypeChecker extends Visitor<TypeAST> {
     private final Environment<TypeAST> environment;
@@ -112,8 +113,9 @@ public class TypeChecker extends Visitor<TypeAST> {
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
         String identifier = node.value;
+        int distance = this.environment.distance(identifier);
 
-        return this.environment.get(identifier);
+        return this.environment.get(identifier, distance);
     }
 
     @Override
@@ -150,8 +152,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         String identifier = statement.left.value;
 
-        this.environment.declare(identifier);
-        this.environment.define(identifier, right);
+        this.environment.define(identifier, right, 0);
     }
 
     @Override
@@ -203,13 +204,19 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
-        if (statement.block == null) {
-            this.environment.declare(identifier);
-            return;
+        int distance = this.environment.distance(identifier);
+
+        if (distance == 0) {
+            TypeAST type = this.environment.get(identifier, distance);
+
+            if (!type.equals(functionType)) {
+                throw KaoriError.TypeError(
+                        String.format("invalid function definiton for function declared with type %s", type),
+                        this.line);
+            }
         }
 
-        this.environment.declare(identifier);
-        this.environment.define(identifier, functionType);
+        this.environment.define(identifier, functionType, 0);
 
         this.environment.enterScope();
 
@@ -221,5 +228,16 @@ public class TypeChecker extends Visitor<TypeAST> {
         this.visitStatements(statements);
 
         this.environment.exitScope();
+    }
+
+    @Override
+    public void visitFunctionDeclStatement(FunctionDecl statement) {
+        String identifier = statement.name.value;
+        List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
+        TypeAST returnType = statement.returnType;
+        TypeAST functionType = new TypeAST.Function(parameters, returnType);
+
+        this.environment.declare(identifier, functionType);
+
     }
 }

@@ -1,12 +1,11 @@
 package com.kaori.visitor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.ExpressionAST.Identifier;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.StatementAST.FunctionDecl;
 import com.kaori.visitor.memory.Environment;
 
 public class Resolver extends Visitor<Resolver.ResolverState> {
@@ -22,6 +21,48 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         UNDECLARED,
         DECLARED,
         DEFINED
+    }
+
+    @Override
+    protected void declare(ExpressionAST.Identifier identifier) {
+        String id = identifier.value;
+        int distance = this.environment.distance(id);
+
+        if (distance == 0) {
+            throw KaoriError.VariableError(identifier + " is already declared", this.line);
+        }
+
+        this.environment.put(id, ResolverState.DECLARED);
+    }
+
+    @Override
+    protected void define(ExpressionAST.Identifier identifier, ResolverState value) {
+        String id = identifier.value;
+        int distance = this.environment.distance(id);
+
+        if (distance < 0) {
+            throw KaoriError.VariableError(identifier + " is not declared", this.line);
+        }
+
+        this.environment.put(id, value, distance);
+    }
+
+    @Override
+    protected ResolverState get(ExpressionAST.Identifier identifier) {
+        String id = identifier.value;
+        int distance = this.environment.distance(id);
+
+        if (distance < 0) {
+            throw KaoriError.VariableError(identifier + " is not declared", this.line);
+        }
+
+        ResolverState state = this.environment.get(id, distance);
+
+        if (state == ResolverState.DECLARED) {
+            throw KaoriError.VariableError(identifier + " is not defined", this.line);
+        }
+
+        return state;
     }
 
     @Override
@@ -43,15 +84,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public ResolverState visitAssign(ExpressionAST.Assign node) {
         node.right.acceptVisitor(this);
 
-        String identifier = node.left.value;
-
-        int distance = this.environment.distance(identifier);
-
-        if (distance == -1) {
-            throw KaoriError.VariableError(identifier + " is not declared", this.line);
-        } else {
-            this.environment.define(identifier, ResolverState.DEFINED, distance);
-        }
+        this.define(node.left, ResolverState.DEFINED);
 
         return ResolverState.DEFINED;
     }
@@ -67,20 +100,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitIdentifier(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-        int distance = this.environment.distance(identifier);
-
-        if (distance == -1) {
-            throw KaoriError.VariableError(identifier + " is not declared", this.line);
-        }
-
-        ResolverState state = this.environment.get(identifier, distance);
-
-        if (state == ResolverState.DECLARED) {
-            throw KaoriError.VariableError(identifier + " is not defined", this.line);
-        }
-
-        return state;
+        return this.get(node);
     }
 
     @Override
@@ -105,17 +125,9 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        String identifier = statement.left.value;
-        int distance = this.environment.distance(identifier);
-
-        if (distance == 0) {
-            throw KaoriError.VariableError(identifier + " is already declared", this.line);
-        }
-
+        this.declare(statement.left);
         ResolverState right = statement.right.acceptVisitor(this);
-
-        this.environment.declare(identifier, ResolverState.DECLARED);
-        this.environment.define(identifier, right, distance);
+        this.define(statement.left, right);
     }
 
     @Override
@@ -146,18 +158,6 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        String identifier = statement.name.value;
-
-        if (!this.environment.isDeclared(identifier)) {
-            this.environment.declare(identifier);
-            this.environment.define(identifier, ResolverState.DEFINED);
-        }
-
-        if (this.environment.get(identifier) == ResolverState.DEFINED) {
-            throw KaoriError.VariableError(identifier + " is already defined", this.line);
-        }
-
-        this.environment.define(identifier, ResolverState.DEFINED);
 
         this.environment.enterScope();
 
@@ -174,14 +174,6 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
-        String identifier = statement.name.value;
-
-        if (this.environment.isDeclared(identifier)) {
-            throw KaoriError.VariableError(identifier + " is already declared", this.line);
-        }
-
-        this.environment.declare(identifier);
-        this.environment.define(identifier, ResolverState.DECLARED);
+        this.declare(statement.name);
     }
-
 }
