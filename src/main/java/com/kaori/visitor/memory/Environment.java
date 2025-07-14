@@ -9,7 +9,8 @@ public class Environment<T> {
 
     public Environment() {
         this.environments = new Stack<>();
-        this.environments.push(new HashMap<>());
+        Map<String, T> environment = new HashMap<>();
+        this.environments.push(environment);
     }
 
     public void declare(String identifier) {
@@ -44,5 +45,26 @@ public class Environment<T> {
                 break;
             }
         }
+    }
+
+    public boolean find(String identifier) {
+        for (int i = environments.size() - 1; i >= 0; i--) {
+            Map<String, T> environment = environments.get(i);
+
+            if (environment.containsKey(identifier)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void enterScope() {
+        Map<String, T> environment = new HashMap<>();
+        this.environments.add(environment);
+    }
+
+    public void exitScope() {
+        this.environments.pop();
     }
 }

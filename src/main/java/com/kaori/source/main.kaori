@@ -1,15 +1,19 @@
+def foo(n: f64): f64;
+def bar(n: f64): f64;
 
+def foo(n: f64): f64 {
+    if n == 0:
+        return;
 
+    bar(n - 1);
+}
 
-n: f64;
+foo(5);
 
-def foo(): f64 {
-    bar;
+def bar(n: f64): f64 {
+    if n == 0:
+        return
+    foo(n - 1)
 }
 
 
-def bar(a: f64, b: str, c: bool): void {
-    a + b + c;
-}
-
-print(n);

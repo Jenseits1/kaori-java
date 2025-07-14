@@ -1,4 +1,9 @@
-foo();
 function foo() {
-	console.log(2 * 3 /* 5 */ * 4);
+	bar();
 }
+
+function bar() {
+	console.log("hi");
+}
+
+foo();

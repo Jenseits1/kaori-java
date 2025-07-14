@@ -5,32 +5,15 @@ import java.util.List;
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.TypeAST;
+import com.kaori.visitor.memory.Environment;
 import com.kaori.parser.StatementAST;
 
 public class TypeChecker extends Visitor<TypeAST> {
+    private final Environment<TypeAST> environment;
+
     public TypeChecker(List<StatementAST> statements) {
         super(statements);
-    }
-
-    @Override
-    protected void declare(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-
-        this.callStack.declare(identifier);
-    }
-
-    @Override
-    protected TypeAST define(ExpressionAST.Identifier node, TypeAST value) {
-        String identifier = node.value;
-
-        return this.callStack.define(identifier, value);
-    }
-
-    @Override
-    protected TypeAST get(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-
-        return this.callStack.get(identifier);
+        this.environment = new Environment<>();
     }
 
     @Override
@@ -128,9 +111,9 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
-        TypeAST type = this.get(node);
+        String identifier = node.value;
 
-        return type;
+        return this.environment.get(identifier);
     }
 
     @Override
@@ -145,9 +128,9 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.callStack.enterScope();
+        this.environment.enterScope();
         this.visitStatements(statement.statements);
-        this.callStack.leaveScope();
+        this.environment.exitScope();
     }
 
     @Override
@@ -165,8 +148,10 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.declare(statement.left);
-        this.define(statement.left, right);
+        String identifier = statement.left.value;
+
+        this.environment.declare(identifier);
+        this.environment.define(identifier, right);
     }
 
     @Override
@@ -217,7 +202,9 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
-        this.declare(statement.name);
-        this.define(statement.name, functionType);
+        String identifier = statement.name.value;
+
+        this.environment.declare(identifier);
+        this.environment.define(identifier, functionType);
     }
 }

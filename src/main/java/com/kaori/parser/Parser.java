@@ -489,6 +489,13 @@ public class Parser {
 
         TypeAST returnType = this.type();
 
+        if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
+            StatementAST.Function function = new StatementAST.Function(line, name, parameters, returnType, null);
+            this.tokens.consume(TokenKind.SEMICOLON);
+
+            return function;
+        }
+
         StatementAST.Block block = this.blockStatement();
 
         return new StatementAST.Function(line, name, parameters, returnType, block);

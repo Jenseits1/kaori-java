@@ -21,12 +21,6 @@ public abstract class Visitor<T> {
 
     }
 
-    protected abstract void declare(ExpressionAST.Identifier node);
-
-    protected abstract T define(ExpressionAST.Identifier node, T value);
-
-    protected abstract T get(ExpressionAST.Identifier node);
-
     protected void visitStatements(List<StatementAST> statements) {
         for (StatementAST statement : statements) {
             this.line = statement.line;

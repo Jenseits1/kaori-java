@@ -1,61 +1,25 @@
 package com.kaori.visitor;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.StatementAST;
+import com.kaori.visitor.memory.Environment;
 
 public class Resolver extends Visitor<Resolver.ResolverState> {
-    private final Stack<HashMap<String, StatementAST.Function>> functions;
+    public final Environment<ResolverState> environment;
 
     public Resolver(List<StatementAST> statements) {
         super(statements);
 
-        this.functions = new Stack<>();
-        this.functions.add(new HashMap<>());
-
+        this.environment = new Environment<>();
     }
 
     public static enum ResolverState {
         UNDECLARED,
         DECLARED,
         DEFINED
-    }
-
-    @Override
-    protected void declare(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-
-        if (this.callStack.declared(identifier)) {
-            throw KaoriError.VariableError(identifier + " is already declared", this.line);
-        }
-
-        this.callStack.declare(identifier);
-    }
-
-    @Override
-    protected ResolverState define(ExpressionAST.Identifier node, ResolverState value) {
-        String identifier = node.value;
-
-        if (this.callStack.find(identifier)) {
-            return this.callStack.define(identifier, value);
-        } else {
-            throw KaoriError.VariableError(identifier + " is not declared", this.line);
-        }
-    }
-
-    @Override
-    protected ResolverState get(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-
-        if (this.callStack.find(identifier)) {
-            return this.callStack.get(identifier);
-        } else {
-            throw KaoriError.VariableError(identifier + " is not declared", this.line);
-        }
     }
 
     @Override
@@ -77,7 +41,15 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public ResolverState visitAssign(ExpressionAST.Assign node) {
         node.right.acceptVisitor(this);
 
-        return this.define(node.left, ResolverState.DEFINED);
+        String identifier = node.left.value;
+
+        if (this.environment.find(identifier)) {
+            this.environment.define(identifier, ResolverState.DEFINED);
+        } else {
+            throw KaoriError.VariableError(identifier + " is not declared", this.line);
+        }
+
+        return ResolverState.DEFINED;
     }
 
     @Override
@@ -91,18 +63,26 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitIdentifier(ExpressionAST.Identifier node) {
-        ResolverState state = this.get(node);
+        String identifier = node.value;
 
-        if (state == ResolverState.DECLARED) {
-            throw KaoriError.VariableError(node.value + " is not defined", this.line);
+        ResolverState state = ResolverState.UNDECLARED;
+
+        if (this.environment.find(identifier)) {
+            state = this.environment.get(identifier);
         }
 
-        return state;
+        return switch (state) {
+            case DEFINED -> ResolverState.DEFINED;
+            case DECLARED -> throw KaoriError.VariableError(identifier + " is not defined", this.line);
+            case UNDECLARED -> throw KaoriError.VariableError(identifier + " is not declared", this.line);
+            default -> null;
+        };
     }
 
     @Override
     public ResolverState visitFunctionCall(ExpressionAST.FunctionCall node) {
-        node.callee.acceptVisitor(this);
+
+        ResolverState state = ResolverState.UNDECLARED;
 
         return ResolverState.DEFINED;
     }
@@ -114,20 +94,29 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.callStack.enterScope();
-        this.functions.add(new HashMap<>());
+        this.environment.enterScope();
         this.visitStatements(statement.statements);
-        this.callStack.leaveScope();
-        this.functions.pop();
-
+        this.environment.exitScope();
     }
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
+        String identifier = statement.left.value;
+        ResolverState state = ResolverState.UNDECLARED;
+
+        if (this.environment.find(identifier)) {
+            state = this.environment.get(identifier);
+        }
+
+        if (state == ResolverState.DECLARED || state == ResolverState.DEFINED) {
+            throw KaoriError.VariableError(identifier + " is already declared", this.line);
+
+        }
+
         ResolverState right = statement.right.acceptVisitor(this);
 
-        this.declare(statement.left);
-        this.define(statement.left, right);
+        this.environment.declared(identifier);
+        this.environment.define(identifier, right);
     }
 
     @Override
@@ -158,10 +147,29 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        this.declare(statement.name);
-        this.define(statement.name, ResolverState.DEFINED);
-
         String identifier = statement.name.value;
-        this.functions.peek().put(identifier, statement);
+
+        if (statement.block == null) {
+            if (this.environment.declared(identifier)) {
+                throw KaoriError.VariableError(identifier + " is already declared", this.line);
+            }
+
+            this.environment.declare(identifier);
+            this.environment.define(identifier, ResolverState.DECLARED);
+            return;
+        }
+
+        if (!this.environment.declared(identifier)) {
+            this.environment.declare(identifier);
+            this.environment.define(identifier, ResolverState.DEFINED);
+        }
+
+        if (this.environment.get(identifier) == ResolverState.DEFINED) {
+            throw KaoriError.VariableError(identifier + " is already defined", this.line);
+        }
+
+        this.environment.define(identifier, ResolverState.DEFINED);
+
+        statement.block.acceptVisitor(this);
     }
 }
