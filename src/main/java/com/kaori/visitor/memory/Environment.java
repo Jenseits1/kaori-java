@@ -13,50 +13,35 @@ public class Environment<T> {
         this.environments.push(environment);
     }
 
-    public void declare(String identifier) {
+    public void declare(String identifier, T value) {
         Map<String, T> environment = environments.peek();
-        environment.put(identifier, null);
+        environment.put(identifier, value);
     }
 
-    public boolean isDeclared(String identifier) {
-        Map<String, T> environment = environments.peek();
+    public T get(String identifier, int distance) {
+        int current = this.environments.size() - 1;
+        Map<String, T> environment = environments.get(current - distance);
 
-        return environment.containsKey(identifier);
+        return environment.get(identifier);
     }
 
-    public T get(String identifier) {
+    public void define(String identifier, T value, int distance) {
+        int current = this.environments.size() - 1;
+        Map<String, T> environment = environments.get(current - distance);
+
+        environment.put(identifier, value);
+    }
+
+    public int distance(String identifier) {
         for (int i = environments.size() - 1; i >= 0; i--) {
             Map<String, T> environment = environments.get(i);
 
             if (environment.containsKey(identifier)) {
-                return environment.get(identifier);
+                return this.environments.size() - 1 - i;
             }
         }
 
-        return null;
-    }
-
-    public void define(String identifier, T value) {
-        for (int i = environments.size() - 1; i >= 0; i--) {
-            Map<String, T> environment = environments.get(i);
-
-            if (environment.containsKey(identifier)) {
-                environment.put(identifier, value);
-                break;
-            }
-        }
-    }
-
-    public boolean find(String identifier) {
-        for (int i = environments.size() - 1; i >= 0; i--) {
-            Map<String, T> environment = environments.get(i);
-
-            if (environment.containsKey(identifier)) {
-                return true;
-            }
-        }
-
-        return false;
+        return -1;
     }
 
     public void enterScope() {
