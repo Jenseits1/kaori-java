@@ -22,7 +22,7 @@ public abstract class Visitor<T> {
 
     }
 
-    protected abstract void declare(ExpressionAST.Identifier identifier);
+    protected abstract void declare(ExpressionAST.Identifier identifier, T value);
 
     protected abstract void define(ExpressionAST.Identifier identifier, T value);
 

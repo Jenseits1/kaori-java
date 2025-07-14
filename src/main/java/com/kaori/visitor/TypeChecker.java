@@ -18,6 +18,38 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
+    protected void declare(ExpressionAST.Identifier identifier, TypeAST value) {
+        if (value.equals(TypeAST.Primitive.VOID)) {
+            throw KaoriError.TypeError(String.format("invalid %s type for declaration", value),
+                    this.line);
+        }
+
+        this.environment.put(identifier, value);
+    }
+
+    @Override
+    protected void define(ExpressionAST.Identifier identifier, TypeAST value) {
+        int distance = this.environment.distance(identifier);
+
+        TypeAST previousType = this.environment.get(identifier, distance);
+
+        if (!previousType.equals(value)) {
+            throw KaoriError.TypeError(
+                    String.format("invalid definition with type %s for type %s", value, previousType),
+                    this.line);
+        }
+
+        this.environment.put(identifier, value, distance);
+    }
+
+    @Override
+    protected TypeAST get(ExpressionAST.Identifier identifier) {
+        int distance = this.environment.distance(identifier);
+
+        return this.environment.get(identifier, distance);
+    }
+
+    @Override
     public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
         TypeAST left = node.left.acceptVisitor(this);
         TypeAST right = node.right.acceptVisitor(this);
@@ -112,10 +144,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
-        String identifier = node.value;
-        int distance = this.environment.distance(identifier);
-
-        return this.environment.get(identifier, distance);
+        return this.get(node);
     }
 
     @Override
@@ -137,22 +166,13 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
+        ExpressionAST.Identifier identifier = statement.left;
+
         TypeAST left = statement.type;
         TypeAST right = statement.right.acceptVisitor(this);
 
-        if (left.equals(TypeAST.Primitive.VOID)) {
-            throw KaoriError.TypeError(String.format("invalid %s type in variable declaration", left, right),
-                    this.line);
-        }
-
-        if (!left.equals(right)) {
-            throw KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right),
-                    this.line);
-        }
-
-        String identifier = statement.left.value;
-
-        this.environment.define(identifier, right, 0);
+        this.declare(identifier, left);
+        this.define(identifier, right);
     }
 
     @Override
@@ -199,24 +219,13 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        String identifier = statement.name.value;
+        ExpressionAST.Identifier identifier = statement.name;
+
         List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
-        int distance = this.environment.distance(identifier);
-
-        if (distance == 0) {
-            TypeAST type = this.environment.get(identifier, distance);
-
-            if (!type.equals(functionType)) {
-                throw KaoriError.TypeError(
-                        String.format("invalid function definiton for function declared with type %s", type),
-                        this.line);
-            }
-        }
-
-        this.environment.define(identifier, functionType, 0);
+        this.define(identifier, functionType);
 
         this.environment.enterScope();
 
@@ -232,12 +241,13 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitFunctionDeclStatement(FunctionDecl statement) {
-        String identifier = statement.name.value;
+        ExpressionAST.Identifier identifier = statement.name;
+
         List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
-        this.environment.declare(identifier, functionType);
-
+        this.declare(identifier, functionType);
     }
+
 }

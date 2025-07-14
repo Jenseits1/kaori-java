@@ -3,7 +3,9 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.ExpressionAST.Identifier;
 import com.kaori.parser.StatementAST;
+import com.kaori.parser.StatementAST.FunctionDecl;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {
@@ -133,5 +135,29 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
 
+    }
+
+    @Override
+    public void visitFunctionDeclStatement(FunctionDecl statement) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionDeclStatement'");
+    }
+
+    @Override
+    protected void declare(Identifier identifier, Object value) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'declare'");
+    }
+
+    @Override
+    protected void define(Identifier identifier, Object value) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'define'");
+    }
+
+    @Override
+    protected Object get(Identifier identifier) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
     }
 }

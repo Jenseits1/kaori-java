@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import com.kaori.parser.ExpressionAST;
+
 public class Environment<T> {
     public final Stack<Map<String, T>> environments;
 
@@ -13,30 +15,30 @@ public class Environment<T> {
         this.environments.push(environment);
     }
 
-    public T get(String identifier, int distance) {
+    public T get(ExpressionAST.Identifier identifier, int distance) {
         int current = this.environments.size() - 1;
         Map<String, T> environment = environments.get(current - distance);
 
-        return environment.get(identifier);
+        return environment.get(identifier.value);
     }
 
-    public void put(String identifier, T value) {
+    public void put(ExpressionAST.Identifier identifier, T value) {
         Map<String, T> environment = environments.peek();
-        environment.put(identifier, value);
+        environment.put(identifier.value, value);
     }
 
-    public void put(String identifier, T value, int distance) {
+    public void put(ExpressionAST.Identifier identifier, T value, int distance) {
         int current = this.environments.size() - 1;
         Map<String, T> environment = environments.get(current - distance);
 
-        environment.put(identifier, value);
+        environment.put(identifier.value, value);
     }
 
-    public int distance(String identifier) {
+    public int distance(ExpressionAST.Identifier identifier) {
         for (int i = environments.size() - 1; i >= 0; i--) {
             Map<String, T> environment = environments.get(i);
 
-            if (environment.containsKey(identifier)) {
+            if (environment.containsKey(identifier.value)) {
                 return this.environments.size() - 1 - i;
             }
         }
