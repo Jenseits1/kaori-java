@@ -1,13 +1,23 @@
 
-a: f64 = 566.56;
-b: f64 = 55.;
-print(1 / a);
 
+def foo(a: f64, b: f64): void;
 
+def bar(a: f64): void {
+    foo(a, 10);
+}
 
+def foo(a: f64, b: f64): void {
+    print(a + b);
+}
 
-f: f64;
+for i: f64 = 0; i < 10; i++ {
+    print(i);
+}
 
-
-
-g: f64;
+if a < b {
+    print("smaller");
+} else if a > b {
+    print("bigger");
+} else {
+    print("equal");
+}

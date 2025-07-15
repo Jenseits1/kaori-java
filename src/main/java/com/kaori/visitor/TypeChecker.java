@@ -219,17 +219,13 @@ public class TypeChecker extends Visitor<TypeAST> {
     public void visitFunctionStatement(StatementAST.Function statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        List<TypeAST> parameters = statement.parameters().stream().map(parameter -> parameter.type()).toList();
-        TypeAST returnType = statement.returnType();
-        TypeAST functionType = new TypeAST.Function(parameters, returnType);
-
         int distance = this.environment.distance(identifier);
 
         if (distance != 0) {
-            this.declare(identifier, functionType);
+            this.declare(identifier, statement.type());
         }
 
-        this.define(identifier, functionType);
+        this.define(identifier, statement.type());
 
         this.environment.enterScope();
 
@@ -247,11 +243,7 @@ public class TypeChecker extends Visitor<TypeAST> {
     public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        List<TypeAST> parameters = statement.parameters().stream().map(parameter -> parameter.type()).toList();
-        TypeAST returnType = statement.returnType();
-        TypeAST functionType = new TypeAST.Function(parameters, returnType);
-
-        this.declare(identifier, functionType);
+        this.declare(identifier, statement.type());
     }
 
 }

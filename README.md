@@ -50,7 +50,7 @@ statement                -> expr_stmt
                          | variable_stmt
                          | function_stmt
 
-function_stmt            -> "def" identifier "(" variable_stmt* ")" ":" type block_stmt
+function_stmt            -> "def" identifier "(" variable_stmt* ")" ":" type (block_stmt | ";")
 
 expr_stmt                -> expression ";"
 
@@ -68,7 +68,7 @@ for_stmt                 -> "for" variable_stmt ";" expression ";" expression bl
 
 expression               -> assign | or ";"
 
-assign                   -> identifier "=" assignment
+assign                   -> identifier "=" expression
 
 logic_or                 -> logic_and ("||" logic_and)*
 

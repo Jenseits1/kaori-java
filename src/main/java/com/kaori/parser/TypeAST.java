@@ -32,8 +32,8 @@ public abstract class TypeAST {
     }
 
     public static class Function extends TypeAST {
-        private final List<TypeAST> parameters;
-        private final TypeAST returnType;
+        public final List<TypeAST> parameters;
+        public final TypeAST returnType;
 
         public Function(List<TypeAST> parameters, TypeAST returnType) {
             this.parameters = parameters;

@@ -97,6 +97,8 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(ExpressionAST.Assign node) {
         Object value = this.visit(node.right());
 
+        this.define(node.left(), value);
+
         return value;
     }
 
