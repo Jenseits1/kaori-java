@@ -1,11 +1,8 @@
 package com.kaori.parser;
 
 import java.util.List;
-import com.kaori.visitor.Visitor;
 
 public abstract class ExpressionAST {
-    public abstract <T> T acceptVisitor(Visitor<T> visitor);
-
     public static enum Operator {
         PLUS("+"),
         MINUS("-"),
@@ -43,11 +40,6 @@ public abstract class ExpressionAST {
             this.right = right;
             this.operator = operator;
         }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitBinaryOperator(this);
-        }
     }
 
     public static class UnaryOperator extends ExpressionAST {
@@ -57,11 +49,6 @@ public abstract class ExpressionAST {
         public UnaryOperator(ExpressionAST left, Operator operator) {
             this.left = left;
             this.operator = operator;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitUnaryOperator(this);
         }
     }
 
@@ -73,11 +60,6 @@ public abstract class ExpressionAST {
             this.left = left;
             this.right = right;
         }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitAssign(this);
-        }
     }
 
     public static class Literal extends ExpressionAST {
@@ -88,11 +70,6 @@ public abstract class ExpressionAST {
             this.type = type;
             this.value = value;
         }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitLiteral(this);
-        }
     }
 
     public static class Identifier extends ExpressionAST {
@@ -100,11 +77,6 @@ public abstract class ExpressionAST {
 
         public Identifier(String value) {
             this.value = value;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitIdentifier(this);
         }
     }
 
@@ -115,11 +87,6 @@ public abstract class ExpressionAST {
         public FunctionCall(ExpressionAST callee, List<ExpressionAST> arguments) {
             this.callee = callee;
             this.arguments = arguments;
-        }
-
-        @Override
-        public <T> T acceptVisitor(Visitor<T> visitor) {
-            return visitor.visitFunctionCall(this);
         }
     }
 }

@@ -3,7 +3,7 @@ function foo() {
 }
 
 function bar() {
-	console.log("hi");
+	console.log("hiiiiiiiiii");
 }
 
 foo();

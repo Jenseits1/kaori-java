@@ -7,7 +7,6 @@ import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.TypeAST;
 import com.kaori.visitor.memory.Environment;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.StatementAST.FunctionDecl;
 
 public class TypeChecker extends Visitor<TypeAST> {
     private final Environment<TypeAST> environment;
@@ -127,14 +126,13 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitAssign(ExpressionAST.Assign node) {
-        TypeAST left = node.left.acceptVisitor(this);
+        ExpressionAST.Identifier identifier = node.left;
+
         TypeAST right = node.right.acceptVisitor(this);
 
-        if (left.equals(right)) {
-            return right;
-        }
+        this.define(identifier, right);
 
-        throw KaoriError.TypeError(String.format("invalid = operation between %s and %s", left, right), this.line);
+        return right;
     }
 
     @Override
@@ -225,6 +223,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
+        this.declare(identifier, functionType);
         this.define(identifier, functionType);
 
         this.environment.enterScope();
@@ -240,7 +239,7 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    public void visitFunctionDeclStatement(FunctionDecl statement) {
+    public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
         ExpressionAST.Identifier identifier = statement.name;
 
         List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();

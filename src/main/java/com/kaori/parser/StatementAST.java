@@ -3,8 +3,6 @@ package com.kaori.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.visitor.Visitor;
-
 public abstract class StatementAST {
     public final int line;
 
@@ -12,19 +10,12 @@ public abstract class StatementAST {
         this.line = line;
     }
 
-    public abstract <T> void acceptVisitor(Visitor<T> visitor);
-
     public static class Print extends StatementAST {
         public final ExpressionAST expression;
 
         public Print(int line, ExpressionAST expression) {
             super(line);
             this.expression = expression;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitPrintStatement(this);
         }
     }
 
@@ -34,11 +25,6 @@ public abstract class StatementAST {
         public Expr(int line, ExpressionAST expression) {
             super(line);
             this.expression = expression;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitExpressionStatement(this);
         }
     }
 
@@ -52,11 +38,6 @@ public abstract class StatementAST {
             this.left = left;
             this.right = right;
             this.type = type;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitVariableStatement(this);
         }
     }
 
@@ -72,11 +53,6 @@ public abstract class StatementAST {
             super(line);
             this.statements = new ArrayList<>();
         }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitBlockStatement(this);
-        }
     }
 
     public static class If extends StatementAST {
@@ -90,11 +66,6 @@ public abstract class StatementAST {
             this.thenBranch = thenBranch;
             this.elseBranch = elseBranch;
         }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitIfStatement(this);
-        }
     }
 
     public static class WhileLoop extends StatementAST {
@@ -105,11 +76,6 @@ public abstract class StatementAST {
             super(line);
             this.condition = condition;
             this.block = block;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitWhileLoopStatement(this);
         }
     }
 
@@ -125,11 +91,6 @@ public abstract class StatementAST {
             this.condition = condition;
             this.increment = increment;
             this.block = block;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitForLoopStatement(this);
         }
     }
 
@@ -147,11 +108,6 @@ public abstract class StatementAST {
             this.returnType = returnType;
             this.block = block;
         }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitFunctionStatement(this);
-        }
     }
 
     public static class FunctionDecl extends StatementAST {
@@ -164,11 +120,6 @@ public abstract class StatementAST {
             this.name = name;
             this.parameters = parameters;
             this.returnType = returnType;
-        }
-
-        @Override
-        public <T> void acceptVisitor(Visitor<T> visitor) {
-            visitor.visitFunctionDeclStatement(this);
         }
     }
 }

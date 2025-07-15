@@ -47,7 +47,7 @@ public enum TokenKind {
     ELSE("else"),
     RETURN("return"),
     PRINT("print"),
-    FUNCTION("fun"),
+    FUNCTION("def"),
 
     // Literals and identifiers
     IDENTIFIER("identifier"),

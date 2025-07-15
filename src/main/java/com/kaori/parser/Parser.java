@@ -490,10 +490,7 @@ public class Parser {
         TypeAST returnType = this.type();
 
         if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
-            StatementAST.FunctionDecl functionDecl = new StatementAST.FunctionDecl(line, name, parameters, returnType);
-            this.tokens.consume(TokenKind.SEMICOLON);
-
-            return functionDecl;
+            return new StatementAST.FunctionDecl(line, name, parameters, returnType);
         }
 
         StatementAST.Block block = this.blockStatement();
@@ -519,7 +516,7 @@ public class Parser {
         };
 
         if (statement instanceof StatementAST.Expr || statement instanceof StatementAST.Variable
-                || statement instanceof StatementAST.Print) {
+                || statement instanceof StatementAST.Print || statement instanceof StatementAST.FunctionDecl) {
             this.tokens.consume(TokenKind.SEMICOLON);
         }
 

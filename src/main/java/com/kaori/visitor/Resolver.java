@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.ExpressionAST.Identifier;
+
 import com.kaori.parser.StatementAST;
 import com.kaori.visitor.memory.Environment;
 
@@ -75,9 +75,11 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitAssign(ExpressionAST.Assign node) {
+        ExpressionAST.Identifier identifier = node.left;
+
         node.right.acceptVisitor(this);
 
-        this.define(node.left, ResolverState.DEFINED);
+        this.define(identifier, ResolverState.DEFINED);
 
         return ResolverState.DEFINED;
     }
@@ -98,8 +100,11 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitFunctionCall(ExpressionAST.FunctionCall node) {
+        node.callee.acceptVisitor(this);
 
-        ResolverState state = ResolverState.UNDECLARED;
+        for (ExpressionAST argument : node.arguments) {
+            argument.acceptVisitor(this);
+        }
 
         return ResolverState.DEFINED;
     }
