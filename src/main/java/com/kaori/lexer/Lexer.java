@@ -31,9 +31,9 @@ public class Lexer {
         return current >= this.source.length();
     }
 
-    private boolean lookAhead(String expected) {
+    private boolean lookAhead(String expected, int current) {
         for (int i = 0; i < expected.length(); i++) {
-            int j = this.index + i;
+            int j = current + i;
 
             if (j >= this.source.length()) {
                 return false;
@@ -55,6 +55,20 @@ public class Lexer {
         this.tokens.add(token);
 
         this.advance(size);
+    }
+
+    private void scanComment() {
+        int current = this.index + 2;
+
+        while (!this.atEnd(current) && !this.lookAhead("*/", current)) {
+            current++;
+        }
+
+        current += 2;
+
+        int steps = current - this.index;
+
+        this.advance(steps);
     }
 
     private void scanWhiteSpace() {
@@ -142,14 +156,14 @@ public class Lexer {
 
     private void scanSymbol() {
         TokenKind kind = switch (this.source.charAt(this.index)) {
-            case '+' -> this.lookAhead("++") ? TokenKind.INCREMENT : TokenKind.PLUS;
-            case '-' -> this.lookAhead("--") ? TokenKind.DECREMENT : TokenKind.MINUS;
-            case '&' -> this.lookAhead("&&") ? TokenKind.AND : TokenKind.INVALID;
-            case '|' -> this.lookAhead("||") ? TokenKind.OR : TokenKind.INVALID;
-            case '=' -> this.lookAhead("==") ? TokenKind.EQUAL : TokenKind.ASSIGN;
-            case '!' -> this.lookAhead("!=") ? TokenKind.NOT_EQUAL : TokenKind.NOT;
-            case '>' -> this.lookAhead(">=") ? TokenKind.GREATER_EQUAL : TokenKind.GREATER;
-            case '<' -> this.lookAhead("<=") ? TokenKind.LESS_EQUAL : TokenKind.LESS;
+            case '+' -> this.lookAhead("++", this.index) ? TokenKind.INCREMENT : TokenKind.PLUS;
+            case '-' -> this.lookAhead("--", this.index) ? TokenKind.DECREMENT : TokenKind.MINUS;
+            case '&' -> this.lookAhead("&&", this.index) ? TokenKind.AND : TokenKind.INVALID;
+            case '|' -> this.lookAhead("||", this.index) ? TokenKind.OR : TokenKind.INVALID;
+            case '=' -> this.lookAhead("==", this.index) ? TokenKind.EQUAL : TokenKind.ASSIGN;
+            case '!' -> this.lookAhead("!=", this.index) ? TokenKind.NOT_EQUAL : TokenKind.NOT;
+            case '>' -> this.lookAhead(">=", this.index) ? TokenKind.GREATER_EQUAL : TokenKind.GREATER;
+            case '<' -> this.lookAhead("<=", this.index) ? TokenKind.LESS_EQUAL : TokenKind.LESS;
             case '*' -> TokenKind.MULTIPLY;
             case '/' -> TokenKind.DIVIDE;
             case '%' -> TokenKind.MODULO;
@@ -202,6 +216,8 @@ public class Lexer {
                 this.scanIdentifierOrKeyword();
             } else if (c == '"') {
                 this.scanStringLiteral();
+            } else if (this.lookAhead("/*", this.index)) {
+                this.scanComment();
             } else {
                 this.scanSymbol();
             }
