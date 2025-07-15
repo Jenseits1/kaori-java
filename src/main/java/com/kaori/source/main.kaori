@@ -1,7 +1,7 @@
-def foo(n: f64): f64;
+def foo(n: bool): f64;
 def bar(n: f64): f64;
 
-def foo(n: f64): f64 {
+def foo(n: f64): bool {
    if n > 0 {
       bar(n - 1);
    }
@@ -12,5 +12,3 @@ def bar(n: f64): f64 {
       foo(n - 1);
    }
 }
-
-foo(5);

@@ -50,9 +50,9 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        TypeAST left = this.visitExpression(node.left);
-        TypeAST right = this.visitExpression(node.right);
-        ExpressionAST.Operator operator = node.operator;
+        TypeAST left = this.visitExpression(node.left());
+        TypeAST right = this.visitExpression(node.right());
+        ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
             case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO -> {
@@ -100,8 +100,8 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        TypeAST left = this.visitExpression(node.left);
-        ExpressionAST.Operator operator = node.operator;
+        TypeAST left = this.visitExpression(node.left());
+        ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
             case MINUS -> {
@@ -126,9 +126,9 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitAssign(ExpressionAST.Assign node) {
-        ExpressionAST.Identifier identifier = node.left;
+        ExpressionAST.Identifier identifier = node.left();
 
-        TypeAST right = this.visitExpression(node.right);
+        TypeAST right = this.visitExpression(node.right());
 
         this.define(identifier, right);
 
@@ -137,7 +137,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitLiteral(ExpressionAST.Literal node) {
-        return node.type;
+        return node.type();
     }
 
     @Override
@@ -147,7 +147,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
-        return this.visitExpression(node.callee);
+        return this.visitExpression(node.callee());
     }
 
     @Override
@@ -223,7 +223,12 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST returnType = statement.returnType;
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
-        this.declare(identifier, functionType);
+        int distance = this.environment.distance(identifier);
+
+        if (distance != 0) {
+            this.declare(identifier, functionType);
+        }
+
         this.define(identifier, functionType);
 
         this.environment.enterScope();

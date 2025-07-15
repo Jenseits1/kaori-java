@@ -14,9 +14,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        Object left = this.visitExpression(node.left);
-        Object right = this.visitExpression(node.right);
-        ExpressionAST.Operator operator = node.operator;
+        Object left = this.visitExpression(node.left());
+        Object right = this.visitExpression(node.right());
+        ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
             case PLUS -> (Double) left + (Double) right;
@@ -38,8 +38,8 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        Object left = this.visitExpression(node.left);
-        ExpressionAST.Operator operator = node.operator;
+        Object left = this.visitExpression(node.left());
+        ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
             case MINUS -> -(Double) left;
@@ -50,14 +50,14 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitAssign(ExpressionAST.Assign node) {
-        Object value = this.visitExpression(node.right);
+        Object value = this.visitExpression(node.right());
 
         return value;
     }
 
     @Override
     public Object visitLiteral(ExpressionAST.Literal node) {
-        return node.value;
+        return node.value();
     }
 
     @Override

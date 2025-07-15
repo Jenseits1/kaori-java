@@ -27,7 +27,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         int distance = this.environment.distance(identifier);
 
         if (distance == 0) {
-            throw KaoriError.VariableError(identifier.value + " is already declared", this.line);
+            throw KaoriError.VariableError(identifier.value() + " is already declared", this.line);
         }
 
         this.environment.put(identifier, value);
@@ -38,7 +38,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         int distance = this.environment.distance(identifier);
 
         if (distance < 0) {
-            throw KaoriError.VariableError(identifier.value + " is not declared", this.line);
+            throw KaoriError.VariableError(identifier.value() + " is not declared", this.line);
         }
 
         this.environment.put(identifier, value, distance);
@@ -49,7 +49,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         int distance = this.environment.distance(identifier);
 
         if (distance < 0) {
-            throw KaoriError.VariableError(identifier.value + " is not declared", this.line);
+            throw KaoriError.VariableError(identifier.value() + " is not declared", this.line);
         }
 
         ResolverState state = this.environment.get(identifier, distance);
@@ -61,24 +61,24 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        this.visitExpression(node.left);
-        this.visitExpression(node.right);
+        this.visitExpression(node.left());
+        this.visitExpression(node.right());
 
         return ResolverState.DEFINED;
     }
 
     @Override
     public ResolverState visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        this.visitExpression(node.left);
+        this.visitExpression(node.left());
 
         return ResolverState.DEFINED;
     }
 
     @Override
     public ResolverState visitAssign(ExpressionAST.Assign node) {
-        ExpressionAST.Identifier identifier = node.left;
+        ExpressionAST.Identifier identifier = node.left();
 
-        this.visitExpression(node.right);
+        this.visitExpression(node.right());
 
         this.define(identifier, ResolverState.DEFINED);
 
@@ -87,7 +87,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitLiteral(ExpressionAST.Literal node) {
-        if (node.value == null) {
+        if (node.value() == null) {
             return ResolverState.DECLARED;
         }
 
@@ -101,9 +101,9 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitFunctionCall(ExpressionAST.FunctionCall node) {
-        this.visitExpression(node.callee);
+        this.visitExpression(node.callee());
 
-        for (ExpressionAST argument : node.arguments) {
+        for (ExpressionAST argument : node.arguments()) {
             this.visitExpression(argument);
         }
 
