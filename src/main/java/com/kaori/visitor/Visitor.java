@@ -51,10 +51,10 @@ public abstract class Visitor<T> {
 
         } else if (statement instanceof StatementAST.FunctionDecl funcDecl) {
             this.visitFunctionDeclStatement(funcDecl);
+        } else {
+            throw new IllegalStateException(
+                    "Unhandled statement type: " + statement.getClass().getSimpleName());
         }
-
-        throw new IllegalStateException(
-                "Unhandled statement type: " + statement.getClass().getSimpleName());
 
     }
 

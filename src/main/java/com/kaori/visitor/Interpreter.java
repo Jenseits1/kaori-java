@@ -14,8 +14,8 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        Object left = node.left.acceptVisitor(this);
-        Object right = node.right.acceptVisitor(this);
+        Object left = this.visitExpression(node.left);
+        Object right = this.visitExpression(node.right);
         ExpressionAST.Operator operator = node.operator;
 
         return switch (operator) {
@@ -38,7 +38,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        Object left = node.left.acceptVisitor(this);
+        Object left = this.visitExpression(node.left);
         ExpressionAST.Operator operator = node.operator;
 
         return switch (operator) {
@@ -50,7 +50,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitAssign(ExpressionAST.Assign node) {
-        Object value = node.right.acceptVisitor(this);
+        Object value = this.visitExpression(node.right);
 
         return value;
     }
@@ -72,63 +72,60 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
-        Object expression = statement.expression.acceptVisitor(this);
+        Object expression = this.visitExpression(statement.expression);
         System.out.println(expression);
     }
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-
         this.visitStatements(statement.statements);
-
     }
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        Object value = statement.right.acceptVisitor(this);
-
+        Object value = this.visitExpression(statement.right);
     }
 
     @Override
     public void visitExpressionStatement(StatementAST.Expr statement) {
-        statement.expression.acceptVisitor(this);
+        this.visitExpression(statement.expression);
     }
 
     @Override
     public void visitIfStatement(StatementAST.If statement) {
-        Object condition = statement.condition.acceptVisitor(this);
+        Object condition = this.visitExpression(statement.condition);
 
         if ((Boolean) condition == true) {
-            statement.thenBranch.acceptVisitor(this);
+            this.visitStatement(statement.thenBranch);
         } else {
-            statement.elseBranch.acceptVisitor(this);
+            this.visitStatement(statement.elseBranch);
         }
     }
 
     @Override
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
         while (true) {
-            Object condition = statement.condition.acceptVisitor(this);
+            Object condition = this.visitExpression(statement.condition);
 
             if ((Boolean) condition == false)
                 break;
 
-            statement.block.acceptVisitor(this);
+            this.visitStatement(statement.block);
         }
     }
 
     @Override
     public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        statement.variable.acceptVisitor(this);
+        this.visitStatement(statement.variable);
 
         while (true) {
-            Object condition = statement.condition.acceptVisitor(this);
+            Object condition = this.visitExpression(statement.condition);
 
             if ((Boolean) condition == false)
                 break;
 
-            statement.block.acceptVisitor(this);
-            statement.increment.acceptVisitor(this);
+            this.visitStatement(statement.block);
+            this.visitExpression(statement.increment);
         }
     }
 
@@ -139,25 +136,21 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionDeclStatement(FunctionDecl statement) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visitFunctionDeclStatement'");
     }
 
     @Override
     protected void declare(Identifier identifier, Object value) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'declare'");
     }
 
     @Override
     protected void define(Identifier identifier, Object value) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'define'");
     }
 
     @Override
     protected Object get(Identifier identifier) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'get'");
     }
 }

@@ -50,8 +50,8 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        TypeAST left = node.left.acceptVisitor(this);
-        TypeAST right = node.right.acceptVisitor(this);
+        TypeAST left = this.visitExpression(node.left);
+        TypeAST right = this.visitExpression(node.right);
         ExpressionAST.Operator operator = node.operator;
 
         return switch (operator) {
@@ -100,7 +100,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        TypeAST left = node.left.acceptVisitor(this);
+        TypeAST left = this.visitExpression(node.left);
         ExpressionAST.Operator operator = node.operator;
 
         return switch (operator) {
@@ -128,7 +128,7 @@ public class TypeChecker extends Visitor<TypeAST> {
     public TypeAST visitAssign(ExpressionAST.Assign node) {
         ExpressionAST.Identifier identifier = node.left;
 
-        TypeAST right = node.right.acceptVisitor(this);
+        TypeAST right = this.visitExpression(node.right);
 
         this.define(identifier, right);
 
@@ -147,12 +147,12 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
-        return node.callee.acceptVisitor(this);
+        return this.visitExpression(node.callee);
     }
 
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
-        statement.expression.acceptVisitor(this);
+        this.visitExpression(statement.expression);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         ExpressionAST.Identifier identifier = statement.left;
 
         TypeAST left = statement.type;
-        TypeAST right = statement.right.acceptVisitor(this);
+        TypeAST right = this.visitExpression(statement.right);
 
         this.declare(identifier, left);
         this.define(identifier, right);
@@ -175,44 +175,44 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitExpressionStatement(StatementAST.Expr statement) {
-        statement.expression.acceptVisitor(this);
+        this.visitExpression(statement.expression);
     }
 
     @Override
     public void visitIfStatement(StatementAST.If statement) {
-        TypeAST condition = statement.condition.acceptVisitor(this);
+        TypeAST condition = this.visitExpression(statement.condition);
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
-        statement.thenBranch.acceptVisitor(this);
-        statement.elseBranch.acceptVisitor(this);
+        this.visitStatement(statement.thenBranch);
+        this.visitStatement(statement.elseBranch);
     }
 
     @Override
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
-        TypeAST condition = statement.condition.acceptVisitor(this);
+        TypeAST condition = this.visitExpression(statement.condition);
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
-        statement.block.acceptVisitor(this);
+        this.visitStatement(statement.block);
     }
 
     @Override
     public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        statement.variable.acceptVisitor(this);
+        this.visitStatement(statement.variable);
 
-        TypeAST condition = statement.condition.acceptVisitor(this);
+        TypeAST condition = this.visitExpression(statement.condition);
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
-        statement.block.acceptVisitor(this);
-        statement.increment.acceptVisitor(this);
+        this.visitStatement(statement.block);
+        this.visitExpression(statement.increment);
     }
 
     @Override
@@ -229,7 +229,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         this.environment.enterScope();
 
         for (StatementAST.Variable parameter : statement.parameters) {
-            parameter.acceptVisitor(this);
+            this.visitStatement(parameter);
         }
 
         List<StatementAST> statements = statement.block.statements;

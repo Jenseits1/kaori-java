@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
-
 import com.kaori.parser.StatementAST;
 import com.kaori.visitor.memory.Environment;
 
@@ -58,17 +57,19 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         return state;
     }
 
+    /* ──────── expressions ──────── */
+
     @Override
     public ResolverState visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        node.left.acceptVisitor(this);
-        node.right.acceptVisitor(this);
+        this.visitExpression(node.left);
+        this.visitExpression(node.right);
 
         return ResolverState.DEFINED;
     }
 
     @Override
     public ResolverState visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        node.left.acceptVisitor(this);
+        this.visitExpression(node.left);
 
         return ResolverState.DEFINED;
     }
@@ -77,7 +78,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public ResolverState visitAssign(ExpressionAST.Assign node) {
         ExpressionAST.Identifier identifier = node.left;
 
-        node.right.acceptVisitor(this);
+        this.visitExpression(node.right);
 
         this.define(identifier, ResolverState.DEFINED);
 
@@ -100,18 +101,20 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
 
     @Override
     public ResolverState visitFunctionCall(ExpressionAST.FunctionCall node) {
-        node.callee.acceptVisitor(this);
+        this.visitExpression(node.callee);
 
         for (ExpressionAST argument : node.arguments) {
-            argument.acceptVisitor(this);
+            this.visitExpression(argument);
         }
 
         return ResolverState.DEFINED;
     }
 
+    /* ──────── statements ──────── */
+
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
-        statement.expression.acceptVisitor(this);
+        this.visitExpression(statement.expression);
     }
 
     @Override
@@ -126,34 +129,34 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         ExpressionAST.Identifier identifier = statement.left;
 
         this.declare(identifier, ResolverState.DECLARED);
-        ResolverState right = statement.right.acceptVisitor(this);
+        ResolverState right = this.visitExpression(statement.right);
         this.define(identifier, right);
     }
 
     @Override
     public void visitExpressionStatement(StatementAST.Expr statement) {
-        statement.expression.acceptVisitor(this);
+        this.visitExpression(statement.expression);
     }
 
     @Override
     public void visitIfStatement(StatementAST.If statement) {
-        statement.condition.acceptVisitor(this);
-        statement.thenBranch.acceptVisitor(this);
-        statement.elseBranch.acceptVisitor(this);
+        this.visitExpression(statement.condition);
+        this.visitStatement(statement.thenBranch);
+        this.visitStatement(statement.elseBranch);
     }
 
     @Override
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
-        statement.condition.acceptVisitor(this);
-        statement.block.acceptVisitor(this);
+        this.visitExpression(statement.condition);
+        this.visitStatement(statement.block);
     }
 
     @Override
     public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        statement.variable.acceptVisitor(this);
-        statement.condition.acceptVisitor(this);
-        statement.block.acceptVisitor(this);
-        statement.increment.acceptVisitor(this);
+        this.visitStatement(statement.variable);
+        this.visitExpression(statement.condition);
+        this.visitStatement(statement.block);
+        this.visitExpression(statement.increment);
     }
 
     @Override
@@ -171,7 +174,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         this.environment.enterScope();
 
         for (StatementAST.Variable parameter : statement.parameters) {
-            parameter.acceptVisitor(this);
+            this.visitStatement(parameter);
         }
 
         List<StatementAST> statements = statement.block.statements;
