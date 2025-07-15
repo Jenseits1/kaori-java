@@ -9,8 +9,7 @@ import com.kaori.token.TokenKind;
 
 public class Lexer {
     private final String source;
-    private int left;
-    private int right;
+    private int index;
     private int line;
     private List<Token> tokens;
 
@@ -18,35 +17,27 @@ public class Lexer {
         this.source = source;
     }
 
-    private void advance() {
-        this.right++;
-
-        if (!this.atEnd() && this.currentChar() == '\n') {
-            this.line++;
-        }
-    }
-
     private void advance(int steps) {
         for (int i = 0; i < steps; i++) {
-            this.right++;
+            this.index++;
 
-            if (!this.atEnd() && this.currentChar() == '\n') {
+            if (!this.atEnd() && this.source.charAt(this.index) == '\n') {
                 this.line++;
             }
         }
     }
 
-    private char currentChar() {
-        return this.source.charAt(this.right);
+    private boolean atEnd(int index) {
+        return index >= this.source.length();
     }
 
     private boolean atEnd() {
-        return this.right >= this.source.length();
+        return this.index >= this.source.length();
     }
 
     private boolean lookAhead(String expected) {
         for (int i = 0; i < expected.length(); i++) {
-            int j = this.left + i;
+            int j = this.index + i;
 
             if (j >= this.source.length()) {
                 return false;
@@ -60,52 +51,55 @@ public class Lexer {
         return true;
     }
 
-    private void createToken(TokenKind kind) {
-        int position = this.left;
-        int size = this.right - this.left;
+    private void createToken(TokenKind kind, int size) {
+        int position = this.index;
 
         Token token = new Token(kind, this.line, position, size);
 
         this.tokens.add(token);
 
-        this.left = this.right;
+        this.left = this.index;
     }
 
     private void scanWhiteSpace() {
-        while (!this.atEnd() && Character.isWhitespace(this.currentChar())) {
-            this.advance();
+        while (!this.atEnd() && Character.isWhitespace(this.source.charAt(this.index))) {
+            this.index++;
         }
-
-        this.left = this.right;
     }
 
     private void scanNumber() {
-        while (!this.atEnd() && Character.isDigit(this.currentChar())) {
-            this.advance();
+        int current = this.index;
+
+        while (!this.atEnd(current) && Character.isDigit(this.source.charAt(current))) {
+            current++;
         }
 
-        if (!this.atEnd() && this.currentChar() == '.') {
-            this.advance();
+        if (!this.atEnd(current) && this.source.charAt(current) == '.') {
+            current++;
         }
 
-        while (!this.atEnd() && Character.isDigit(this.currentChar())) {
-            this.advance();
+        while (!this.atEnd(current) && Character.isDigit(this.source.charAt(current))) {
+            current++;
         }
 
-        this.createToken(TokenKind.NUMBER_LITERAL);
+        int size = current - this.index;
+
+        this.createToken(TokenKind.NUMBER_LITERAL, size);
     }
 
     private void scanIdentifierOrKeyword() {
-        while (!this.atEnd() && Character.isAlphabetic(this.currentChar())) {
-            this.advance();
+        int current = this.index;
+
+        while (!this.atEnd(current) && Character.isAlphabetic(this.source.charAt(current))) {
+            current++;
         }
 
-        while (!this.atEnd()
-                && (Character.isLetterOrDigit(this.currentChar()) || this.currentChar() == '_')) {
-            this.advance();
+        while (!this.atEnd(current)
+                && (Character.isLetterOrDigit(this.source.charAt(current)) || this.source.charAt(current) == '_')) {
+            current++;
         }
 
-        TokenKind kind = switch (this.source.substring(this.left, this.right)) {
+        TokenKind kind = switch (this.source.substring(this.left, this.index)) {
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;
@@ -119,29 +113,34 @@ public class Lexer {
             default -> TokenKind.IDENTIFIER;
         };
 
-        this.createToken(kind);
+        int size = current - this.index;
+
+        this.createToken(kind, size);
     }
 
     private void scanStringLiteral() {
         int line = this.line;
+        int current = this.index;
 
-        this.advance();
+        current++;
 
-        while (!this.atEnd() && this.currentChar() != '"') {
-            this.advance();
+        while (!this.atEnd(current) && this.source.charAt(current) != '"') {
+            current++;
         }
 
-        if (this.atEnd() || this.currentChar() != '"') {
+        if (this.atEnd(current) || this.source.charAt(current) != '"') {
             throw KaoriError.SyntaxError("missing closing quotation marks for string literal", line);
         }
 
-        this.advance();
+        current++;
 
-        this.createToken(TokenKind.STRING_LITERAL);
+        int size = current - this.index;
+
+        this.createToken(TokenKind.STRING_LITERAL, size);
     }
 
     private void scanSymbol() {
-        TokenKind kind = switch (this.currentChar()) {
+        TokenKind kind = switch (this.source.charAt(this.index)) {
             case '+' -> this.lookAhead("++") ? TokenKind.INCREMENT : TokenKind.PLUS;
             case '-' -> this.lookAhead("--") ? TokenKind.DECREMENT : TokenKind.MINUS;
             case '&' -> this.lookAhead("&&") ? TokenKind.AND : TokenKind.INVALID;
@@ -165,10 +164,10 @@ public class Lexer {
         };
 
         if (kind == TokenKind.INVALID) {
-            throw KaoriError.SyntaxError("invalid token " + this.currentChar(), this.line);
+            throw KaoriError.SyntaxError("invalid token " + this.source.charAt(this.index), this.line);
         }
 
-        int symbolSize = switch (kind) {
+        int size = switch (kind) {
             case INCREMENT,
                     DECREMENT,
                     AND,
@@ -181,27 +180,27 @@ public class Lexer {
             default -> 1;
         };
 
-        this.advance(symbolSize);
-
-        this.createToken(kind);
+        this.createToken(kind, size);
     }
 
     private void reset() {
         this.left = 0;
-        this.right = 0;
+        this.index = 0;
         this.line = 1;
         this.tokens = new ArrayList<>();
     }
 
     private void start() {
         while (!this.atEnd()) {
-            if (Character.isWhitespace(this.currentChar())) {
+            char c = this.source.charAt(this.index);
+
+            if (Character.isWhitespace(c)) {
                 this.scanWhiteSpace();
-            } else if (Character.isDigit(this.currentChar())) {
+            } else if (Character.isDigit(c)) {
                 this.scanNumber();
-            } else if (Character.isLetter(this.currentChar())) {
+            } else if (Character.isLetter(c)) {
                 this.scanIdentifierOrKeyword();
-            } else if (this.currentChar() == '"') {
+            } else if (c == '"') {
                 this.scanStringLiteral();
             } else {
                 this.scanSymbol();
