@@ -50,8 +50,8 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        TypeAST left = this.visitExpression(node.left());
-        TypeAST right = this.visitExpression(node.right());
+        TypeAST left = this.visit(node.left());
+        TypeAST right = this.visit(node.right());
         ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
@@ -100,7 +100,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        TypeAST left = this.visitExpression(node.left());
+        TypeAST left = this.visit(node.left());
         ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
@@ -128,7 +128,7 @@ public class TypeChecker extends Visitor<TypeAST> {
     public TypeAST visitAssign(ExpressionAST.Assign node) {
         ExpressionAST.Identifier identifier = node.left();
 
-        TypeAST right = this.visitExpression(node.right());
+        TypeAST right = this.visit(node.right());
 
         this.define(identifier, right);
 
@@ -147,27 +147,27 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
-        return this.visitExpression(node.callee());
+        return this.visit(node.callee());
     }
 
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
-        this.visitExpression(statement.expression);
+        this.visit(statement.expression());
     }
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
         this.environment.enterScope();
-        this.visitStatements(statement.statements);
+        this.visitStatements(statement.statements());
         this.environment.exitScope();
     }
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        ExpressionAST.Identifier identifier = statement.left;
+        ExpressionAST.Identifier identifier = statement.left();
 
-        TypeAST left = statement.type;
-        TypeAST right = this.visitExpression(statement.right);
+        TypeAST left = statement.type();
+        TypeAST right = this.visit(statement.right());
 
         this.declare(identifier, left);
         this.define(identifier, right);
@@ -175,52 +175,52 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitExpressionStatement(StatementAST.Expr statement) {
-        this.visitExpression(statement.expression);
+        this.visit(statement.expression());
     }
 
     @Override
     public void visitIfStatement(StatementAST.If statement) {
-        TypeAST condition = this.visitExpression(statement.condition);
+        TypeAST condition = this.visit(statement.condition());
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
-        this.visitStatement(statement.thenBranch);
-        this.visitStatement(statement.elseBranch);
+        this.visit(statement.thenBranch());
+        this.visit(statement.elseBranch());
     }
 
     @Override
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
-        TypeAST condition = this.visitExpression(statement.condition);
+        TypeAST condition = this.visit(statement.condition());
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
-        this.visitStatement(statement.block);
+        this.visit(statement.block());
     }
 
     @Override
     public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        this.visitStatement(statement.variable);
+        this.visit(statement.variable());
 
-        TypeAST condition = this.visitExpression(statement.condition);
+        TypeAST condition = this.visit(statement.condition());
 
         if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
             throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
         }
 
-        this.visitStatement(statement.block);
-        this.visitExpression(statement.increment);
+        this.visit(statement.block());
+        this.visit(statement.increment());
     }
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        ExpressionAST.Identifier identifier = statement.name;
+        ExpressionAST.Identifier identifier = statement.name();
 
-        List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
-        TypeAST returnType = statement.returnType;
+        List<TypeAST> parameters = statement.parameters().stream().map(parameter -> parameter.type()).toList();
+        TypeAST returnType = statement.returnType();
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
         int distance = this.environment.distance(identifier);
@@ -233,11 +233,11 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         this.environment.enterScope();
 
-        for (StatementAST.Variable parameter : statement.parameters) {
-            this.visitStatement(parameter);
+        for (StatementAST.Variable parameter : statement.parameters()) {
+            this.visit(parameter);
         }
 
-        List<StatementAST> statements = statement.block.statements;
+        List<StatementAST> statements = statement.block().statements();
         this.visitStatements(statements);
 
         this.environment.exitScope();
@@ -245,10 +245,10 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
-        ExpressionAST.Identifier identifier = statement.name;
+        ExpressionAST.Identifier identifier = statement.name();
 
-        List<TypeAST> parameters = statement.parameters.stream().map(parameter -> parameter.type).toList();
-        TypeAST returnType = statement.returnType;
+        List<TypeAST> parameters = statement.parameters().stream().map(parameter -> parameter.type()).toList();
+        TypeAST returnType = statement.returnType();
         TypeAST functionType = new TypeAST.Function(parameters, returnType);
 
         this.declare(identifier, functionType);

@@ -2,28 +2,50 @@ package com.kaori.visitor;
 
 import java.util.List;
 
+import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
 import com.kaori.parser.ExpressionAST.Identifier;
 import com.kaori.parser.StatementAST;
 import com.kaori.parser.StatementAST.FunctionDecl;
+import com.kaori.visitor.memory.Environment;
 
 public class Interpreter extends Visitor<Object> {
+    private final Environment<Object> environment;
+
     public Interpreter(List<StatementAST> statements) {
         super(statements);
+        this.environment = new Environment<>();
     }
 
     @Override
     public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        Object left = this.visitExpression(node.left());
-        Object right = this.visitExpression(node.right());
+        Object left = this.visit(node.left());
+        Object right = this.visit(node.right());
         ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
             case PLUS -> (Double) left + (Double) right;
             case MINUS -> (Double) left - (Double) right;
             case MULTIPLY -> (Double) left * (Double) right;
-            case DIVIDE -> (Double) left / (Double) right;
-            case MODULO -> (Double) left % (Double) right;
+            case DIVIDE -> {
+                if ((Double) right == 0) {
+                    throw KaoriError.RuntimeError(
+                            String.format("operation %s between %s and %s is invalid", operator, left, right),
+                            this.line);
+                }
+
+                yield (Double) left / (Double) right;
+            }
+
+            case MODULO -> {
+                if ((Double) right == 0) {
+                    throw KaoriError.RuntimeError(
+                            String.format("operation %s between %s and %s is invalid", operator, left, right),
+                            this.line);
+                }
+
+                yield (Double) left % (Double) right;
+            }
             case GREATER -> (Double) left > (Double) right;
             case GREATER_EQUAL -> (Double) left >= (Double) right;
             case LESS -> (Double) left < (Double) right;
@@ -38,7 +60,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        Object left = this.visitExpression(node.left());
+        Object left = this.visit(node.left());
         ExpressionAST.Operator operator = node.operator();
 
         return switch (operator) {
@@ -50,7 +72,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitAssign(ExpressionAST.Assign node) {
-        Object value = this.visitExpression(node.right());
+        Object value = this.visit(node.right());
 
         return value;
     }
@@ -72,60 +94,60 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
-        Object expression = this.visitExpression(statement.expression);
+        Object expression = this.visit(statement.expression());
         System.out.println(expression);
     }
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.visitStatements(statement.statements);
+        this.visitStatements(statement.statements());
     }
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        Object value = this.visitExpression(statement.right);
+        Object value = this.visit(statement.right());
     }
 
     @Override
     public void visitExpressionStatement(StatementAST.Expr statement) {
-        this.visitExpression(statement.expression);
+        this.visit(statement.expression());
     }
 
     @Override
     public void visitIfStatement(StatementAST.If statement) {
-        Object condition = this.visitExpression(statement.condition);
+        Object condition = this.visit(statement.condition());
 
         if ((Boolean) condition == true) {
-            this.visitStatement(statement.thenBranch);
+            this.visit(statement.thenBranch());
         } else {
-            this.visitStatement(statement.elseBranch);
+            this.visit(statement.elseBranch());
         }
     }
 
     @Override
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
         while (true) {
-            Object condition = this.visitExpression(statement.condition);
+            Object condition = this.visit(statement.condition());
 
             if ((Boolean) condition == false)
                 break;
 
-            this.visitStatement(statement.block);
+            this.visit(statement.block());
         }
     }
 
     @Override
     public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        this.visitStatement(statement.variable);
+        this.visit(statement.variable());
 
         while (true) {
-            Object condition = this.visitExpression(statement.condition);
+            Object condition = this.visit(statement.condition());
 
             if ((Boolean) condition == false)
                 break;
 
-            this.visitStatement(statement.block);
-            this.visitExpression(statement.increment);
+            this.visit(statement.block());
+            this.visit(statement.increment());
         }
     }
 
@@ -136,21 +158,30 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionDeclStatement(FunctionDecl statement) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionDeclStatement'");
+
     }
 
     @Override
     protected void declare(Identifier identifier, Object value) {
-        throw new UnsupportedOperationException("Unimplemented method 'declare'");
+        this.environment.put(identifier, value);
     }
 
     @Override
     protected void define(Identifier identifier, Object value) {
-        throw new UnsupportedOperationException("Unimplemented method 'define'");
+        int distance = this.environment.distance(identifier);
+
+        this.environment.put(identifier, value, distance);
     }
 
     @Override
     protected Object get(Identifier identifier) {
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
+        int distance = this.environment.distance(identifier);
+        Object value = this.environment.get(identifier, distance);
+
+        if (value == null) {
+
+        }
+
+        return value;
     }
 }

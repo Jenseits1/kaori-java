@@ -3,123 +3,61 @@ package com.kaori.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class StatementAST {
-    public final int line;
+public interface StatementAST {
+    int line();
 
-    private StatementAST(int line) {
-        this.line = line;
+    record Print(int line, ExpressionAST expression) implements StatementAST {
     }
 
-    public static class Print extends StatementAST {
-        public final ExpressionAST expression;
-
-        public Print(int line, ExpressionAST expression) {
-            super(line);
-            this.expression = expression;
-        }
+    record Expr(int line, ExpressionAST expression) implements StatementAST {
     }
 
-    public static class Expr extends StatementAST {
-        public final ExpressionAST expression;
-
-        public Expr(int line, ExpressionAST expression) {
-            super(line);
-            this.expression = expression;
-        }
+    record Variable(
+            int line,
+            ExpressionAST.Identifier left,
+            ExpressionAST right,
+            TypeAST type) implements StatementAST {
     }
 
-    public static class Variable extends StatementAST {
-        public final ExpressionAST.Identifier left;
-        public final ExpressionAST right;
-        public final TypeAST type;
-
-        public Variable(int line, ExpressionAST.Identifier left, ExpressionAST right, TypeAST type) {
-            super(line);
-            this.left = left;
-            this.right = right;
-            this.type = type;
-        }
-    }
-
-    public static class Block extends StatementAST {
-        public final List<StatementAST> statements;
-
-        public Block(int line, List<StatementAST> statements) {
-            super(line);
-            this.statements = statements;
-        }
-
+    record Block(int line, List<StatementAST> statements) implements StatementAST {
         public Block(int line) {
-            super(line);
-            this.statements = new ArrayList<>();
+            this(line, new ArrayList<>());
         }
     }
 
-    public static class If extends StatementAST {
-        public final ExpressionAST condition;
-        public final Block thenBranch;
-        public final StatementAST elseBranch;
-
-        public If(int line, ExpressionAST condition, Block thenBranch, StatementAST elseBranch) {
-            super(line);
-            this.condition = condition;
-            this.thenBranch = thenBranch;
-            this.elseBranch = elseBranch;
-        }
+    record If(
+            int line,
+            ExpressionAST condition,
+            Block thenBranch,
+            StatementAST elseBranch) implements StatementAST {
     }
 
-    public static class WhileLoop extends StatementAST {
-        public final ExpressionAST condition;
-        public final Block block;
-
-        public WhileLoop(int line, ExpressionAST condition, Block block) {
-            super(line);
-            this.condition = condition;
-            this.block = block;
-        }
+    record WhileLoop(
+            int line,
+            ExpressionAST condition,
+            Block block) implements StatementAST {
     }
 
-    public static class ForLoop extends StatementAST {
-        public final Variable variable;
-        public final ExpressionAST condition;
-        public final ExpressionAST increment;
-        public final Block block;
-
-        public ForLoop(int line, Variable variable, ExpressionAST condition, ExpressionAST increment, Block block) {
-            super(line);
-            this.variable = variable;
-            this.condition = condition;
-            this.increment = increment;
-            this.block = block;
-        }
+    record ForLoop(
+            int line,
+            Variable variable,
+            ExpressionAST condition,
+            ExpressionAST increment,
+            Block block) implements StatementAST {
     }
 
-    public static class Function extends StatementAST {
-        public final ExpressionAST.Identifier name;
-        public final List<Variable> parameters;
-        public final TypeAST returnType;
-        public final Block block;
-
-        public Function(int line, ExpressionAST.Identifier name, List<Variable> parameters, TypeAST returnType,
-                Block block) {
-            super(line);
-            this.name = name;
-            this.parameters = parameters;
-            this.returnType = returnType;
-            this.block = block;
-        }
+    record Function(
+            int line,
+            ExpressionAST.Identifier name,
+            List<Variable> parameters,
+            TypeAST returnType,
+            Block block) implements StatementAST {
     }
 
-    public static class FunctionDecl extends StatementAST {
-        public final ExpressionAST.Identifier name;
-        public final List<Variable> parameters;
-        public final TypeAST returnType;
-
-        public FunctionDecl(int line, ExpressionAST.Identifier name, List<Variable> parameters, TypeAST returnType) {
-            super(line);
-            this.name = name;
-            this.parameters = parameters;
-            this.returnType = returnType;
-        }
+    record FunctionDecl(
+            int line,
+            ExpressionAST.Identifier name,
+            List<Variable> parameters,
+            TypeAST returnType) implements StatementAST {
     }
 }

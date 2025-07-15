@@ -19,13 +19,7 @@ public abstract class Visitor<T> {
         this.visitStatements(this.statements);
     }
 
-    protected abstract void declare(ExpressionAST.Identifier identifier, T value);
-
-    protected abstract void define(ExpressionAST.Identifier identifier, T value);
-
-    protected abstract T get(ExpressionAST.Identifier identifier);
-
-    protected void visitStatement(StatementAST statement) {
+    protected void visit(StatementAST statement) {
         if (statement instanceof StatementAST.Block block) {
             this.visitBlockStatement(block);
         } else if (statement instanceof StatementAST.ForLoop forLoop) {
@@ -55,10 +49,9 @@ public abstract class Visitor<T> {
             throw new IllegalStateException(
                     "Unhandled statement type: " + statement.getClass().getSimpleName());
         }
-
     }
 
-    protected T visitExpression(ExpressionAST expression) {
+    protected T visit(ExpressionAST expression) {
         if (expression instanceof ExpressionAST.BinaryOperator binOp) {
             return this.visitBinaryOperator(binOp);
         }
@@ -89,10 +82,16 @@ public abstract class Visitor<T> {
 
     protected void visitStatements(List<StatementAST> statements) {
         for (StatementAST statement : statements) {
-            this.line = statement.line;
-            this.visitStatement(statement);
+            this.line = statement.line();
+            this.visit(statement);
         }
     }
+
+    protected abstract void declare(ExpressionAST.Identifier identifier, T value);
+
+    protected abstract void define(ExpressionAST.Identifier identifier, T value);
+
+    protected abstract T get(ExpressionAST.Identifier identifier);
 
     // Expressions
     public abstract T visitBinaryOperator(ExpressionAST.BinaryOperator node);

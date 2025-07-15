@@ -12,14 +12,14 @@ public class KaoriError extends RuntimeException {
         return super.getMessage();
     }
 
-    public static KaoriError DivisionByZero(String errorMessage, int line) {
-        String formattedMessage = String.format("DivisionByZero: %s at line %d", errorMessage, line);
+    public static KaoriError SyntaxError(String errorMessage, int line) {
+        String formattedMessage = String.format("SyntaxError: %s at line %d", errorMessage, line);
 
         return new KaoriError(formattedMessage, line);
     }
 
-    public static KaoriError SyntaxError(String errorMessage, int line) {
-        String formattedMessage = String.format("SyntaxError: %s at line %d", errorMessage, line);
+    public static KaoriError ResolveError(String errorMessage, int line) {
+        String formattedMessage = String.format("ResolveError: %s at line %d", errorMessage, line);
 
         return new KaoriError(formattedMessage, line);
     }
@@ -30,8 +30,8 @@ public class KaoriError extends RuntimeException {
         return new KaoriError(formattedMessage, line);
     }
 
-    public static KaoriError VariableError(String errorMessage, int line) {
-        String formattedMessage = String.format("VariableError: %s at line %d", errorMessage, line);
+    public static KaoriError RuntimeError(String errorMessage, int line) {
+        String formattedMessage = String.format("RuntimeError: %s at line %d", errorMessage, line);
 
         return new KaoriError(formattedMessage, line);
     }
