@@ -64,9 +64,9 @@ public class Lexer {
 
         current += 2;
 
-        int steps = current - this.index;
+        int size = current - this.index;
 
-        this.advance(steps);
+        this.advance(size);
     }
 
     private void scanWhiteSpace() {
@@ -76,9 +76,9 @@ public class Lexer {
             current++;
         }
 
-        int steps = current - this.index;
+        int size = current - this.index;
 
-        this.advance(steps);
+        this.advance(size);
     }
 
     private void scanNumber() {

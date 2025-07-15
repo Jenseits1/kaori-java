@@ -24,25 +24,25 @@ public class TokenStream {
 
         Token token = this.tokens.get(this.index);
 
-        return token.kind;
+        return token.kind();
     }
 
     public int getLine() {
         Token token = this.tokens.get(this.index);
 
-        return token.line;
+        return token.line();
     }
 
     private int getPosition() {
         Token token = this.tokens.get(this.index);
 
-        return token.position;
+        return token.position();
     }
 
     private int getSize() {
         Token token = this.tokens.get(this.index);
 
-        return token.size;
+        return token.size();
     }
 
     public String getLexeme() {
@@ -84,7 +84,7 @@ public class TokenStream {
 
             Token token = this.tokens.get(j);
 
-            if (token.kind != expected[i])
+            if (token.kind() != expected[i])
                 return false;
         }
 

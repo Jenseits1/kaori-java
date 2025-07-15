@@ -50,7 +50,7 @@ public interface StatementAST {
                         int line,
                         ExpressionAST.Identifier name,
                         List<Variable> parameters,
-                        TypeAST type,
+                        TypeAST.Function type,
                         Block block) implements StatementAST {
         }
 
@@ -58,6 +58,6 @@ public interface StatementAST {
                         int line,
                         ExpressionAST.Identifier name,
                         List<Variable> parameters,
-                        TypeAST type) implements StatementAST {
+                        TypeAST.Function type) implements StatementAST {
         }
 }

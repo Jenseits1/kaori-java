@@ -489,7 +489,7 @@ public class Parser {
 
         TypeAST returnType = this.type();
 
-        TypeAST type = new TypeAST.Function(parameters.stream().map(parameter -> parameter.type()).toList(),
+        TypeAST.Function type = new TypeAST.Function(parameters.stream().map(parameter -> parameter.type()).toList(),
                 returnType);
 
         if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
