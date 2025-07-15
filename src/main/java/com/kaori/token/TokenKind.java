@@ -30,7 +30,7 @@ public enum TokenKind {
     COMMA(","),
     SEMICOLON(";"),
     COLON(":"),
-    DOLLAR("$"),
+    THIN_ARROW("->"),
 
     // Grouping symbols
     LEFT_PAREN("("),

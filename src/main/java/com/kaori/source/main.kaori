@@ -1,12 +1,12 @@
 
 
-def foo(a: f64, b: f64): void;
+def foo(a: f64, b: f64) -> void;
 
 def bar(a: f64): void {
     foo(a, 10);
 }
 
-def foo(a: f64, b: f64): void {
+def foo(a: f64, b: f64) -> void {
     print(a + b);
 }
 
