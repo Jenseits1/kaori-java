@@ -55,6 +55,9 @@ public enum TokenKind {
     NUMBER_LITERAL("number"),
     BOOLEAN_LITERAL("boolean"),
 
+    // Invalid token
+    INVALID("invalid"),
+
     // End of File
     EOF("end of file");
 

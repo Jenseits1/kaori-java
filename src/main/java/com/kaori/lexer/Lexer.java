@@ -26,6 +26,16 @@ public class Lexer {
         }
     }
 
+    private void advance(int steps) {
+        for (int i = 0; i < steps; i++) {
+            this.right++;
+
+            if (!this.atEnd() && this.currentChar() == '\n') {
+                this.line++;
+            }
+        }
+    }
+
     private char currentChar() {
         return this.source.charAt(this.right);
     }
@@ -131,133 +141,49 @@ public class Lexer {
     }
 
     private void scanSymbol() {
-        switch (this.currentChar()) {
-            case '+' -> {
-                if (this.lookAhead("++")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.INCREMENT);
-                } else {
-                    this.advance();
-                    this.createToken(TokenKind.PLUS);
+        TokenKind kind = switch (this.currentChar()) {
+            case '+' -> this.lookAhead("++") ? TokenKind.INCREMENT : TokenKind.PLUS;
+            case '-' -> this.lookAhead("--") ? TokenKind.DECREMENT : TokenKind.MINUS;
+            case '&' -> this.lookAhead("&&") ? TokenKind.AND : TokenKind.INVALID;
+            case '|' -> this.lookAhead("||") ? TokenKind.OR : TokenKind.INVALID;
+            case '=' -> this.lookAhead("==") ? TokenKind.EQUAL : TokenKind.ASSIGN;
+            case '!' -> this.lookAhead("!=") ? TokenKind.NOT_EQUAL : TokenKind.NOT;
+            case '>' -> this.lookAhead(">=") ? TokenKind.GREATER_EQUAL : TokenKind.GREATER;
+            case '<' -> this.lookAhead("<=") ? TokenKind.LESS_EQUAL : TokenKind.LESS;
+            case '*' -> TokenKind.MULTIPLY;
+            case '/' -> TokenKind.DIVIDE;
+            case '%' -> TokenKind.MODULO;
+            case '(' -> TokenKind.LEFT_PAREN;
+            case ')' -> TokenKind.RIGHT_PAREN;
+            case '{' -> TokenKind.LEFT_BRACE;
+            case '}' -> TokenKind.RIGHT_BRACE;
+            case ',' -> TokenKind.COMMA;
+            case ';' -> TokenKind.SEMICOLON;
+            case ':' -> TokenKind.COLON;
+            case '$' -> TokenKind.DOLLAR;
+            default -> TokenKind.INVALID;
+        };
 
-                }
-            }
-            case '-' -> {
-                if (this.lookAhead("--")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.DECREMENT);
-                } else {
-                    this.advance();
-                    this.createToken(TokenKind.MINUS);
-
-                }
-            }
-            case '&' -> {
-                if (this.lookAhead("&&")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.AND);
-                } else {
-                    throw KaoriError.SyntaxError(String.format("invalid token %s", this.currentChar()), this.line);
-                }
-            }
-            case '|' -> {
-                if (this.lookAhead("||")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.OR);
-                } else {
-                    throw KaoriError.SyntaxError(String.format("invalid token %s", this.currentChar()), this.line);
-                }
-            }
-            case '!' -> {
-                if (this.lookAhead("!=")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.NOT_EQUAL);
-                } else {
-                    this.advance();
-                    this.createToken(TokenKind.NOT);
-                }
-            }
-            case '=' -> {
-                if (this.lookAhead("==")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.EQUAL);
-                } else {
-                    this.advance();
-                    this.createToken(TokenKind.ASSIGN);
-                }
-            }
-            case '>' -> {
-                if (this.lookAhead(">=")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.GREATER_EQUAL);
-                } else {
-                    this.advance();
-                    this.createToken(TokenKind.GREATER);
-                }
-            }
-            case '<' -> {
-                if (this.lookAhead("<=")) {
-                    this.advance();
-                    this.advance();
-                    this.createToken(TokenKind.LESS_EQUAL);
-                } else {
-                    this.advance();
-                    this.createToken(TokenKind.LESS);
-                }
-            }
-            case '*' -> {
-                this.advance();
-                this.createToken(TokenKind.MULTIPLY);
-            }
-            case '/' -> {
-                this.advance();
-                this.createToken(TokenKind.DIVIDE);
-            }
-            case '%' -> {
-                this.advance();
-                this.createToken(TokenKind.MODULO);
-            }
-            case '(' -> {
-                this.advance();
-                this.createToken(TokenKind.LEFT_PAREN);
-            }
-            case ')' -> {
-                this.advance();
-                this.createToken(TokenKind.RIGHT_PAREN);
-            }
-            case '{' -> {
-                this.advance();
-                this.createToken(TokenKind.LEFT_BRACE);
-            }
-            case '}' -> {
-                this.advance();
-                this.createToken(TokenKind.RIGHT_BRACE);
-            }
-            case ',' -> {
-                this.advance();
-                this.createToken(TokenKind.COMMA);
-            }
-            case ';' -> {
-                this.advance();
-                this.createToken(TokenKind.SEMICOLON);
-            }
-            case ':' -> {
-                this.advance();
-                this.createToken(TokenKind.COLON);
-            }
-            case '$' -> {
-                this.advance();
-                this.createToken(TokenKind.DOLLAR);
-            }
-            default -> throw KaoriError.SyntaxError(String.format("invalid token %s", this.currentChar()), this.line);
+        if (kind == TokenKind.INVALID) {
+            throw KaoriError.SyntaxError("invalid token " + this.currentChar(), this.line);
         }
+
+        int symbolSize = switch (kind) {
+            case INCREMENT,
+                    DECREMENT,
+                    AND,
+                    OR,
+                    NOT_EQUAL,
+                    EQUAL,
+                    GREATER_EQUAL,
+                    LESS_EQUAL ->
+                2;
+            default -> 1;
+        };
+
+        this.advance(symbolSize);
+
+        this.createToken(kind);
     }
 
     private void reset() {

@@ -4,9 +4,8 @@ import java.util.List;
 
 import com.kaori.error.KaoriError;
 import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.ExpressionAST.Identifier;
 import com.kaori.parser.StatementAST;
-import com.kaori.parser.StatementAST.FunctionDecl;
+
 import com.kaori.visitor.memory.Environment;
 
 public class Interpreter extends Visitor<Object> {
@@ -15,6 +14,30 @@ public class Interpreter extends Visitor<Object> {
     public Interpreter(List<StatementAST> statements) {
         super(statements);
         this.environment = new Environment<>();
+    }
+
+    @Override
+    protected void declare(ExpressionAST.Identifier identifier, Object value) {
+        this.environment.put(identifier, value);
+    }
+
+    @Override
+    protected void define(ExpressionAST.Identifier identifier, Object value) {
+        int distance = this.environment.distance(identifier);
+
+        this.environment.put(identifier, value, distance);
+    }
+
+    @Override
+    protected Object get(ExpressionAST.Identifier identifier) {
+        int distance = this.environment.distance(identifier);
+        Object value = this.environment.get(identifier, distance);
+
+        if (value == null) {
+            throw KaoriError.RuntimeError(identifier.value() + " is not defined", this.line);
+        }
+
+        return value;
     }
 
     @Override
@@ -30,7 +53,7 @@ public class Interpreter extends Visitor<Object> {
             case DIVIDE -> {
                 if ((Double) right == 0) {
                     throw KaoriError.RuntimeError(
-                            String.format("operation %s between %s and %s is invalid", operator, left, right),
+                            String.format("invalid %s operation between %s and %s", operator, left, right),
                             this.line);
                 }
 
@@ -40,7 +63,7 @@ public class Interpreter extends Visitor<Object> {
             case MODULO -> {
                 if ((Double) right == 0) {
                     throw KaoriError.RuntimeError(
-                            String.format("operation %s between %s and %s is invalid", operator, left, right),
+                            String.format("invalid %s operation between %s and %s", operator, left, right),
                             this.line);
                 }
 
@@ -84,7 +107,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier node) {
-        return null;
+        return this.get(node);
     }
 
     @Override
@@ -105,7 +128,10 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
-        Object value = this.visit(statement.right());
+        Object right = this.visit(statement.right());
+
+        this.declare(statement.left(), null);
+        this.define(statement.left(), right);
     }
 
     @Override
@@ -157,31 +183,7 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public void visitFunctionDeclStatement(FunctionDecl statement) {
+    public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
 
-    }
-
-    @Override
-    protected void declare(Identifier identifier, Object value) {
-        this.environment.put(identifier, value);
-    }
-
-    @Override
-    protected void define(Identifier identifier, Object value) {
-        int distance = this.environment.distance(identifier);
-
-        this.environment.put(identifier, value, distance);
-    }
-
-    @Override
-    protected Object get(Identifier identifier) {
-        int distance = this.environment.distance(identifier);
-        Object value = this.environment.get(identifier, distance);
-
-        if (value == null) {
-
-        }
-
-        return value;
     }
 }

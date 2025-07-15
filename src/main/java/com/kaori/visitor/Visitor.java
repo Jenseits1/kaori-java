@@ -20,31 +20,33 @@ public abstract class Visitor<T> {
     }
 
     protected void visit(StatementAST statement) {
-        if (statement instanceof StatementAST.Block block) {
-            this.visitBlockStatement(block);
-        } else if (statement instanceof StatementAST.ForLoop forLoop) {
-            this.visitForLoopStatement(forLoop);
+        if (statement instanceof StatementAST.Block stmt) {
+            this.visitBlockStatement(stmt);
 
-        } else if (statement instanceof StatementAST.Print print) {
-            this.visitPrintStatement(print);
+        } else if (statement instanceof StatementAST.ForLoop stmt) {
+            this.visitForLoopStatement(stmt);
 
-        } else if (statement instanceof StatementAST.Expr expr) {
-            this.visitExpressionStatement(expr);
+        } else if (statement instanceof StatementAST.Print stmt) {
+            this.visitPrintStatement(stmt);
 
-        } else if (statement instanceof StatementAST.Variable variable) {
-            this.visitVariableStatement(variable);
+        } else if (statement instanceof StatementAST.Expr stmt) {
+            this.visitExpressionStatement(stmt);
 
-        } else if (statement instanceof StatementAST.If ifStmt) {
-            this.visitIfStatement(ifStmt);
+        } else if (statement instanceof StatementAST.Variable stmt) {
+            this.visitVariableStatement(stmt);
 
-        } else if (statement instanceof StatementAST.WhileLoop whileLoop) {
-            this.visitWhileLoopStatement(whileLoop);
+        } else if (statement instanceof StatementAST.If stmt) {
+            this.visitIfStatement(stmt);
 
-        } else if (statement instanceof StatementAST.Function function) {
-            this.visitFunctionStatement(function);
+        } else if (statement instanceof StatementAST.WhileLoop stmt) {
+            this.visitWhileLoopStatement(stmt);
 
-        } else if (statement instanceof StatementAST.FunctionDecl funcDecl) {
-            this.visitFunctionDeclStatement(funcDecl);
+        } else if (statement instanceof StatementAST.Function stmt) {
+            this.visitFunctionStatement(stmt);
+
+        } else if (statement instanceof StatementAST.FunctionDecl stmt) {
+            this.visitFunctionDeclStatement(stmt);
+
         } else {
             throw new IllegalStateException(
                     "Unhandled statement type: " + statement.getClass().getSimpleName());
@@ -52,30 +54,24 @@ public abstract class Visitor<T> {
     }
 
     protected T visit(ExpressionAST expression) {
-        if (expression instanceof ExpressionAST.BinaryOperator binOp) {
-            return this.visitBinaryOperator(binOp);
+        if (expression instanceof ExpressionAST.BinaryOperator expr) {
+            return this.visitBinaryOperator(expr);
         }
-
-        if (expression instanceof ExpressionAST.UnaryOperator unaryOp) {
-            return this.visitUnaryOperator(unaryOp);
+        if (expression instanceof ExpressionAST.UnaryOperator expr) {
+            return this.visitUnaryOperator(expr);
         }
-
-        if (expression instanceof ExpressionAST.Assign assign) {
-            return this.visitAssign(assign);
+        if (expression instanceof ExpressionAST.Assign expr) {
+            return this.visitAssign(expr);
         }
-
-        if (expression instanceof ExpressionAST.Literal literal) {
-            return this.visitLiteral(literal);
+        if (expression instanceof ExpressionAST.Literal expr) {
+            return this.visitLiteral(expr);
         }
-
-        if (expression instanceof ExpressionAST.Identifier identifier) {
-            return this.visitIdentifier(identifier);
+        if (expression instanceof ExpressionAST.Identifier expr) {
+            return this.visitIdentifier(expr);
         }
-
-        if (expression instanceof ExpressionAST.FunctionCall funcCall) {
-            return this.visitFunctionCall(funcCall);
+        if (expression instanceof ExpressionAST.FunctionCall expr) {
+            return this.visitFunctionCall(expr);
         }
-
         throw new IllegalStateException(
                 "Unhandled expression type: " + expression.getClass().getSimpleName());
     }
