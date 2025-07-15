@@ -23,6 +23,7 @@
     -   [x] `while` loops
     -   [x] Block statements for scope (`{ ... }`)
     -   [x] Output with `print` statements
+    -   [x] Code comments (`/* this is a comment */`)
     -   [ ] Functions
     -   [ ] Native data structures (e.g., lists, maps)
     -   [ ] Bytecode generation
@@ -66,7 +67,7 @@ while_stmt               -> "while" expression block_stmt
 
 for_stmt                 -> "for" variable_stmt ";" expression ";" expression block_stmt
 
-expression               -> assign | or ";"
+expression               -> assign | or
 
 assign                   -> identifier "=" expression
 

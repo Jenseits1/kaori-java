@@ -14,10 +14,11 @@ for i: f64 = 0; i < 10; i++ {
     print(i);
 }
 
-if a < b {
+/* if a < b {
     print("smaller");
 } else if a > b {
     print("bigger");
 } else {
     print("equal");
-}
+} */
+print("hello world");

@@ -31,17 +31,15 @@ public class Lexer {
         return current >= this.source.length();
     }
 
-    private boolean lookAhead(String expected, int current) {
+    private boolean lookAhead(String expected, int currentIndex) {
         for (int i = 0; i < expected.length(); i++) {
-            int j = current + i;
+            int j = currentIndex + i;
 
-            if (j >= this.source.length()) {
-                return false;
+            if (j < this.source.length() && expected.charAt(i) == this.source.charAt(j)) {
+                continue;
             }
 
-            if (expected.charAt(i) != this.source.charAt(j)) {
-                return false;
-            }
+            return false;
         }
 
         return true;
