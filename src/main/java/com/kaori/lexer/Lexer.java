@@ -58,7 +58,7 @@ public class Lexer {
 
         this.tokens.add(token);
 
-        this.left = this.index;
+        this.advance(size);
     }
 
     private void scanWhiteSpace() {
@@ -99,7 +99,7 @@ public class Lexer {
             current++;
         }
 
-        TokenKind kind = switch (this.source.substring(this.left, this.index)) {
+        TokenKind kind = switch (this.source.substring(this.index, current)) {
             case "if" -> TokenKind.IF;
             case "else" -> TokenKind.ELSE;
             case "while" -> TokenKind.WHILE;
@@ -184,7 +184,6 @@ public class Lexer {
     }
 
     private void reset() {
-        this.left = 0;
         this.index = 0;
         this.line = 1;
         this.tokens = new ArrayList<>();
