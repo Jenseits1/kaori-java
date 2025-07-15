@@ -19,20 +19,16 @@ public class Lexer {
 
     private void advance(int steps) {
         for (int i = 0; i < steps; i++) {
-            this.index++;
-
-            if (!this.atEnd() && this.source.charAt(this.index) == '\n') {
+            if (this.source.charAt(this.index) == '\n') {
                 this.line++;
             }
+
+            this.index++;
         }
     }
 
-    private boolean atEnd(int index) {
-        return index >= this.source.length();
-    }
-
-    private boolean atEnd() {
-        return this.index >= this.source.length();
+    private boolean atEnd(int current) {
+        return current >= this.source.length();
     }
 
     private boolean lookAhead(String expected) {
@@ -62,9 +58,15 @@ public class Lexer {
     }
 
     private void scanWhiteSpace() {
-        while (!this.atEnd() && Character.isWhitespace(this.source.charAt(this.index))) {
-            this.index++;
+        int current = this.index;
+
+        while (!this.atEnd(current) && Character.isWhitespace(this.source.charAt(current))) {
+            current++;
         }
+
+        int steps = current - this.index;
+
+        this.advance(steps);
     }
 
     private void scanNumber() {
@@ -119,7 +121,6 @@ public class Lexer {
     }
 
     private void scanStringLiteral() {
-        int line = this.line;
         int current = this.index;
 
         current++;
@@ -129,7 +130,7 @@ public class Lexer {
         }
 
         if (this.atEnd(current) || this.source.charAt(current) != '"') {
-            throw KaoriError.SyntaxError("missing closing quotation marks for string literal", line);
+            throw KaoriError.SyntaxError("missing closing quotation marks for string literal", this.line);
         }
 
         current++;
@@ -190,7 +191,7 @@ public class Lexer {
     }
 
     private void start() {
-        while (!this.atEnd()) {
+        while (!this.atEnd(this.index)) {
             char c = this.source.charAt(this.index);
 
             if (Character.isWhitespace(c)) {
