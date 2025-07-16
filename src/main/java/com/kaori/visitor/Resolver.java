@@ -2,10 +2,10 @@ package com.kaori.visitor;
 
 import java.util.List;
 
+import com.kaori.ast.ExpressionAST;
+import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
-import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.StatementAST;
-import com.kaori.visitor.memory.Environment;
+import com.kaori.memory.Environment;
 
 public class Resolver extends Visitor<Resolver.ResolverState> {
     public final Environment<ResolverState> environment;

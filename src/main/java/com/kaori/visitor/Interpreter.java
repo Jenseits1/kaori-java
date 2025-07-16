@@ -2,11 +2,10 @@ package com.kaori.visitor;
 
 import java.util.List;
 
+import com.kaori.ast.ExpressionAST;
+import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
-import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.StatementAST;
-
-import com.kaori.visitor.memory.Environment;
+import com.kaori.memory.Environment;
 
 public class Interpreter extends Visitor<Object> {
     private final Environment<Object> environment;
@@ -114,7 +113,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
-        throw new UnsupportedOperationException("Unimplemented method 'visitFunctionCall'");
+        return null;
     }
 
     @Override

@@ -3,6 +3,9 @@ package com.kaori.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kaori.ast.ExpressionAST;
+import com.kaori.ast.StatementAST;
+import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
 import com.kaori.token.TokenKind;
 import com.kaori.token.TokenStream;
@@ -324,7 +327,8 @@ public class Parser {
     private TypeAST type() {
         TypeAST type = switch (this.tokens.getCurrent()) {
             case IDENTIFIER -> this.primitiveType();
-            default -> throw KaoriError.SyntaxError("expected valid type", this.tokens.getLine());
+            default ->
+                throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());
         };
 
         return type;
@@ -339,7 +343,8 @@ public class Parser {
             case "bool" -> TypeAST.Primitive.BOOLEAN;
             case "f64" -> TypeAST.Primitive.NUMBER;
             case "void" -> TypeAST.Primitive.VOID;
-            default -> throw KaoriError.SyntaxError("expected primitive types", this.tokens.getLine());
+            default ->
+                throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());
         };
 
         return type;
@@ -485,7 +490,8 @@ public class Parser {
         }
 
         this.tokens.consume(TokenKind.RIGHT_PAREN);
-        this.tokens.consume(TokenKind.COLON);
+
+        this.tokens.consume(TokenKind.THIN_ARROW);
 
         TypeAST returnType = this.type();
 

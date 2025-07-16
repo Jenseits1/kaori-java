@@ -155,15 +155,8 @@ public class Lexer {
     private void scanSymbol() {
         TokenKind kind = switch (this.source.charAt(this.index)) {
             case '+' -> this.lookAhead("++", this.index) ? TokenKind.INCREMENT : TokenKind.PLUS;
-            case '-' -> {
-                if (this.lookAhead("--", this.index)) {
-                    yield TokenKind.DECREMENT;
-                } else if (this.lookAhead("->", this.index)) {
-                    yield TokenKind.THIN_ARROW;
-                } else {
-                    yield TokenKind.MINUS;
-                }
-            }
+            case '-' -> this.lookAhead("--", this.index) ? TokenKind.DECREMENT
+                    : this.lookAhead("->", this.index) ? TokenKind.THIN_ARROW : TokenKind.MINUS;
             case '&' -> this.lookAhead("&&", this.index) ? TokenKind.AND : TokenKind.INVALID;
             case '|' -> this.lookAhead("||", this.index) ? TokenKind.OR : TokenKind.INVALID;
             case '=' -> this.lookAhead("==", this.index) ? TokenKind.EQUAL : TokenKind.ASSIGN;
@@ -195,7 +188,8 @@ public class Lexer {
                     NOT_EQUAL,
                     EQUAL,
                     GREATER_EQUAL,
-                    LESS_EQUAL ->
+                    LESS_EQUAL,
+                    THIN_ARROW ->
                 2;
             default -> 1;
         };

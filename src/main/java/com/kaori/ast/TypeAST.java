@@ -1,51 +1,34 @@
-package com.kaori.parser;
+package com.kaori.ast;
 
 import java.util.List;
 
-public abstract class TypeAST {
+public interface TypeAST {
     public abstract boolean equals(TypeAST other);
 
-    public static class Primitive extends TypeAST {
-        private final String value;
-        public static final Primitive STRING = new Primitive("string");
-        public static final Primitive NUMBER = new Primitive("number");
-        public static final Primitive BOOLEAN = new Primitive("boolean");
-        public static final Primitive VOID = new Primitive("void");
-
-        private Primitive(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
+    public enum Primitive implements TypeAST {
+        STRING,
+        NUMBER,
+        BOOLEAN,
+        VOID;
 
         @Override
         public boolean equals(TypeAST type) {
             if (type instanceof Primitive other) {
-                return this.value == other.value;
+                return this.equals(other);
             }
 
             return false;
         }
+
     }
 
-    public static class Function extends TypeAST {
-        public final List<TypeAST> parameters;
-        public final TypeAST returnType;
-
-        public Function(List<TypeAST> parameters, TypeAST returnType) {
-            this.parameters = parameters;
-            this.returnType = returnType;
-        }
-
+    public record Function(List<TypeAST> parameters, TypeAST returnType) implements TypeAST {
         @Override
         public String toString() {
             String parameters = String.join(", ",
                     this.parameters.stream().map(parameter -> parameter.toString()).toList());
 
-            return String.format("(%s) => %s", parameters, returnType);
+            return String.format("(%s) -> %s", parameters, returnType);
         }
 
         @Override

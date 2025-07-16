@@ -1,8 +1,8 @@
-package com.kaori.visitor.memory;
+package com.kaori.memory;
 
 import java.util.List;
 
-import com.kaori.parser.StatementAST;
+import com.kaori.ast.StatementAST;
 
 public abstract class KaoriFunction {
 

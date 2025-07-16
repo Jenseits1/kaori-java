@@ -2,11 +2,11 @@ package com.kaori.visitor;
 
 import java.util.List;
 
+import com.kaori.ast.ExpressionAST;
+import com.kaori.ast.StatementAST;
+import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
-import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.TypeAST;
-import com.kaori.visitor.memory.Environment;
-import com.kaori.parser.StatementAST;
+import com.kaori.memory.Environment;
 
 public class TypeChecker extends Visitor<TypeAST> {
     private final Environment<TypeAST> environment;
@@ -147,7 +147,31 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
-        return this.visit(node.callee());
+        TypeAST type = this.visit(node.callee());
+
+        if (!(type instanceof TypeAST.Function func)) {
+            throw KaoriError.TypeError(String.format("invalid %s type is not calleable", type),
+                    this.line);
+        }
+
+        if (node.arguments().size() != func.parameters().size()) {
+            throw KaoriError.TypeError(
+                    String.format("invalid number of arguments passed for function of type %s", func),
+                    this.line);
+        }
+
+        for (int i = 0; i < func.parameters().size(); i++) {
+            TypeAST argument = this.visit(node.arguments().get(i));
+            TypeAST parameter = func.parameters().get(i);
+            if (!argument.equals(parameter)) {
+                throw KaoriError.TypeError(
+                        String.format("invalid argument of type %s for parameter of type %s in function of type %s",
+                                argument, parameter, func),
+                        this.line);
+            }
+        }
+
+        return func.returnType();
     }
 
     @Override

@@ -1,10 +1,10 @@
-package com.kaori.visitor.memory;
+package com.kaori.memory;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import com.kaori.parser.ExpressionAST;
+import com.kaori.ast.ExpressionAST;
 
 public class Environment<T> {
     public final Stack<Map<String, T>> environments;

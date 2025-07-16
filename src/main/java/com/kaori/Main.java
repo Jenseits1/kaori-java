@@ -8,10 +8,10 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 import com.kaori.parser.Parser;
-import com.kaori.parser.StatementAST;
 import com.kaori.token.Token;
 import com.kaori.token.TokenStream;
 import com.kaori.visitor.Interpreter;
@@ -32,6 +32,7 @@ public class Main {
 
             List<Token> tokens = lexer.scan();
 
+            // System.out.println(gson.toJson(tokens));
             TokenStream tokenStream = new TokenStream(tokens, source);
 
             Parser parser = new Parser(tokenStream);

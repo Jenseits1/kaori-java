@@ -1,4 +1,4 @@
-package com.kaori.parser;
+package com.kaori.ast;
 
 import java.util.List;
 

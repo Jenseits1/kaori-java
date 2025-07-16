@@ -2,19 +2,27 @@
 
 def foo(a: f64, b: f64) -> void;
 
-def bar(a: f64): void {
-    foo(a, 10);
+def bar(a: f64) -> void {
+
 }
 
 def foo(a: f64, b: f64) -> void {
     print(a + b);
 }
 
-for i: f64 = 0; i < 10; i++ {
+bar(1)();
 
+/* for i: f64 = 0; i < 10; i++ {
+    print(i);
 }
 
-/* 
+j: f64 = 0;
+
+while j < 5 {
+    print(j);
+    j++;
+}
+
 if a < b {
     print("smaller");
 } else if a > b {
@@ -22,4 +30,4 @@ if a < b {
 } else {
     print("equal");
 }
- */
+  */
