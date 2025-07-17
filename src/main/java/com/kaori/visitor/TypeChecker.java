@@ -49,10 +49,10 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        TypeAST left = this.visit(node.left());
-        TypeAST right = this.visit(node.right());
-        ExpressionAST.Operator operator = node.operator();
+    public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+        TypeAST left = this.visit(expression.left());
+        TypeAST right = this.visit(expression.right());
+        ExpressionAST.Operator operator = expression.operator();
 
         return switch (operator) {
             case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO -> {
@@ -99,9 +99,9 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        TypeAST left = this.visit(node.left());
-        ExpressionAST.Operator operator = node.operator();
+    public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+        TypeAST left = this.visit(expression.left());
+        ExpressionAST.Operator operator = expression.operator();
 
         return switch (operator) {
             case MINUS -> {
@@ -125,10 +125,10 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    public TypeAST visitAssign(ExpressionAST.Assign node) {
-        ExpressionAST.Identifier identifier = node.left();
+    public TypeAST visitAssign(ExpressionAST.Assign expression) {
+        ExpressionAST.Identifier identifier = expression.left();
 
-        TypeAST right = this.visit(node.right());
+        TypeAST right = this.visit(expression.right());
 
         this.define(identifier, right);
 
@@ -136,27 +136,27 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    public TypeAST visitLiteral(ExpressionAST.Literal node) {
-        return node.type();
+    public TypeAST visitLiteral(ExpressionAST.Literal expression) {
+        return expression.type();
     }
 
     @Override
-    public TypeAST visitIdentifier(ExpressionAST.Identifier node) {
-        return this.get(node);
+    public TypeAST visitIdentifier(ExpressionAST.Identifier expression) {
+        return this.get(expression);
     }
 
     @Override
-    public TypeAST visitFunctionCall(ExpressionAST.FunctionCall node) {
-        TypeAST type = this.visit(node.callee());
+    public TypeAST visitFunctionCall(ExpressionAST.FunctionCall expression) {
+        TypeAST type = this.visit(expression.callee());
 
         if (!(type instanceof TypeAST.Function func)) {
             throw KaoriError.TypeError(String.format("invalid %s type is not a function", type),
                     this.line);
         }
-        int smallest = Math.min(func.parameters().size(), node.arguments().size());
+        int smallest = Math.min(func.parameters().size(), expression.arguments().size());
 
         for (int i = 0; i < smallest; i++) {
-            TypeAST argument = this.visit(node.arguments().get(i));
+            TypeAST argument = this.visit(expression.arguments().get(i));
             TypeAST parameter = func.parameters().get(i);
 
             if (!argument.equals(parameter)) {

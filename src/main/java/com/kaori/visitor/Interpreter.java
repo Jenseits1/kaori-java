@@ -41,10 +41,10 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        Object left = this.visit(node.left());
-        Object right = this.visit(node.right());
-        ExpressionAST.Operator operator = node.operator();
+    public Object visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+        Object left = this.visit(expression.left());
+        Object right = this.visit(expression.right());
+        ExpressionAST.Operator operator = expression.operator();
 
         return switch (operator) {
             case PLUS -> (Double) left + (Double) right;
@@ -82,9 +82,9 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        Object left = this.visit(node.left());
-        ExpressionAST.Operator operator = node.operator();
+    public Object visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+        Object left = this.visit(expression.left());
+        ExpressionAST.Operator operator = expression.operator();
 
         return switch (operator) {
             case MINUS -> -(Double) left;
@@ -94,27 +94,27 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitAssign(ExpressionAST.Assign node) {
-        Object value = this.visit(node.right());
+    public Object visitAssign(ExpressionAST.Assign expression) {
+        Object value = this.visit(expression.right());
 
-        this.define(node.left(), value);
+        this.define(expression.left(), value);
 
         return value;
     }
 
     @Override
-    public Object visitLiteral(ExpressionAST.Literal node) {
-        return node.value();
+    public Object visitLiteral(ExpressionAST.Literal expression) {
+        return expression.value();
     }
 
     @Override
-    public Object visitIdentifier(ExpressionAST.Identifier node) {
-        return this.get(node);
+    public Object visitIdentifier(ExpressionAST.Identifier expression) {
+        return this.get(expression);
     }
 
     @Override
-    public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
-        FunctionObject func = (FunctionObject) this.visit(node.callee());
+    public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
+        FunctionObject func = (FunctionObject) this.visit(expression.callee());
 
         if (func == null) {
             throw KaoriError.RuntimeError(func + " is not defined", this.line);
@@ -124,11 +124,11 @@ public class Interpreter extends Visitor<Object> {
             this.visit(parameter);
         }
 
-        int smallest = Math.min(node.arguments().size(), func.parameters().size());
+        int smallest = Math.min(expression.arguments().size(), func.parameters().size());
 
         for (int i = 0; i < smallest; i++) {
             ExpressionAST.Identifier left = func.parameters().get(i).left();
-            Object right = this.visit(node.arguments().get(i));
+            Object right = this.visit(expression.arguments().get(i));
 
             this.define(left, right);
         }

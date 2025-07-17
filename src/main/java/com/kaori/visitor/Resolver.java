@@ -58,25 +58,25 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     }
 
     @Override
-    public ResolverState visitBinaryOperator(ExpressionAST.BinaryOperator node) {
-        this.visit(node.left());
-        this.visit(node.right());
+    public ResolverState visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+        this.visit(expression.left());
+        this.visit(expression.right());
 
         return ResolverState.DEFINED;
     }
 
     @Override
-    public ResolverState visitUnaryOperator(ExpressionAST.UnaryOperator node) {
-        this.visit(node.left());
+    public ResolverState visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+        this.visit(expression.left());
 
         return ResolverState.DEFINED;
     }
 
     @Override
-    public ResolverState visitAssign(ExpressionAST.Assign node) {
-        ExpressionAST.Identifier identifier = node.left();
+    public ResolverState visitAssign(ExpressionAST.Assign expression) {
+        ExpressionAST.Identifier identifier = expression.left();
 
-        this.visit(node.right());
+        this.visit(expression.right());
 
         this.define(identifier, ResolverState.DEFINED);
 
@@ -84,8 +84,8 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     }
 
     @Override
-    public ResolverState visitLiteral(ExpressionAST.Literal node) {
-        if (node.value() == null) {
+    public ResolverState visitLiteral(ExpressionAST.Literal expression) {
+        if (expression.value() == null) {
             return ResolverState.DECLARED;
         }
 
@@ -93,15 +93,15 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     }
 
     @Override
-    public ResolverState visitIdentifier(ExpressionAST.Identifier node) {
-        return this.get(node);
+    public ResolverState visitIdentifier(ExpressionAST.Identifier expression) {
+        return this.get(expression);
     }
 
     @Override
-    public ResolverState visitFunctionCall(ExpressionAST.FunctionCall node) {
-        this.visit(node.callee());
+    public ResolverState visitFunctionCall(ExpressionAST.FunctionCall expression) {
+        this.visit(expression.callee());
 
-        for (ExpressionAST argument : node.arguments()) {
+        for (ExpressionAST argument : expression.arguments()) {
             this.visit(argument);
         }
 

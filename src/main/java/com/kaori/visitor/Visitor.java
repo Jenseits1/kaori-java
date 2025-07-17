@@ -90,17 +90,17 @@ public abstract class Visitor<T> {
     protected abstract T get(ExpressionAST.Identifier identifier);
 
     // Expressions
-    public abstract T visitBinaryOperator(ExpressionAST.BinaryOperator node);
+    public abstract T visitBinaryOperator(ExpressionAST.BinaryOperator expression);
 
-    public abstract T visitUnaryOperator(ExpressionAST.UnaryOperator node);
+    public abstract T visitUnaryOperator(ExpressionAST.UnaryOperator expression);
 
-    public abstract T visitAssign(ExpressionAST.Assign node);
+    public abstract T visitAssign(ExpressionAST.Assign expression);
 
-    public abstract T visitLiteral(ExpressionAST.Literal node);
+    public abstract T visitLiteral(ExpressionAST.Literal expression);
 
-    public abstract T visitIdentifier(ExpressionAST.Identifier node);
+    public abstract T visitIdentifier(ExpressionAST.Identifier expression);
 
-    public abstract T visitFunctionCall(ExpressionAST.FunctionCall node);
+    public abstract T visitFunctionCall(ExpressionAST.FunctionCall expression);
 
     // Statements
     public abstract void visitExpressionStatement(StatementAST.Expr statement);
