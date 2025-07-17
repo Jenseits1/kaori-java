@@ -120,6 +120,21 @@ public class Interpreter extends Visitor<Object> {
             throw KaoriError.RuntimeError(func + " is not defined", this.line);
         }
 
+        for (StatementAST.Variable parameter : func.parameters()) {
+            this.visit(parameter);
+        }
+
+        int smallest = Math.min(node.arguments().size(), func.parameters().size());
+
+        for (int i = 0; i < smallest; i++) {
+            ExpressionAST.Identifier left = func.parameters().get(i).left();
+            Object right = this.visit(node.arguments().get(i));
+
+            this.define(left, right);
+        }
+
+        this.visitStatements(func.statements());
+
         return null;
     }
 

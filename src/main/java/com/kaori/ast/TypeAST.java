@@ -48,12 +48,16 @@ public interface TypeAST {
                 return false;
             }
 
-            if (!this.returnType.equals(other.returnType) || this.parameters.size() != other.parameters.size()) {
+            if (!this.returnType.equals(other.returnType)) {
+                return false;
+            }
+
+            if (this.parameters.size() != other.parameters.size()) {
                 return false;
             }
 
             for (int i = 0; i < this.parameters.size(); i++) {
-                if (this.parameters.get(i).equals(other.parameters.get(i))) {
+                if (!this.parameters.get(i).equals(other.parameters.get(i))) {
                     return false;
                 }
             }

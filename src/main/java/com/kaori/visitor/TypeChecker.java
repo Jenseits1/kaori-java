@@ -153,14 +153,9 @@ public class TypeChecker extends Visitor<TypeAST> {
             throw KaoriError.TypeError(String.format("invalid %s type is not a function", type),
                     this.line);
         }
+        int smallest = Math.min(func.parameters().size(), node.arguments().size());
 
-        if (node.arguments().size() != func.parameters().size()) {
-            throw KaoriError.TypeError(
-                    String.format("invalid number of arguments passed for function of type %s", func),
-                    this.line);
-        }
-
-        for (int i = 0; i < func.parameters().size(); i++) {
+        for (int i = 0; i < smallest; i++) {
             TypeAST argument = this.visit(node.arguments().get(i));
             TypeAST parameter = func.parameters().get(i);
 

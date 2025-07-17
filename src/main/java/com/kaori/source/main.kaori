@@ -1,21 +1,18 @@
 
 
-def foo(a: f64, b: f64) -> void;
 
-def bar(a: f64) -> void {
 
-}
 
-def foo(a: f64, b: f64) -> void {
+
+def foo(a: f64, b: f64 = 9) -> void {
     print(a + b);
+
+
 }
 
-bar(5);
+foo(1);
 
-bool: f64 = 5;
-f: f64 = bool;
 
-print(f);
 /* for i: f64 = 0; i < 10; i++ {
     print(i);
 }
