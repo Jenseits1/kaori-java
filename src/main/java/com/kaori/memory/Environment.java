@@ -1,50 +1,35 @@
 package com.kaori.memory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
-import com.kaori.ast.ExpressionAST;
+import com.kaori.error.KaoriError;
 
 public class Environment<T> {
     public final Stack<Declaration<T>> declarations;
 
-    private static class Declaration<T> {
-        public final String identifier;
-        public T value;
-
-        public Declaration(String identifier, T value) {
-            this.identifier = identifier;
-            this.value = value;
-        }
-    }
-
     public Environment() {
-        this.environments = new Stack<>();
-        Map<String, T> environment = new HashMap<>();
-        this.environments.push(environment);
+        this.declarations = new Stack<>();
     }
 
-    public T get(ExpressionAST.Identifier identifier, int distance) {
-        int current = this.environments.size() - 1;
-        Map<String, T> environment = environments.get(current - distance);
+    public T get(int reference) {
+        Declaration<T> declaration = declarations.get(reference);
 
-        return environment.get(identifier.name());
+        return declaration.value;
     }
 
-    public void put(ExpressionAST.Identifier identifier, T value) {
-        Map<String, T> environment = environments.peek();
-        environment.put(identifier.name(), value);
+    public void update(T value, int reference) {
+        Declaration<T> declaration = declarations.get(reference);
+
+        declaration.value = value;
     }
 
-    public void put(ExpressionAST.Identifier identifier, T value, int distance) {
-        int current = this.environments.size() - 1;
-        Map<String, T> environment = environments.get(current - distance);
+    public void add(String identifier, T value) {
+        Declaration<T> declaration = new Declaration<>(identifier, value);
 
-        environment.put(identifier.name(), value);
+        this.declarations.add(declaration);
     }
 
-    public int reference(String identifier) {
+    public int getReference(String identifier, int line) {
         for (int i = declarations.size() - 1; i >= 0; i--) {
             Declaration<T> declaration = declarations.get(i);
 
@@ -53,15 +38,14 @@ public class Environment<T> {
             }
         }
 
-        return -1;
+        throw KaoriError.ResolveError(identifier + " is not declared", line);
     }
 
     public void enterScope() {
-        Map<String, T> environment = new HashMap<>();
-        this.environments.add(environment);
+
     }
 
     public void exitScope() {
-        this.environments.pop();
+
     }
 }

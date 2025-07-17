@@ -7,8 +7,8 @@ import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
 import com.kaori.memory.Environment;
 
-public class Resolver extends Visitor<Resolver.ResolverState> {
-    public final Environment<ResolverState> environment;
+public class Resolver extends Visitor<Object> {
+    public final Environment<Object> environment;
 
     public Resolver(List<StatementAST> statements) {
         super(statements);
@@ -16,96 +16,66 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         this.environment = new Environment<>();
     }
 
-    public static enum ResolverState {
-        UNDECLARED,
-        DECLARED,
-        DEFINED
+    @Override
+    protected void declare(ExpressionAST.Identifier identifier, Object value) {
+
     }
 
     @Override
-    protected void declare(ExpressionAST.Identifier identifier, ResolverState value) {
-        int distance = this.environment.distance(identifier);
+    protected void define(ExpressionAST.Identifier identifier, Object value) {
 
-        if (distance == 0) {
-            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-        }
-
-        this.environment.put(identifier, value);
     }
 
     @Override
-    protected void define(ExpressionAST.Identifier identifier, ResolverState value) {
-        int distance = this.environment.distance(identifier);
+    protected Object get(ExpressionAST.Identifier identifier) {
+        int reference = this.environment.getReference(identifier.name(), this.line);
 
-        if (distance < 0) {
-            throw KaoriError.ResolveError(identifier.name() + " is not declared", this.line);
-        }
-
-        this.environment.put(identifier, value, distance);
+        return reference;
     }
 
     @Override
-    protected ResolverState get(ExpressionAST.Identifier identifier) {
-        int distance = this.environment.distance(identifier);
-
-        if (distance < 0) {
-            throw KaoriError.ResolveError(identifier.name() + " is not declared", this.line);
-        }
-
-        ResolverState state = this.environment.get(identifier, distance);
-
-        return state;
-    }
-
-    @Override
-    public ResolverState visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+    public Object visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
         this.visit(expression.left());
         this.visit(expression.right());
 
-        return ResolverState.DEFINED;
+        return null;
     }
 
     @Override
-    public ResolverState visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+    public Object visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
         this.visit(expression.left());
 
-        return ResolverState.DEFINED;
+        return null;
     }
 
     @Override
-    public ResolverState visitAssign(ExpressionAST.Assign expression) {
-        ExpressionAST.Identifier identifier = expression.left();
+    public Object visitAssign(ExpressionAST.Assign expression) {
+        this.visit((ExpressionAST) expression.left());
 
         this.visit(expression.right());
 
-        this.define(identifier, ResolverState.DEFINED);
-
-        return ResolverState.DEFINED;
+        return null;
     }
 
     @Override
-    public ResolverState visitLiteral(ExpressionAST.Literal expression) {
-        if (expression.value() == null) {
-            return ResolverState.DECLARED;
-        }
-
-        return ResolverState.DEFINED;
+    public Object visitLiteral(ExpressionAST.Literal expression) {
+        return null;
     }
 
     @Override
-    public ResolverState visitIdentifier(ExpressionAST.Identifier expression) {
+    public Object visitIdentifier(ExpressionAST.Identifier expression) {
         return this.get(expression);
     }
 
     @Override
-    public ResolverState visitFunctionCall(ExpressionAST.FunctionCall expression) {
+    public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
         this.visit(expression.callee());
 
         for (ExpressionAST argument : expression.arguments()) {
             this.visit(argument);
         }
 
-        return ResolverState.DEFINED;
+        return null;
     }
 
     @Override
@@ -124,9 +94,10 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public void visitVariableStatement(StatementAST.Variable statement) {
         ExpressionAST.Identifier identifier = statement.left();
 
-        this.declare(identifier, ResolverState.DECLARED);
-        ResolverState right = this.visit(statement.right());
-        this.define(identifier, right);
+        this.visit(statement.right());
+
+        this.declare(identifier, null);
+
     }
 
     @Override
@@ -159,14 +130,6 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public void visitFunctionStatement(StatementAST.Function statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        int distance = this.environment.distance(identifier);
-
-        if (distance != 0) {
-            this.declare(identifier, ResolverState.DECLARED);
-        }
-
-        this.define(identifier, ResolverState.DEFINED);
-
         this.environment.enterScope();
 
         for (StatementAST.Variable parameter : statement.parameters()) {
@@ -184,6 +147,6 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
     public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        this.declare(identifier, ResolverState.DECLARED);
+        this.declare(identifier, Object.DECLARED);
     }
 }

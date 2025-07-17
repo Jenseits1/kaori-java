@@ -42,8 +42,8 @@ public class Main {
             List<Visitor<?>> visitors = new ArrayList<>();
 
             visitors.add(new Resolver(ast));
-            visitors.add(new TypeChecker(ast));
-            visitors.add(new Interpreter(ast));
+            // visitors.add(new TypeChecker(ast));
+            // visitors.add(new Interpreter(ast));
 
             for (Visitor<?> visitor : visitors) {
                 visitor.run();
