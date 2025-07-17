@@ -19,26 +19,26 @@ public class Environment<T> {
         int current = this.environments.size() - 1;
         Map<String, T> environment = environments.get(current - distance);
 
-        return environment.get(identifier.value());
+        return environment.get(identifier.name());
     }
 
     public void put(ExpressionAST.Identifier identifier, T value) {
         Map<String, T> environment = environments.peek();
-        environment.put(identifier.value(), value);
+        environment.put(identifier.name(), value);
     }
 
     public void put(ExpressionAST.Identifier identifier, T value, int distance) {
         int current = this.environments.size() - 1;
         Map<String, T> environment = environments.get(current - distance);
 
-        environment.put(identifier.value(), value);
+        environment.put(identifier.name(), value);
     }
 
     public int distance(ExpressionAST.Identifier identifier) {
         for (int i = environments.size() - 1; i >= 0; i--) {
             Map<String, T> environment = environments.get(i);
 
-            if (environment.containsKey(identifier.value())) {
+            if (environment.containsKey(identifier.name())) {
                 return this.environments.size() - 1 - i;
             }
         }

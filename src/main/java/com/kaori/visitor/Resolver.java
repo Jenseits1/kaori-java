@@ -27,7 +27,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         int distance = this.environment.distance(identifier);
 
         if (distance == 0) {
-            throw KaoriError.ResolveError(identifier.value() + " is already declared", this.line);
+            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
 
         this.environment.put(identifier, value);
@@ -38,7 +38,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         int distance = this.environment.distance(identifier);
 
         if (distance < 0) {
-            throw KaoriError.ResolveError(identifier.value() + " is not declared", this.line);
+            throw KaoriError.ResolveError(identifier.name() + " is not declared", this.line);
         }
 
         this.environment.put(identifier, value, distance);
@@ -49,7 +49,7 @@ public class Resolver extends Visitor<Resolver.ResolverState> {
         int distance = this.environment.distance(identifier);
 
         if (distance < 0) {
-            throw KaoriError.ResolveError(identifier.value() + " is not declared", this.line);
+            throw KaoriError.ResolveError(identifier.name() + " is not declared", this.line);
         }
 
         ResolverState state = this.environment.get(identifier, distance);

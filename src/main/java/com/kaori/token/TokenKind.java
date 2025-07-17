@@ -61,7 +61,7 @@ public enum TokenKind {
     // End of File
     EOF("end of file");
 
-    public final String label;
+    private final String label;
 
     private TokenKind(String label) {
         this.label = label;

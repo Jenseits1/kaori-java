@@ -105,8 +105,8 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         return switch (operator) {
             case MINUS -> {
-                if (left.equals(TypeAST.Primitive.BOOLEAN)) {
-                    yield TypeAST.Primitive.BOOLEAN;
+                if (left.equals(TypeAST.Primitive.NUMBER)) {
+                    yield TypeAST.Primitive.NUMBER;
                 }
 
                 throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
@@ -150,7 +150,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST type = this.visit(node.callee());
 
         if (!(type instanceof TypeAST.Function func)) {
-            throw KaoriError.TypeError(String.format("invalid %s type is not calleable", type),
+            throw KaoriError.TypeError(String.format("invalid %s type is not a function", type),
                     this.line);
         }
 
@@ -163,10 +163,10 @@ public class TypeChecker extends Visitor<TypeAST> {
         for (int i = 0; i < func.parameters().size(); i++) {
             TypeAST argument = this.visit(node.arguments().get(i));
             TypeAST parameter = func.parameters().get(i);
+
             if (!argument.equals(parameter)) {
                 throw KaoriError.TypeError(
-                        String.format("invalid argument of type %s for parameter of type %s in function of type %s",
-                                argument, parameter, func),
+                        String.format("invalid argument of type %s for parameter of type %s", argument, parameter),
                         this.line);
             }
         }

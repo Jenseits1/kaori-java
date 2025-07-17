@@ -6,15 +6,26 @@ public interface TypeAST {
     public abstract boolean equals(TypeAST other);
 
     public enum Primitive implements TypeAST {
-        STRING,
-        NUMBER,
-        BOOLEAN,
-        VOID;
+        STRING("string"),
+        NUMBER("number"),
+        BOOLEAN("boolean"),
+        VOID("void");
+
+        private final String label;
+
+        private Primitive(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return this.label;
+        }
 
         @Override
         public boolean equals(TypeAST type) {
             if (type instanceof Primitive other) {
-                return this.equals(other);
+                return this == other;
             }
 
             return false;
@@ -37,19 +48,12 @@ public interface TypeAST {
                 return false;
             }
 
-            if (!this.returnType.equals(other.returnType)) {
-                return false;
-            }
-
-            if (this.parameters.size() != other.parameters.size()) {
+            if (!this.returnType.equals(other.returnType) || this.parameters.size() != other.parameters.size()) {
                 return false;
             }
 
             for (int i = 0; i < this.parameters.size(); i++) {
-                TypeAST leftParameter = this.parameters.get(i);
-                TypeAST rightParameter = other.parameters.get(i);
-
-                if (!leftParameter.equals(rightParameter)) {
+                if (this.parameters.get(i).equals(other.parameters.get(i))) {
                     return false;
                 }
             }
@@ -57,4 +61,5 @@ public interface TypeAST {
             return true;
         }
     }
+
 }

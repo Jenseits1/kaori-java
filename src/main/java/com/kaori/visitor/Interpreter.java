@@ -6,6 +6,7 @@ import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
 import com.kaori.memory.Environment;
+import com.kaori.memory.FunctionObject;
 
 public class Interpreter extends Visitor<Object> {
     private final Environment<Object> environment;
@@ -33,7 +34,7 @@ public class Interpreter extends Visitor<Object> {
         Object value = this.environment.get(identifier, distance);
 
         if (value == null) {
-            throw KaoriError.RuntimeError(identifier.value() + " is not defined", this.line);
+            throw KaoriError.RuntimeError(identifier.name() + " is not defined", this.line);
         }
 
         return value;
@@ -113,12 +114,19 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitFunctionCall(ExpressionAST.FunctionCall node) {
+        FunctionObject func = (FunctionObject) this.visit(node.callee());
+
+        if (func == null) {
+            throw KaoriError.RuntimeError(func + " is not defined", this.line);
+        }
+
         return null;
     }
 
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
         Object expression = this.visit(statement.expression());
+
         System.out.println(expression);
     }
 
@@ -180,11 +188,16 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
+        this.declare(statement.name(), null);
+
+        FunctionObject func = new FunctionObject(statement.parameters(), statement.block().statements());
+
+        this.define(statement.name(), func);
 
     }
 
     @Override
     public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
-
+        this.declare(statement.name(), null);
     }
 }

@@ -10,8 +10,12 @@ def foo(a: f64, b: f64) -> void {
     print(a + b);
 }
 
-bar(1)();
+bar(5);
 
+bool: f64 = 5;
+f: f64 = bool;
+
+print(f);
 /* for i: f64 = 0; i < 10; i++ {
     print(i);
 }

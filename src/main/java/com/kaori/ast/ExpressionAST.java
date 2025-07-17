@@ -42,7 +42,7 @@ public interface ExpressionAST {
     record Literal(TypeAST type, Object value) implements ExpressionAST {
     }
 
-    record Identifier(String value) implements ExpressionAST {
+    record Identifier(String name) implements ExpressionAST {
     }
 
     record FunctionCall(ExpressionAST callee, List<ExpressionAST> arguments) implements ExpressionAST {
