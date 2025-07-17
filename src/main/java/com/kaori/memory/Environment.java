@@ -7,7 +7,17 @@ import java.util.Stack;
 import com.kaori.ast.ExpressionAST;
 
 public class Environment<T> {
-    public final Stack<Map<String, T>> environments;
+    public final Stack<Declaration<T>> environments;
+
+    private static class Declaration<T> {
+        public final String name;
+        public T value;
+
+        public Declaration(String identifier, T value) {
+            this.identifier = name;
+            this.value = value;
+        }
+    }
 
     public Environment() {
         this.environments = new Stack<>();
@@ -34,7 +44,7 @@ public class Environment<T> {
         environment.put(identifier.name(), value);
     }
 
-    public int distance(ExpressionAST.Identifier identifier) {
+    public int distance(String identifier) {
         for (int i = environments.size() - 1; i >= 0; i--) {
             Map<String, T> environment = environments.get(i);
 
