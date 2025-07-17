@@ -7,14 +7,14 @@ import java.util.Stack;
 import com.kaori.ast.ExpressionAST;
 
 public class Environment<T> {
-    public final Stack<Declaration<T>> environments;
+    public final Stack<Declaration<T>> declarations;
 
     private static class Declaration<T> {
-        public final String name;
+        public final String identifier;
         public T value;
 
         public Declaration(String identifier, T value) {
-            this.identifier = name;
+            this.identifier = identifier;
             this.value = value;
         }
     }
@@ -44,12 +44,12 @@ public class Environment<T> {
         environment.put(identifier.name(), value);
     }
 
-    public int distance(String identifier) {
-        for (int i = environments.size() - 1; i >= 0; i--) {
-            Map<String, T> environment = environments.get(i);
+    public int reference(String identifier) {
+        for (int i = declarations.size() - 1; i >= 0; i--) {
+            Declaration<T> declaration = declarations.get(i);
 
-            if (environment.containsKey(identifier.name())) {
-                return this.environments.size() - 1 - i;
+            if (declaration.identifier == identifier) {
+                return i;
             }
         }
 
