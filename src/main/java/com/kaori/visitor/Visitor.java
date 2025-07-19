@@ -51,10 +51,10 @@ public abstract class Visitor<T> {
     }
 
     protected T visit(ExpressionAST expression) {
-        if (expression instanceof ExpressionAST.BinaryOperator expr) {
+        if (expression instanceof ExpressionAST.BinaryExpression expr) {
             return this.visitBinaryOperator(expr);
         }
-        if (expression instanceof ExpressionAST.UnaryOperator expr) {
+        if (expression instanceof ExpressionAST.UnaryExpression expr) {
             return this.visitUnaryOperator(expr);
         }
         if (expression instanceof ExpressionAST.Assign expr) {
@@ -81,9 +81,9 @@ public abstract class Visitor<T> {
     }
 
     // Expressions
-    public abstract T visitBinaryOperator(ExpressionAST.BinaryOperator expression);
+    public abstract T visitBinaryExpression(ExpressionAST.BinaryExpression expression);
 
-    public abstract T visitUnaryOperator(ExpressionAST.UnaryOperator expression);
+    public abstract T visitUnaryExpression(ExpressionAST.UnaryExpression expression);
 
     public abstract T visitAssign(ExpressionAST.Assign expression);
 

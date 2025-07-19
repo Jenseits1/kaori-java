@@ -3,7 +3,7 @@ package com.kaori.ast;
 import java.util.List;
 
 public interface ExpressionAST {
-    public static enum Operator implements ExpressionAST {
+    public static enum BinaryOperator implements ExpressionAST {
         PLUS("+"),
         MINUS("-"),
         MULTIPLY("*"),
@@ -11,7 +11,6 @@ public interface ExpressionAST {
         MODULO("%"),
         AND("&&"),
         OR("||"),
-        NOT("!"),
         NOT_EQUAL("!="),
         EQUAL("=="),
         GREATER(">"),
@@ -21,7 +20,7 @@ public interface ExpressionAST {
 
         public final String label;
 
-        private Operator(String label) {
+        private BinaryOperator(String label) {
             this.label = label;
         }
 
@@ -30,10 +29,25 @@ public interface ExpressionAST {
         }
     }
 
-    record BinaryOperator(ExpressionAST left, ExpressionAST right, Operator operator) implements ExpressionAST {
+    public static enum UnaryOperator implements ExpressionAST {
+        MINUS("-"),
+        NOT("!");
+
+        public final String label;
+
+        private UnaryOperator(String label) {
+            this.label = label;
+        }
+
+        public String toString() {
+            return this.label;
+        }
     }
 
-    record UnaryOperator(ExpressionAST left, Operator operator) implements ExpressionAST {
+    record BinaryExpression(ExpressionAST left, ExpressionAST right, BinaryOperator operator) implements ExpressionAST {
+    }
+
+    record UnaryExpression(ExpressionAST left, UnaryOperator operator) implements ExpressionAST {
     }
 
     record Assign(ExpressionAST.Identifier left, ExpressionAST right) implements ExpressionAST {

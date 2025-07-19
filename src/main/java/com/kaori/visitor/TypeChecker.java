@@ -17,10 +17,10 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+    public TypeAST visitBinaryExpression(ExpressionAST.BinaryExpression expression) {
         TypeAST left = this.visit(expression.left());
         TypeAST right = this.visit(expression.right());
-        ExpressionAST.Operator operator = expression.operator();
+        ExpressionAST.BinaryOperator operator = expression.operator();
 
         return switch (operator) {
             case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO -> {
@@ -62,14 +62,13 @@ public class TypeChecker extends Visitor<TypeAST> {
                         String.format("invalid %s operation between %s and %s", operator, left, right),
                         this.line);
             }
-            default -> null;
         };
     }
 
     @Override
-    public TypeAST visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+    public TypeAST visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
         TypeAST left = this.visit(expression.left());
-        ExpressionAST.Operator operator = expression.operator();
+        ExpressionAST.UnaryOperator operator = expression.operator();
 
         return switch (operator) {
             case MINUS -> {
@@ -88,7 +87,6 @@ public class TypeChecker extends Visitor<TypeAST> {
                 throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
                         this.line);
             }
-            default -> null;
         };
     }
 

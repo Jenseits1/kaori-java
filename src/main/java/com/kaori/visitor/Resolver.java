@@ -22,8 +22,12 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         DEFINED
     }
 
+    private ResolutionStatus getStatus(int reference) {
+        return reference < 0 ? ResolutionStatus.UNDECLARED : this.environment.get(reference);
+    }
+
     @Override
-    public ResolutionStatus visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+    public ResolutionStatus visitBinaryExpression(ExpressionAST.BinaryExpression expression) {
         this.visit(expression.left());
         this.visit(expression.right());
 
@@ -31,7 +35,7 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
     }
 
     @Override
-    public ResolutionStatus visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+    public ResolutionStatus visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
         this.visit(expression.left());
 
         return ResolutionStatus.DEFINED;
@@ -53,7 +57,7 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
     @Override
     public ResolutionStatus visitIdentifier(ExpressionAST.Identifier expression) {
         int reference = this.environment.search(expression.name());
-        ResolutionStatus status = reference < 0 ? ResolutionStatus.UNDECLARED : this.environment.get(reference);
+        ResolutionStatus status = this.getStatus(reference);
 
         if (status == ResolutionStatus.UNDECLARED) {
             throw KaoriError.ResolveError(expression.name() + " is not declared", this.line);
@@ -93,13 +97,13 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         this.visit(statement.right());
 
         int reference = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = reference < 0 ? ResolutionStatus.UNDECLARED : this.environment.get(reference);
+        ResolutionStatus status = this.getStatus(reference);
 
-        if (status == ResolutionStatus.DECLARED || status == ResolutionStatus.DEFINED) {
-            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
+        switch (status) {
+            case DECLARED, DEFINED ->
+                throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
+            case UNDECLARED -> this.environment.declare(identifier.name(), ResolutionStatus.DECLARED);
         }
-
-        this.environment.declare(identifier.name(), ResolutionStatus.DECLARED);
 
         this.visit(identifier);
     }
@@ -135,15 +139,16 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         ExpressionAST.Identifier identifier = statement.name();
 
         int reference = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = reference < 0 ? ResolutionStatus.UNDECLARED : this.environment.get(reference);
+        ResolutionStatus status = this.getStatus(reference);
 
-        if (status == ResolutionStatus.UNDECLARED) {
-            this.environment.declare(identifier.name(), ResolutionStatus.DECLARED);
-            reference = this.environment.searchInner(identifier.name());
-        } else if (status == ResolutionStatus.DEFINED) {
-            throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
-        } else if (status == ResolutionStatus.DECLARED && statement.block() == null) {
-            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
+        switch (status) {
+            case UNDECLARED -> this.environment.declare(identifier.name(), ResolutionStatus.DECLARED);
+            case DEFINED -> throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
+            case DECLARED -> {
+                if (statement.block() == null) {
+                    throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
+                }
+            }
         }
 
         this.visit(identifier);
@@ -151,6 +156,8 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         if (statement.block() == null) {
             return;
         }
+
+        reference = this.environment.searchInner(identifier.name());
 
         this.environment.define(identifier.name(), ResolutionStatus.DEFINED, reference);
 

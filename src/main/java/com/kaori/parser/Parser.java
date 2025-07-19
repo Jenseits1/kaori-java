@@ -49,14 +49,15 @@ public class Parser {
         return switch (this.tokens.getCurrent()) {
             case INCREMENT -> {
                 ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
-                ExpressionAST add = new ExpressionAST.BinaryOperator(identifier, literal, ExpressionAST.Operator.PLUS);
+                ExpressionAST add = new ExpressionAST.BinaryExpression(identifier, literal,
+                        ExpressionAST.BinaryOperator.PLUS);
                 this.tokens.consume();
                 yield new ExpressionAST.Assign(identifier, add);
             }
             case DECREMENT -> {
                 ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
-                ExpressionAST subtract = new ExpressionAST.BinaryOperator(identifier, literal,
-                        ExpressionAST.Operator.MINUS);
+                ExpressionAST subtract = new ExpressionAST.BinaryExpression(identifier, literal,
+                        ExpressionAST.BinaryOperator.MINUS);
                 this.tokens.consume();
                 yield new ExpressionAST.Assign(identifier, subtract);
             }
@@ -131,11 +132,11 @@ public class Parser {
         return switch (this.tokens.getCurrent()) {
             case MINUS -> {
                 this.tokens.consume();
-                yield new ExpressionAST.UnaryOperator(this.prefixUnary(), ExpressionAST.Operator.MINUS);
+                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.MINUS);
             }
             case NOT -> {
                 this.tokens.consume();
-                yield new ExpressionAST.UnaryOperator(this.prefixUnary(), ExpressionAST.Operator.NOT);
+                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.NOT);
             }
             case PLUS -> {
                 this.tokens.consume();
@@ -156,17 +157,17 @@ public class Parser {
                 case MULTIPLY -> {
                     this.tokens.consume();
                     ExpressionAST right = this.prefixUnary();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.MULTIPLY);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MULTIPLY);
                 }
                 case DIVIDE -> {
                     this.tokens.consume();
                     ExpressionAST right = this.prefixUnary();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.DIVIDE);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.DIVIDE);
                 }
                 case MODULO -> {
                     this.tokens.consume();
                     ExpressionAST right = this.prefixUnary();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.MODULO);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MODULO);
                 }
                 default -> {
                     return left;
@@ -187,12 +188,12 @@ public class Parser {
                 case PLUS -> {
                     this.tokens.consume();
                     ExpressionAST right = this.factor();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.PLUS);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.PLUS);
                 }
                 case MINUS -> {
                     this.tokens.consume();
                     ExpressionAST right = this.factor();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.MINUS);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MINUS);
                 }
                 default -> {
                     return left;
@@ -213,22 +214,22 @@ public class Parser {
                 case GREATER -> {
                     this.tokens.consume();
                     ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.GREATER);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.GREATER);
                 }
                 case GREATER_EQUAL -> {
                     this.tokens.consume();
                     ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.GREATER_EQUAL);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.GREATER_EQUAL);
                 }
                 case LESS -> {
                     this.tokens.consume();
                     ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.LESS);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.LESS);
                 }
                 case LESS_EQUAL -> {
                     this.tokens.consume();
                     ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.LESS_EQUAL);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.LESS_EQUAL);
                 }
                 default -> {
                     return left;
@@ -249,12 +250,12 @@ public class Parser {
                 case EQUAL -> {
                     this.tokens.consume();
                     ExpressionAST right = this.comparison();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.EQUAL);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.EQUAL);
                 }
                 case NOT_EQUAL -> {
                     this.tokens.consume();
                     ExpressionAST right = this.comparison();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.NOT_EQUAL);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.NOT_EQUAL);
                 }
                 default -> {
                     return left;
@@ -275,7 +276,7 @@ public class Parser {
                 case AND -> {
                     this.tokens.consume();
                     ExpressionAST right = this.equality();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.AND);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.AND);
                 }
                 default -> {
                     return left;
@@ -296,7 +297,7 @@ public class Parser {
                 case OR -> {
                     this.tokens.consume();
                     ExpressionAST right = this.and();
-                    left = new ExpressionAST.BinaryOperator(left, right, ExpressionAST.Operator.OR);
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.OR);
                 }
                 default -> {
                     return left;

@@ -17,10 +17,10 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    public Object visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
+    public Object visitBinaryExpression(ExpressionAST.BinaryExpression expression) {
         Object left = this.visit(expression.left());
         Object right = this.visit(expression.right());
-        ExpressionAST.Operator operator = expression.operator();
+        ExpressionAST.BinaryOperator operator = expression.operator();
 
         return switch (operator) {
             case PLUS -> (Double) left + (Double) right;
@@ -53,19 +53,17 @@ public class Interpreter extends Visitor<Object> {
             case OR -> (Boolean) left || (Boolean) right;
             case EQUAL -> left.equals(right);
             case NOT_EQUAL -> !left.equals(right);
-            default -> null;
         };
     }
 
     @Override
-    public Object visitUnaryOperator(ExpressionAST.UnaryOperator expression) {
+    public Object visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
         Object left = this.visit(expression.left());
-        ExpressionAST.Operator operator = expression.operator();
+        ExpressionAST.UnaryOperator operator = expression.operator();
 
         return switch (operator) {
             case MINUS -> -(Double) left;
             case NOT -> !(Boolean) left;
-            default -> null;
         };
     }
 
