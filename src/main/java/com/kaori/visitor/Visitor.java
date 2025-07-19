@@ -44,9 +44,6 @@ public abstract class Visitor<T> {
         } else if (statement instanceof StatementAST.Function stmt) {
             this.visitFunctionStatement(stmt);
 
-        } else if (statement instanceof StatementAST.FunctionDecl stmt) {
-            this.visitFunctionDeclStatement(stmt);
-
         } else {
             throw new IllegalStateException(
                     "Unhandled statement type: " + statement.getClass().getSimpleName());
@@ -83,12 +80,6 @@ public abstract class Visitor<T> {
         }
     }
 
-    protected abstract void declare(ExpressionAST.Identifier identifier, T value);
-
-    protected abstract void define(ExpressionAST.Identifier identifier, T value);
-
-    protected abstract T get(ExpressionAST.Identifier identifier);
-
     // Expressions
     public abstract T visitBinaryOperator(ExpressionAST.BinaryOperator expression);
 
@@ -118,7 +109,5 @@ public abstract class Visitor<T> {
     public abstract void visitForLoopStatement(StatementAST.ForLoop statement);
 
     public abstract void visitFunctionStatement(StatementAST.Function statement);
-
-    public abstract void visitFunctionDeclStatement(StatementAST.FunctionDecl statement);
 
 }

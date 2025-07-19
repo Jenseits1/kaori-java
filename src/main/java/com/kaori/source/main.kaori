@@ -1,18 +1,14 @@
 
 
+def foo() -> void;
 
 
-a: f64 = 10;
+def foo() -> f64 {
 
-def test() -> void {
-    /* a = 10; */
-    print(a);
-    a: f64 = 20;
-
-    print(a);
 }
 
-test(1);
+
+
 
 
 /* for i: f64 = 0; i < 10; i++ {

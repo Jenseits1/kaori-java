@@ -17,30 +17,6 @@ public class Interpreter extends Visitor<Object> {
     }
 
     @Override
-    protected void declare(ExpressionAST.Identifier identifier, Object value) {
-        this.environment.put(identifier, value);
-    }
-
-    @Override
-    protected void define(ExpressionAST.Identifier identifier, Object value) {
-        int distance = this.environment.distance(identifier);
-
-        this.environment.put(identifier, value, distance);
-    }
-
-    @Override
-    protected Object get(ExpressionAST.Identifier identifier) {
-        int distance = this.environment.distance(identifier);
-        Object value = this.environment.get(identifier, distance);
-
-        if (value == null) {
-            throw KaoriError.RuntimeError(identifier.name() + " is not defined", this.line);
-        }
-
-        return value;
-    }
-
-    @Override
     public Object visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
         Object left = this.visit(expression.left());
         Object right = this.visit(expression.right());

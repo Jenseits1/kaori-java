@@ -17,38 +17,6 @@ public class TypeChecker extends Visitor<TypeAST> {
     }
 
     @Override
-    protected void declare(ExpressionAST.Identifier identifier, TypeAST value) {
-        if (value.equals(TypeAST.Primitive.VOID)) {
-            throw KaoriError.TypeError(String.format("invalid %s type for declaration", value),
-                    this.line);
-        }
-
-        this.environment.put(identifier, value);
-    }
-
-    @Override
-    protected void define(ExpressionAST.Identifier identifier, TypeAST value) {
-        int distance = this.environment.distance(identifier);
-
-        TypeAST previousType = this.environment.get(identifier, distance);
-
-        if (!previousType.equals(value)) {
-            throw KaoriError.TypeError(
-                    String.format("invalid definition with type %s for type %s", value, previousType),
-                    this.line);
-        }
-
-        this.environment.put(identifier, value, distance);
-    }
-
-    @Override
-    protected TypeAST get(ExpressionAST.Identifier identifier) {
-        int distance = this.environment.distance(identifier);
-
-        return this.environment.get(identifier, distance);
-    }
-
-    @Override
     public TypeAST visitBinaryOperator(ExpressionAST.BinaryOperator expression) {
         TypeAST left = this.visit(expression.left());
         TypeAST right = this.visit(expression.right());
@@ -128,9 +96,16 @@ public class TypeChecker extends Visitor<TypeAST> {
     public TypeAST visitAssign(ExpressionAST.Assign expression) {
         ExpressionAST.Identifier identifier = expression.left();
 
+        TypeAST left = this.visit(identifier);
         TypeAST right = this.visit(expression.right());
 
-        this.define(identifier, right);
+        if (!left.equals(right)) {
+            throw KaoriError.TypeError(
+                    String.format("invalid variable declaration with type %s for type %s", left, right),
+                    this.line);
+        }
+
+        this.environment.define(identifier.name(), right, identifier.reference());
 
         return right;
     }
@@ -142,7 +117,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier expression) {
-        return this.get(expression);
+        return this.environment.get(expression.reference());
     }
 
     @Override
@@ -188,8 +163,13 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST left = statement.type();
         TypeAST right = this.visit(statement.right());
 
-        this.declare(identifier, left);
-        this.define(identifier, right);
+        if (!left.equals(right)) {
+            throw KaoriError.TypeError(
+                    String.format("invalid variable declaration with type %s for type %s", left, right),
+                    this.line);
+        }
+
+        this.environment.declare(identifier.name(), right);
     }
 
     @Override
@@ -238,13 +218,18 @@ public class TypeChecker extends Visitor<TypeAST> {
     public void visitFunctionStatement(StatementAST.Function statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        int distance = this.environment.distance(identifier);
+        int reference = identifier.reference();
 
-        if (distance != 0) {
-            this.declare(identifier, statement.type());
+        TypeAST previousType = reference < 0 ? statement.type() : this.environment.get(reference);
+
+        if (!statement.type().equals(previousType)) {
+            throw KaoriError.TypeError(
+                    String.format("invalid function declaration with type %s for type %s", statement.type(),
+                            previousType),
+                    this.line);
         }
 
-        this.define(identifier, statement.type());
+        this.environment.define(identifier.name(), statement.type(), reference);
 
         this.environment.enterScope();
 
@@ -256,13 +241,6 @@ public class TypeChecker extends Visitor<TypeAST> {
         this.visitStatements(statements);
 
         this.environment.exitScope();
-    }
-
-    @Override
-    public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
-        ExpressionAST.Identifier identifier = statement.name();
-
-        this.declare(identifier, statement.type());
     }
 
 }

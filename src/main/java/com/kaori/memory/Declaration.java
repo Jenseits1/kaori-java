@@ -1,6 +1,6 @@
 package com.kaori.memory;
 
-class Declaration<T> {
+public class Declaration<T> {
     public final String identifier;
     public T value;
 

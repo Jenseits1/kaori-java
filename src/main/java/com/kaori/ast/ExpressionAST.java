@@ -36,7 +36,7 @@ public interface ExpressionAST {
     record UnaryOperator(ExpressionAST left, Operator operator) implements ExpressionAST {
     }
 
-    record Assign(Identifier left, ExpressionAST right) implements ExpressionAST {
+    record Assign(ExpressionAST.Identifier left, ExpressionAST right) implements ExpressionAST {
     }
 
     record Literal(TypeAST type, Object value) implements ExpressionAST {
@@ -46,12 +46,19 @@ public interface ExpressionAST {
     }
 
     public class Identifier implements ExpressionAST {
-        public final String name;
-        public int reference;
+        private final String name;
+        private int reference;
 
         public Identifier(String name) {
             this.name = name;
-            this.reference = null;
+        }
+
+        public String name() {
+            return this.name;
+        }
+
+        public int reference() {
+            return this.reference;
         }
 
         public void setReference(int reference) {

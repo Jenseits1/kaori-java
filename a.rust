@@ -1,0 +1,18 @@
+fn visit(&mut self, node: &ASTNode) -> i32 {
+        match node {
+            ASTNode::Number(_) => self.visit_number(node),
+            ASTNode::Add(_, _) => self.visit_add(node),
+            ASTNode::Multiply(_, _) => self.visit_multiply(node),
+        }
+}
+
+trait AstVisitor {
+  fn visit_integer_literal(...);
+  fn visit_char_literal(...);
+}
+
+impl AstNode {
+  fn accept(&mut self, visitor: &mut impl AstVisitor) {
+    visitor.visit_node(self);
+  }
+}
