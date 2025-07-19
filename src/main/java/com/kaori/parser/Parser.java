@@ -443,16 +443,16 @@ public class Parser {
 
         this.tokens.consume(TokenKind.LEFT_BRACE);
 
-        List<StatementAST> statements = new ArrayList<>();
+        List<DeclarationAST> declarations = new ArrayList<>();
 
         while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_BRACE) {
-            StatementAST statement = this.statement();
-            statements.add(statement);
+            DeclarationAST declaration = this.declaration();
+            declarations.add(declaration);
         }
 
         this.tokens.consume(TokenKind.RIGHT_BRACE);
 
-        return new StatementAST.Block(line, statements);
+        return new StatementAST.Block(line, declarations);
     }
 
     private StatementAST.If ifStatement() {
@@ -524,6 +524,11 @@ public class Parser {
             }
         };
 
+        if (declaration instanceof StatementAST.Print || declaration instanceof DeclarationAST.Variable
+                || declaration instanceof StatementAST.Expr) {
+            this.tokens.consume(TokenKind.SEMICOLON);
+        }
+
         return declaration;
     }
 
@@ -537,29 +542,24 @@ public class Parser {
             default -> this.expressionStatement();
         };
 
-        if (statement instanceof StatementAST.Expr || statement instanceof DeclarationAST.Variable
-                || statement instanceof StatementAST.Print) {
-            this.tokens.consume(TokenKind.SEMICOLON);
-        }
-
         return statement;
     }
 
-    private List<StatementAST> start() {
-        List<StatementAST> statements = new ArrayList<>();
+    private List<DeclarationAST> start() {
+        List<DeclarationAST> declarations = new ArrayList<>();
 
         while (!this.tokens.atEnd()) {
-            StatementAST statement = this.statement();
-            statements.add(statement);
+            DeclarationAST declaration = this.declaration();
+            declarations.add(declaration);
 
         }
 
-        return statements;
+        return declarations;
     }
 
-    public List<StatementAST> parse() {
-        List<StatementAST> statements = start();
+    public List<DeclarationAST> parse() {
+        List<DeclarationAST> declarations = start();
 
-        return statements;
+        return declarations;
     }
 }

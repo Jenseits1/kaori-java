@@ -32,18 +32,11 @@ public abstract class Visitor<T> {
         } else if (statement instanceof StatementAST.Expr stmt) {
             this.visitExpressionStatement(stmt);
 
-        } else if (statement instanceof StatementAST.Variable stmt) {
-            this.visitVariableStatement(stmt);
-
         } else if (statement instanceof StatementAST.If stmt) {
             this.visitIfStatement(stmt);
 
         } else if (statement instanceof StatementAST.WhileLoop stmt) {
             this.visitWhileLoopStatement(stmt);
-
-        } else if (statement instanceof StatementAST.Function stmt) {
-            this.visitFunctionStatement(stmt);
-
         } else {
             throw new IllegalStateException(
                     "Unhandled statement type: " + statement.getClass().getSimpleName());
