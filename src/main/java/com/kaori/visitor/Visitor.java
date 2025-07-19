@@ -119,8 +119,8 @@ public abstract class Visitor<T> {
     public abstract void visitForLoopStatement(StatementAST.ForLoop statement);
 
     // Declarations
-    public abstract void visitFunctionDeclaration(DeclarationAST.Function declaration);
-
     public abstract void visitVariableDeclaration(DeclarationAST.Variable declaration);
+
+    public abstract void visitFunctionDeclaration(DeclarationAST.Function declaration);
 
 }

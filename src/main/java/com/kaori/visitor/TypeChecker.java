@@ -2,6 +2,7 @@ package com.kaori.visitor;
 
 import java.util.List;
 
+import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
@@ -11,8 +12,8 @@ import com.kaori.memory.Environment;
 public class TypeChecker extends Visitor<TypeAST> {
     private final Environment<TypeAST> environment;
 
-    public TypeChecker(List<StatementAST> statements) {
-        super(statements);
+    public TypeChecker(List<DeclarationAST> declarations) {
+        super(declarations);
         this.environment = new Environment<>();
     }
 
@@ -127,6 +128,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         return func.returnType();
     }
 
+    /* Statements */
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
         this.visit(statement.expression());
@@ -135,24 +137,8 @@ public class TypeChecker extends Visitor<TypeAST> {
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
         this.environment.enterScope();
-        this.visitStatements(statement.statements());
+        this.visitDeclarations(statement.declarations());
         this.environment.exitScope();
-    }
-
-    @Override
-    public void visitVariableStatement(StatementAST.Variable statement) {
-        ExpressionAST.Identifier identifier = statement.left();
-
-        TypeAST left = statement.type();
-        TypeAST right = this.visit(statement.right());
-
-        if (!left.equals(right)) {
-            throw KaoriError.TypeError(
-                    String.format("invalid variable declaration with type %s for type %s", left, right),
-                    this.line);
-        }
-
-        this.environment.define(identifier.name(), right, identifier.distance());
     }
 
     @Override
@@ -197,35 +183,53 @@ public class TypeChecker extends Visitor<TypeAST> {
         this.visit(statement.increment());
     }
 
+    /* Declarations */
     @Override
-    public void visitFunctionStatement(StatementAST.Function statement) {
-        ExpressionAST.Identifier identifier = statement.name();
+    public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
+        ExpressionAST.Identifier identifier = declaration.left();
+
+        TypeAST left = declaration.type();
+        TypeAST right = this.visit(declaration.right());
+
+        if (!left.equals(right)) {
+            throw KaoriError.TypeError(
+                    String.format("invalid variable declaration with type %s for type %s", left, right),
+                    this.line);
+        }
+
+        this.environment.define(identifier.name(), right, identifier.distance());
+    }
+
+    @Override
+    public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
+        ExpressionAST.Identifier identifier = declaration.name();
 
         int distance = identifier.distance();
 
-        TypeAST previousType = distance == 0 ? statement.type() : this.environment.get(distance);
+        TypeAST previousType = distance == 0 ? declaration.type() : this.environment.get(distance);
 
-        if (!statement.type().equals(previousType)) {
+        if (!declaration.type().equals(previousType)) {
             throw KaoriError.TypeError(
-                    String.format("invalid function declaration with type %s for type %s", statement.type(),
+                    String.format("invalid function declaration with type %s for type %s", declaration.type(),
                             previousType),
                     this.line);
         }
 
-        this.environment.define(identifier.name(), statement.type(), distance);
+        this.environment.define(identifier.name(), declaration.type(), distance);
 
-        if (statement.block() == null) {
+        if (declaration.block() == null) {
             return;
         }
 
         this.environment.enterScope();
 
-        for (StatementAST.Variable parameter : statement.parameters()) {
+        for (DeclarationAST.Variable parameter : declaration.parameters()) {
             this.visit(parameter);
         }
 
-        List<StatementAST> statements = statement.block().statements();
-        this.visitStatements(statements);
+        List<DeclarationAST> declarations = declaration.block().declarations();
+
+        this.visitDeclarations(declarations);
 
         this.environment.exitScope();
     }
