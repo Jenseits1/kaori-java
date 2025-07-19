@@ -23,13 +23,13 @@ public class Environment<T> {
     }
 
     public void define(String identifier, T value, int distance) {
-        Declaration<T> declaration = new Declaration<>(identifier, value);
-
         if (distance == 0) {
+            Declaration<T> declaration = new Declaration<>(identifier, value);
             this.declarations.add(declaration);
         } else {
             int reference = this.declarations.size() - distance;
-            this.declarations.set(reference, declaration);
+            Declaration<T> declaration = this.declarations.get(reference);
+            declaration.value = value;
         }
     }
 

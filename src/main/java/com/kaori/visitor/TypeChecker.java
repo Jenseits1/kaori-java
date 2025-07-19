@@ -84,7 +84,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         if (!left.equals(right)) {
             throw KaoriError.TypeError(
-                    String.format("invalid variable assignment with type %s for type %s", left, right),
+                    String.format("invalid variable assignment with type %s for type %s", right, left),
                     this.line);
         }
 

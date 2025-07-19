@@ -70,6 +70,10 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public Object visitAssign(ExpressionAST.Assign expression) {
         Object value = this.visit(expression.right());
+        ExpressionAST.Identifier identifier = expression.left();
+        int distance = identifier.distance();
+
+        this.environment.define(identifier.name(), value, distance);
 
         return value;
     }
@@ -81,30 +85,32 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
-        return null;
+        int distance = expression.distance();
+
+        if (distance == 0) {
+            throw KaoriError.RuntimeError(expression.name() + " is not defined", this.line);
+        }
+
+        return this.environment.get(distance);
     }
 
     @Override
     public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
-        FunctionObject func = (FunctionObject) this.visit(expression.callee());
+        FunctionObject functionObject = (FunctionObject) this.visit(expression.callee());
 
-        if (func == null) {
-            throw KaoriError.RuntimeError(func + " is not defined", this.line);
-        }
-
-        for (StatementAST.Variable parameter : func.parameters()) {
+        for (StatementAST.Variable parameter : functionObject.parameters()) {
             this.visit(parameter);
         }
 
-        int smallest = Math.min(expression.arguments().size(), func.parameters().size());
+        int smallest = Math.min(expression.arguments().size(), functionObject.parameters().size());
 
         for (int i = 0; i < smallest; i++) {
-            ExpressionAST.Identifier left = func.parameters().get(i).left();
+            ExpressionAST.Identifier left = functionObject.parameters().get(i).left();
             Object right = this.visit(expression.arguments().get(i));
 
         }
 
-        this.visitStatements(func.statements());
+        this.visitStatements(functionObject.statements());
 
         return null;
     }
@@ -124,7 +130,10 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public void visitVariableStatement(StatementAST.Variable statement) {
         Object right = this.visit(statement.right());
+        ExpressionAST.Identifier identifier = statement.left();
+        int distance = identifier.distance();
 
+        this.environment.define(identifier.name(), right, distance);
     }
 
     @Override
@@ -172,8 +181,11 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
+        FunctionObject functionObject = new FunctionObject(statement.parameters(), statement.block().statements());
 
-        FunctionObject func = new FunctionObject(statement.parameters(), statement.block().statements());
+        ExpressionAST.Identifier identifier = statement.name();
+        int distance = identifier.distance();
 
+        this.environment.define(identifier.name(), functionObject, distance);
     }
 }

@@ -1,15 +1,8 @@
 
+a: bool = true;
+b: f64 = 5;
 
-def foo() -> void;
-
-
-
-def bar() -> void;
-
-
-def bar() -> f64;
-
-/* for i: f64 = 0; i < 10; i++ {
+for i: f64 = 0; i < 10; i++ {
     print(i);
 }
 
@@ -27,4 +20,4 @@ if a < b {
 } else {
     print("equal");
 }
-  */
+  
