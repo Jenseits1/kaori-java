@@ -3,10 +3,12 @@ package com.kaori.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
+import com.kaori.memory.Declaration;
 import com.kaori.token.TokenKind;
 import com.kaori.token.TokenStream;
 
@@ -351,16 +353,8 @@ public class Parser {
         return type;
     }
 
-    /* Statements */
-    private StatementAST.Expr expressionStatement() {
-        int line = this.tokens.getLine();
-
-        ExpressionAST expression = this.expression();
-
-        return new StatementAST.Expr(line, expression);
-    }
-
-    private StatementAST.Variable variableStatement() {
+    /* Declarations */
+    private DeclarationAST.Variable variableDeclaration() {
         int line = this.tokens.getLine();
 
         ExpressionAST.Identifier left = this.identifier();
@@ -370,14 +364,64 @@ public class Parser {
 
         if (this.tokens.getCurrent() != TokenKind.ASSIGN) {
             ExpressionAST right = new ExpressionAST.Literal(type, null);
-            return new StatementAST.Variable(line, left, right, type);
+            return new DeclarationAST.Variable(line, left, right, type);
         }
 
         this.tokens.consume(TokenKind.ASSIGN);
 
         ExpressionAST right = this.expression();
 
-        return new StatementAST.Variable(line, left, right, type);
+        return new DeclarationAST.Variable(line, left, right, type);
+    }
+
+    private DeclarationAST functionDeclaration() {
+        int line = this.tokens.getLine();
+
+        this.tokens.consume(TokenKind.FUNCTION);
+
+        ExpressionAST.Identifier name = this.identifier();
+
+        this.tokens.consume(TokenKind.LEFT_PAREN);
+
+        List<DeclarationAST.Variable> parameters = new ArrayList<>();
+
+        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
+            DeclarationAST.Variable parameter = this.variableDeclaration();
+            parameters.add(parameter);
+
+            if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
+                break;
+            }
+
+            this.tokens.consume(TokenKind.COMMA);
+        }
+
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
+
+        this.tokens.consume(TokenKind.THIN_ARROW);
+
+        TypeAST returnType = this.type();
+
+        TypeAST.Function type = new TypeAST.Function(parameters.stream().map(parameter -> parameter.type()).toList(),
+                returnType);
+
+        if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
+            this.tokens.consume(TokenKind.SEMICOLON);
+            return new DeclarationAST.Function(line, name, parameters, type, null);
+        }
+
+        StatementAST.Block block = this.blockStatement();
+
+        return new DeclarationAST.Function(line, name, parameters, type, block);
+    }
+
+    /* Statements */
+    private StatementAST.Expr expressionStatement() {
+        int line = this.tokens.getLine();
+
+        ExpressionAST expression = this.expression();
+
+        return new StatementAST.Expr(line, expression);
     }
 
     private StatementAST.Print printStatement() {
@@ -453,7 +497,7 @@ public class Parser {
 
         this.tokens.consume(TokenKind.FOR);
 
-        StatementAST.Variable variable = this.variableStatement();
+        DeclarationAST.Variable variable = this.variableDeclaration();
 
         this.tokens.consume(TokenKind.SEMICOLON);
 
@@ -468,45 +512,19 @@ public class Parser {
         return new StatementAST.ForLoop(line, variable, condition, increment, block);
     }
 
-    private StatementAST functionStatement() {
-        int line = this.tokens.getLine();
+    private DeclarationAST declaration() {
+        DeclarationAST declaration = switch (this.tokens.getCurrent()) {
+            case FUNCTION -> this.functionDeclaration();
+            default -> {
+                if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
+                    yield this.variableDeclaration();
+                }
 
-        this.tokens.consume(TokenKind.FUNCTION);
-
-        ExpressionAST.Identifier name = this.identifier();
-
-        this.tokens.consume(TokenKind.LEFT_PAREN);
-
-        List<StatementAST.Variable> parameters = new ArrayList<>();
-
-        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
-            StatementAST.Variable parameter = this.variableStatement();
-            parameters.add(parameter);
-
-            if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
-                break;
+                yield this.statement();
             }
+        };
 
-            this.tokens.consume(TokenKind.COMMA);
-        }
-
-        this.tokens.consume(TokenKind.RIGHT_PAREN);
-
-        this.tokens.consume(TokenKind.THIN_ARROW);
-
-        TypeAST returnType = this.type();
-
-        TypeAST.Function type = new TypeAST.Function(parameters.stream().map(parameter -> parameter.type()).toList(),
-                returnType);
-
-        if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
-            this.tokens.consume(TokenKind.SEMICOLON);
-            return new StatementAST.Function(line, name, parameters, type, null);
-        }
-
-        StatementAST.Block block = this.blockStatement();
-
-        return new StatementAST.Function(line, name, parameters, type, block);
+        return declaration;
     }
 
     private StatementAST statement() {
@@ -516,17 +534,10 @@ public class Parser {
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();
-            case FUNCTION -> this.functionStatement();
-            default -> {
-                if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
-                    yield this.variableStatement();
-                }
-
-                yield this.expressionStatement();
-            }
+            default -> this.expressionStatement();
         };
 
-        if (statement instanceof StatementAST.Expr || statement instanceof StatementAST.Variable
+        if (statement instanceof StatementAST.Expr || statement instanceof DeclarationAST.Variable
                 || statement instanceof StatementAST.Print) {
             this.tokens.consume(TokenKind.SEMICOLON);
         }
