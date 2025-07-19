@@ -116,7 +116,7 @@ public class Interpreter extends Visitor<Object> {
             this.environment.define(left.name(), right, distance);
         }
 
-        this.visitStatements(functionObject.statements());
+        this.visitDeclarations(functionObject.declarations());
 
         this.environment.exitScope();
 
@@ -132,16 +132,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.visitStatements(statement.statements());
-    }
-
-    @Override
-    public void visitVariableStatement(StatementAST.Variable statement) {
-        Object right = this.visit(statement.right());
-        ExpressionAST.Identifier identifier = statement.left();
-        int distance = identifier.distance();
-
-        this.environment.define(identifier.name(), right, distance);
+        this.environment.enterScope();
+        this.visitDeclarations(statement.declarations());
+        this.environment.exitScope();
     }
 
     @Override
@@ -187,17 +180,28 @@ public class Interpreter extends Visitor<Object> {
         }
     }
 
+    /* Declarations */
     @Override
-    public void visitFunctionStatement(StatementAST.Function statement) {
-        ExpressionAST.Identifier identifier = statement.name();
+    public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
+        Object right = this.visit(declaration.right());
+        ExpressionAST.Identifier identifier = declaration.left();
         int distance = identifier.distance();
 
-        if (statement.block() == null) {
+        this.environment.define(identifier.name(), right, distance);
+    }
+
+    @Override
+    public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
+        ExpressionAST.Identifier identifier = declaration.name();
+        int distance = identifier.distance();
+
+        if (declaration.block() == null) {
             this.environment.define(identifier.name(), null, distance);
             return;
         }
 
-        FunctionObject functionObject = new FunctionObject(statement.parameters(), statement.block().statements());
+        FunctionObject functionObject = new FunctionObject(declaration.parameters(),
+                declaration.block().declarations());
         this.environment.define(identifier.name(), functionObject, distance);
     }
 }
