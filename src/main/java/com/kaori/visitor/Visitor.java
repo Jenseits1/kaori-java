@@ -2,21 +2,47 @@ package com.kaori.visitor;
 
 import java.util.List;
 
+import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 
 public abstract class Visitor<T> {
     protected int line;
-    protected final List<StatementAST> statements;
+    protected final List<DeclarationAST> declarations;
 
-    public Visitor(List<StatementAST> statements) {
+    public Visitor(List<DeclarationAST> declarations) {
         this.line = 1;
-        this.statements = statements;
+        this.declarations = declarations;
 
     }
 
     public void run() {
-        this.visitStatements(this.statements);
+        this.visitDeclarations(declarations);
+    }
+
+    protected void visitStatements(List<StatementAST> statements) {
+        for (StatementAST statement : statements) {
+            this.line = statement.line();
+            this.visit(statement);
+        }
+    }
+
+    protected void visitDeclarations(List<DeclarationAST> declarations) {
+        for (DeclarationAST declaration : declarations) {
+            this.line = declaration.line();
+            this.visit(declaration);
+        }
+    }
+
+    protected void visit(DeclarationAST declaration) {
+        if (declaration instanceof DeclarationAST.Variable decl) {
+
+        } else if (declaration instanceof DeclarationAST.Function decl) {
+
+        } else {
+            throw new IllegalStateException(
+                    "Unhandled statement type: " + declaration.getClass().getSimpleName());
+        }
     }
 
     protected void visit(StatementAST statement) {
@@ -66,13 +92,6 @@ public abstract class Visitor<T> {
                 "Unhandled expression type: " + expression.getClass().getSimpleName());
     }
 
-    protected void visitStatements(List<StatementAST> statements) {
-        for (StatementAST statement : statements) {
-            this.line = statement.line();
-            this.visit(statement);
-        }
-    }
-
     // Expressions
     public abstract T visitBinaryExpression(ExpressionAST.BinaryExpression expression);
 
@@ -91,8 +110,6 @@ public abstract class Visitor<T> {
 
     public abstract void visitPrintStatement(StatementAST.Print statement);
 
-    public abstract void visitVariableStatement(StatementAST.Variable statement);
-
     public abstract void visitBlockStatement(StatementAST.Block statement);
 
     public abstract void visitIfStatement(StatementAST.If statement);
@@ -101,6 +118,9 @@ public abstract class Visitor<T> {
 
     public abstract void visitForLoopStatement(StatementAST.ForLoop statement);
 
-    public abstract void visitFunctionStatement(StatementAST.Function statement);
+    // Declarations
+    public abstract void visitFunctionDeclaration(DeclarationAST.Function declaration);
+
+    public abstract void visitVariableDeclaration(DeclarationAST.Variable declaration);
 
 }
