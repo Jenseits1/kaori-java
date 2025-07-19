@@ -4,6 +4,11 @@ def foo() -> void;
 
 
 
+def bar() -> void;
+
+
+def bar() -> f64;
+
 /* for i: f64 = 0; i < 10; i++ {
     print(i);
 }

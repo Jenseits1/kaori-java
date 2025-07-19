@@ -84,11 +84,11 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         if (!left.equals(right)) {
             throw KaoriError.TypeError(
-                    String.format("invalid variable declaration with type %s for type %s", left, right),
+                    String.format("invalid variable assignment with type %s for type %s", left, right),
                     this.line);
         }
 
-        this.environment.define(identifier.name(), right, identifier.reference());
+        this.environment.define(identifier.name(), right, identifier.distance());
 
         return right;
     }
@@ -100,7 +100,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier expression) {
-        return this.environment.get(expression.reference());
+        return this.environment.get(expression.distance());
     }
 
     @Override
@@ -152,7 +152,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.environment.declare(identifier.name(), right);
+        this.environment.define(identifier.name(), right, identifier.distance());
     }
 
     @Override
@@ -201,9 +201,9 @@ public class TypeChecker extends Visitor<TypeAST> {
     public void visitFunctionStatement(StatementAST.Function statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        int reference = identifier.reference();
+        int distance = identifier.distance();
 
-        TypeAST previousType = reference < 0 ? statement.type() : this.environment.get(reference);
+        TypeAST previousType = distance == 0 ? statement.type() : this.environment.get(distance);
 
         if (!statement.type().equals(previousType)) {
             throw KaoriError.TypeError(
@@ -212,7 +212,11 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.environment.define(identifier.name(), statement.type(), reference);
+        this.environment.define(identifier.name(), statement.type(), distance);
+
+        if (statement.block() == null) {
+            return;
+        }
 
         this.environment.enterScope();
 

@@ -105,7 +105,7 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
             case UNDECLARED -> this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
         }
 
-        this.visit(identifier);
+        identifier.setDistance(distance);
     }
 
     @Override
@@ -151,13 +151,11 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
             }
         }
 
-        this.visit(identifier);
+        identifier.setDistance(distance);
 
         if (statement.block() == null) {
             return;
         }
-
-        distance = this.environment.searchInner(identifier.name());
 
         this.environment.define(identifier.name(), ResolutionStatus.DEFINED, distance);
 

@@ -71,8 +71,6 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(ExpressionAST.Assign expression) {
         Object value = this.visit(expression.right());
 
-        this.define(expression.left(), value);
-
         return value;
     }
 
@@ -83,7 +81,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
-        return this.get(expression);
+        return null;
     }
 
     @Override
@@ -104,7 +102,6 @@ public class Interpreter extends Visitor<Object> {
             ExpressionAST.Identifier left = func.parameters().get(i).left();
             Object right = this.visit(expression.arguments().get(i));
 
-            this.define(left, right);
         }
 
         this.visitStatements(func.statements());
@@ -128,8 +125,6 @@ public class Interpreter extends Visitor<Object> {
     public void visitVariableStatement(StatementAST.Variable statement) {
         Object right = this.visit(statement.right());
 
-        this.declare(statement.left(), null);
-        this.define(statement.left(), right);
     }
 
     @Override
@@ -177,11 +172,8 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        this.declare(statement.name(), null);
 
         FunctionObject func = new FunctionObject(statement.parameters(), statement.block().statements());
-
-        this.define(statement.name(), func);
 
     }
 }
