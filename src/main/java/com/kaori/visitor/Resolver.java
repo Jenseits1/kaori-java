@@ -22,8 +22,8 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         DEFINED
     }
 
-    private ResolutionStatus getStatus(int reference) {
-        return reference < 0 ? ResolutionStatus.UNDECLARED : this.environment.get(reference);
+    private ResolutionStatus getStatus(int distance) {
+        return distance == 0 ? ResolutionStatus.UNDECLARED : this.environment.get(distance);
     }
 
     @Override
@@ -56,13 +56,13 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
     @Override
     public ResolutionStatus visitIdentifier(ExpressionAST.Identifier expression) {
-        int reference = this.environment.search(expression.name());
-        ResolutionStatus status = this.getStatus(reference);
+        int distance = this.environment.search(expression.name());
+        ResolutionStatus status = this.getStatus(distance);
 
         if (status == ResolutionStatus.UNDECLARED) {
             throw KaoriError.ResolveError(expression.name() + " is not declared", this.line);
         }
-        expression.setReference(reference);
+        expression.setDistance(distance);
 
         return status;
     }
@@ -96,13 +96,13 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
         this.visit(statement.right());
 
-        int reference = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = this.getStatus(reference);
+        int distance = this.environment.searchInner(identifier.name());
+        ResolutionStatus status = this.getStatus(distance);
 
         switch (status) {
             case DECLARED, DEFINED ->
                 throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-            case UNDECLARED -> this.environment.declare(identifier.name(), ResolutionStatus.DECLARED);
+            case UNDECLARED -> this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
         }
 
         this.visit(identifier);
@@ -138,11 +138,11 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
     public void visitFunctionStatement(StatementAST.Function statement) {
         ExpressionAST.Identifier identifier = statement.name();
 
-        int reference = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = this.getStatus(reference);
+        int distance = this.environment.searchInner(identifier.name());
+        ResolutionStatus status = this.getStatus(distance);
 
         switch (status) {
-            case UNDECLARED -> this.environment.declare(identifier.name(), ResolutionStatus.DECLARED);
+            case UNDECLARED -> this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
             case DEFINED -> throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
             case DECLARED -> {
                 if (statement.block() == null) {
@@ -157,9 +157,9 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
             return;
         }
 
-        reference = this.environment.searchInner(identifier.name());
+        distance = this.environment.searchInner(identifier.name());
 
-        this.environment.define(identifier.name(), ResolutionStatus.DEFINED, reference);
+        this.environment.define(identifier.name(), ResolutionStatus.DEFINED, distance);
 
         this.environment.enterScope();
 

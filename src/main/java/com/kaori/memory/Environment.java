@@ -15,26 +15,22 @@ public class Environment<T> {
         this.enterScope();
     }
 
-    public T get(int reference) {
+    public T get(int distance) {
+        int reference = this.declarations.size() - distance;
         Declaration<T> declaration = declarations.get(reference);
 
         return declaration.value;
     }
 
-    public void define(String identifier, T value, int reference) {
+    public void define(String identifier, T value, int distance) {
         Declaration<T> declaration = new Declaration<>(identifier, value);
 
-        if (reference >= this.declarations.size()) {
-            declarations.add(null);
+        if (distance == 0) {
+            this.declarations.add(declaration);
+        } else {
+            int reference = this.declarations.size() - distance;
+            this.declarations.set(reference, declaration);
         }
-
-        this.declarations.set(reference, declaration);
-    }
-
-    public void declare(String identifier, T value) {
-        Declaration<T> declaration = new Declaration<>(identifier, value);
-
-        this.declarations.add(declaration);
     }
 
     public int searchInner(String identifier) {
@@ -44,11 +40,13 @@ public class Environment<T> {
             Declaration<T> declaration = declarations.get(i);
 
             if (declaration.identifier.equals(identifier)) {
-                return i;
+                int distance = this.declarations.size() - i;
+
+                return distance;
             }
         }
 
-        return -1;
+        return 0;
     }
 
     public int search(String identifier) {
@@ -56,11 +54,13 @@ public class Environment<T> {
             Declaration<T> declaration = declarations.get(i);
 
             if (declaration.identifier.equals(identifier)) {
-                return i;
+                int distance = this.declarations.size() - i;
+
+                return distance;
             }
         }
 
-        return -1;
+        return 0;
     }
 
     public void enterScope() {

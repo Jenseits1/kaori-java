@@ -52,10 +52,10 @@ public abstract class Visitor<T> {
 
     protected T visit(ExpressionAST expression) {
         if (expression instanceof ExpressionAST.BinaryExpression expr) {
-            return this.visitBinaryOperator(expr);
+            return this.visitBinaryExpression(expr);
         }
         if (expression instanceof ExpressionAST.UnaryExpression expr) {
-            return this.visitUnaryOperator(expr);
+            return this.visitUnaryExpression(expr);
         }
         if (expression instanceof ExpressionAST.Assign expr) {
             return this.visitAssign(expr);

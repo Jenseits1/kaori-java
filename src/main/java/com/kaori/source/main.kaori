@@ -3,13 +3,6 @@
 def foo() -> void;
 
 
-def foo() -> f64 {
-
-}
-
-
-
-
 
 /* for i: f64 = 0; i < 10; i++ {
     print(i);

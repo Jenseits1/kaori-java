@@ -61,7 +61,7 @@ public interface ExpressionAST {
 
     public class Identifier implements ExpressionAST {
         private final String name;
-        private int reference;
+        private int distance;
 
         public Identifier(String name) {
             this.name = name;
@@ -71,12 +71,12 @@ public interface ExpressionAST {
             return this.name;
         }
 
-        public int reference() {
-            return this.reference;
+        public int distance() {
+            return this.distance;
         }
 
-        public void setReference(int reference) {
-            this.reference = reference;
+        public void setDistance(int distance) {
+            this.distance = distance;
         }
     }
 }
