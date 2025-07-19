@@ -86,17 +86,20 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
         int distance = expression.distance();
+        Object value = this.environment.get(distance);
 
-        if (distance == 0) {
+        if (value == null) {
             throw KaoriError.RuntimeError(expression.name() + " is not defined", this.line);
         }
 
-        return this.environment.get(distance);
+        return value;
     }
 
     @Override
     public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
         FunctionObject functionObject = (FunctionObject) this.visit(expression.callee());
+
+        this.environment.enterScope();
 
         for (StatementAST.Variable parameter : functionObject.parameters()) {
             this.visit(parameter);
@@ -107,10 +110,14 @@ public class Interpreter extends Visitor<Object> {
         for (int i = 0; i < smallest; i++) {
             ExpressionAST.Identifier left = functionObject.parameters().get(i).left();
             Object right = this.visit(expression.arguments().get(i));
+            int distance = left.distance();
 
+            this.environment.define(left.name(), right, distance);
         }
 
         this.visitStatements(functionObject.statements());
+
+        this.environment.exitScope();
 
         return null;
     }
@@ -181,11 +188,15 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitFunctionStatement(StatementAST.Function statement) {
-        FunctionObject functionObject = new FunctionObject(statement.parameters(), statement.block().statements());
-
         ExpressionAST.Identifier identifier = statement.name();
         int distance = identifier.distance();
 
+        if (statement.block() == null) {
+            this.environment.define(identifier.name(), null, distance);
+            return;
+        }
+
+        FunctionObject functionObject = new FunctionObject(statement.parameters(), statement.block().statements());
         this.environment.define(identifier.name(), functionObject, distance);
     }
 }

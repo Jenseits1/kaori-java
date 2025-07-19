@@ -9,7 +9,7 @@ public class Environment<T> {
     public final Stack<Integer> scopeReferences;
 
     public Environment() {
-        this.declarations = new ArrayList<>(1000);
+        this.declarations = new ArrayList<>();
         this.scopeReferences = new Stack<>();
 
         this.enterScope();
@@ -73,7 +73,6 @@ public class Environment<T> {
         int reference = this.scopeReferences.peek();
 
         while (this.declarations.size() > reference) {
-            System.out.println(declarations.get(declarations.size() - 1));
             this.declarations.remove(declarations.size() - 1);
         }
 

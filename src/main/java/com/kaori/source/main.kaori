@@ -1,23 +1,6 @@
 
-a: bool = true;
-b: f64 = 5;
 
-for i: f64 = 0; i < 10; i++ {
-    print(i);
+
+if 1 > 2 {
+    print(5);
 }
-
-j: f64 = 0;
-
-while j < 5 {
-    print(j);
-    j++;
-}
-
-if a < b {
-    print("smaller");
-} else if a > b {
-    print("bigger");
-} else {
-    print("equal");
-}
-  

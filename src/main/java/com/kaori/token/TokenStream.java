@@ -62,6 +62,12 @@ public class TokenStream {
     }
 
     public void consume(TokenKind expected) {
+        if (this.getCurrent() == TokenKind.EOF) {
+            throw KaoriError.SyntaxError(
+                    String.format("expected %s, but had an unexpected end of file", expected),
+                    this.line);
+        }
+
         if (this.getCurrent() != expected) {
             throw KaoriError.SyntaxError(String.format("expected %s instead of %s", expected, this.getCurrent()),
                     this.line);
