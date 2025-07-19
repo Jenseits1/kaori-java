@@ -36,9 +36,11 @@ public abstract class Visitor<T> {
 
     protected void visit(DeclarationAST declaration) {
         if (declaration instanceof DeclarationAST.Variable decl) {
-
+            this.visitVariableDeclaration(decl);
         } else if (declaration instanceof DeclarationAST.Function decl) {
-
+            this.visitFunctionDeclaration(decl);
+        } else if (declaration instanceof StatementAST stmt) {
+            this.visit(stmt);
         } else {
             throw new IllegalStateException(
                     "Unhandled statement type: " + declaration.getClass().getSimpleName());

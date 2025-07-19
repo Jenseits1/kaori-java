@@ -143,24 +143,19 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         ExpressionAST.Identifier identifier = declaration.name();
 
         int distance = this.environment.searchInner(identifier.name());
+
         ResolutionStatus status = this.getStatus(distance);
 
         switch (status) {
             case UNDECLARED -> this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
             case DEFINED -> throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
-            case DECLARED -> {
-                if (declaration.block() == null) {
-                    throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-                }
-            }
+            case DECLARED -> throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
+
         }
 
         identifier.setDistance(distance);
 
-        if (declaration.block() == null) {
-            return;
-        }
-
+        distance = this.environment.searchInner(identifier.name());
         this.environment.define(identifier.name(), ResolutionStatus.DEFINED, distance);
 
         this.environment.enterScope();

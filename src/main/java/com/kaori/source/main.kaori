@@ -1,17 +1,15 @@
 
-
+def bar(n: f64) -> void {
+    n;
+}
 
 def foo(n: f64) -> void {
-    if n > 0 {
-        bar(n - 1);
-    }
-    
+    n;
+
+    bar(5);
 }
 
-def bar(n: f64) -> void {
-    if n > 0 {
-        foo(n - 1);
-    }
-}
 
-foo(10);
+
+foo(5);
+

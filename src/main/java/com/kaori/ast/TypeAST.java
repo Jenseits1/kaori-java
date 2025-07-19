@@ -65,5 +65,4 @@ public interface TypeAST {
             return true;
         }
     }
-
 }

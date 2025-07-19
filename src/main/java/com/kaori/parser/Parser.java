@@ -8,7 +8,6 @@ import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.Declaration;
 import com.kaori.token.TokenKind;
 import com.kaori.token.TokenStream;
 
@@ -404,11 +403,6 @@ public class Parser {
 
         TypeAST.Function type = new TypeAST.Function(parameters.stream().map(parameter -> parameter.type()).toList(),
                 returnType);
-
-        if (this.tokens.getCurrent() != TokenKind.LEFT_BRACE) {
-            this.tokens.consume(TokenKind.SEMICOLON);
-            return new DeclarationAST.Function(line, name, parameters, type, null);
-        }
 
         StatementAST.Block block = this.blockStatement();
 

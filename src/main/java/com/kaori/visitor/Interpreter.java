@@ -109,8 +109,10 @@ public class Interpreter extends Visitor<Object> {
         int smallest = Math.min(expression.arguments().size(), functionObject.parameters().size());
 
         for (int i = 0; i < smallest; i++) {
+
             ExpressionAST.Identifier left = functionObject.parameters().get(i).left();
             Object right = this.visit(expression.arguments().get(i));
+
             int distance = left.distance();
 
             this.environment.define(left.name(), right, distance);
