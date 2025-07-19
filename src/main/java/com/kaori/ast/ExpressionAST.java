@@ -65,6 +65,7 @@ public interface ExpressionAST {
 
         public Identifier(String name) {
             this.name = name;
+            this.distance = -1;
         }
 
         public String name() {

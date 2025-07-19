@@ -102,20 +102,16 @@ public class Interpreter extends Visitor<Object> {
 
         this.environment.enterScope();
 
-        for (StatementAST.Variable parameter : functionObject.parameters()) {
-            this.visit(parameter);
-        }
-
         int smallest = Math.min(expression.arguments().size(), functionObject.parameters().size());
 
         for (int i = 0; i < smallest; i++) {
+            DeclarationAST.Variable parameter = functionObject.parameters().get(i);
+            ExpressionAST argument = expression.arguments().get(i);
+            parameter.setRight(argument);
+        }
 
-            ExpressionAST.Identifier left = functionObject.parameters().get(i).left();
-            Object right = this.visit(expression.arguments().get(i));
-
-            int distance = left.distance();
-
-            this.environment.define(left.name(), right, distance);
+        for (StatementAST.Variable parameter : functionObject.parameters()) {
+            this.visit(parameter);
         }
 
         this.visitDeclarations(functionObject.declarations());

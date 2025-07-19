@@ -20,15 +20,19 @@ public abstract class Visitor<T> {
         this.visitDeclarations(declarations);
     }
 
-    protected void visitStatements(List<StatementAST> statements) {
-        for (StatementAST statement : statements) {
-            this.line = statement.line();
-            this.visit(statement);
-        }
-    }
-
     protected void visitDeclarations(List<DeclarationAST> declarations) {
         for (DeclarationAST declaration : declarations) {
+            if (declaration instanceof DeclarationAST.Function) {
+                this.line = declaration.line();
+                this.visit(declaration);
+            }
+        }
+
+        for (DeclarationAST declaration : declarations) {
+            if (declaration instanceof DeclarationAST.Function) {
+                continue;
+            }
+
             this.line = declaration.line();
             this.visit(declaration);
         }

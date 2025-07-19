@@ -64,6 +64,7 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         if (status == ResolutionStatus.UNDECLARED) {
             throw KaoriError.ResolveError(expression.name() + " is not declared", this.line);
         }
+
         expression.setDistance(distance);
 
         return status;
@@ -146,17 +147,13 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
         ResolutionStatus status = this.getStatus(distance);
 
-        switch (status) {
-            case UNDECLARED -> this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
-            case DEFINED -> throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
-            case DECLARED -> throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-
+        if (status == ResolutionStatus.DECLARED) {
+            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
 
-        identifier.setDistance(distance);
+        this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
 
-        distance = this.environment.searchInner(identifier.name());
-        this.environment.define(identifier.name(), ResolutionStatus.DEFINED, distance);
+        identifier.setDistance(distance);
 
         this.environment.enterScope();
 

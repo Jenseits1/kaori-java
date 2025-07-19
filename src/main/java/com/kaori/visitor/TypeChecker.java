@@ -112,6 +112,7 @@ public class TypeChecker extends Visitor<TypeAST> {
             throw KaoriError.TypeError(String.format("invalid %s type is not a function", type),
                     this.line);
         }
+
         int smallest = Math.min(func.parameters().size(), expression.arguments().size());
 
         for (int i = 0; i < smallest; i++) {
@@ -206,20 +207,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         int distance = identifier.distance();
 
-        TypeAST previousType = distance == 0 ? declaration.type() : this.environment.get(distance);
-
-        if (!declaration.type().equals(previousType)) {
-            throw KaoriError.TypeError(
-                    String.format("invalid function declaration with type %s for type %s", declaration.type(),
-                            previousType),
-                    this.line);
-        }
-
         this.environment.define(identifier.name(), declaration.type(), distance);
-
-        if (declaration.block() == null) {
-            return;
-        }
 
         this.environment.enterScope();
 
