@@ -22,47 +22,38 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST right = this.visit(expression.right());
         ExpressionAST.BinaryOperator operator = expression.operator();
 
-        return switch (operator) {
-            case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO -> {
-                if (left.equals(TypeAST.Primitive.NUMBER) &&
-                        right.equals(TypeAST.Primitive.NUMBER)) {
-                    yield TypeAST.Primitive.NUMBER;
-                }
+        TypeAST type = switch (operator) {
+            case PLUS, MINUS, MULTIPLY, DIVIDE, MODULO ->
+                left.equals(TypeAST.Primitive.NUMBER) &&
+                        right.equals(TypeAST.Primitive.NUMBER)
+                                ? TypeAST.Primitive.NUMBER
+                                : TypeAST.Primitive.VOID;
 
-                throw KaoriError.TypeError(
-                        String.format("invalid %s operation between %s and %s", operator, left, right),
-                        this.line);
-            }
-            case GREATER, GREATER_EQUAL, LESS, LESS_EQUAL -> {
-                if (left.equals(TypeAST.Primitive.NUMBER) &&
-                        right.equals(TypeAST.Primitive.NUMBER)) {
-                    yield TypeAST.Primitive.BOOLEAN;
-                }
+            case GREATER, GREATER_EQUAL, LESS, LESS_EQUAL ->
+                left.equals(TypeAST.Primitive.NUMBER) &&
+                        right.equals(TypeAST.Primitive.NUMBER)
+                                ? TypeAST.Primitive.BOOLEAN
+                                : TypeAST.Primitive.VOID;
 
-                throw KaoriError.TypeError(
-                        String.format("invalid %s operation between %s and %s", operator, left, right),
-                        this.line);
-            }
-            case AND, OR -> {
-                if (left.equals(TypeAST.Primitive.BOOLEAN) &&
-                        right.equals(TypeAST.Primitive.BOOLEAN)) {
-                    yield TypeAST.Primitive.BOOLEAN;
-                }
+            case AND, OR ->
+                left.equals(TypeAST.Primitive.BOOLEAN) &&
+                        right.equals(TypeAST.Primitive.BOOLEAN)
+                                ? TypeAST.Primitive.BOOLEAN
+                                : TypeAST.Primitive.VOID;
 
-                throw KaoriError.TypeError(
-                        String.format("invalid %s operation between %s and %s", operator, left, right),
-                        this.line);
-            }
-            case EQUAL, NOT_EQUAL -> {
-                if (left.equals(right)) {
-                    yield TypeAST.Primitive.BOOLEAN;
-                }
-
-                throw KaoriError.TypeError(
-                        String.format("invalid %s operation between %s and %s", operator, left, right),
-                        this.line);
-            }
+            case EQUAL, NOT_EQUAL ->
+                left.equals(right)
+                        ? TypeAST.Primitive.BOOLEAN
+                        : TypeAST.Primitive.VOID;
         };
+
+        if (type.equals(TypeAST.Primitive.VOID)) {
+            throw KaoriError.TypeError(
+                    String.format("invalid %s operation between %s and %s", operator, left, right),
+                    this.line);
+        }
+
+        return type;
     }
 
     @Override
@@ -70,24 +61,18 @@ public class TypeChecker extends Visitor<TypeAST> {
         TypeAST left = this.visit(expression.left());
         ExpressionAST.UnaryOperator operator = expression.operator();
 
-        return switch (operator) {
-            case MINUS -> {
-                if (left.equals(TypeAST.Primitive.NUMBER)) {
-                    yield TypeAST.Primitive.NUMBER;
-                }
+        TypeAST type = switch (operator) {
+            case MINUS -> left.equals(TypeAST.Primitive.NUMBER) ? TypeAST.Primitive.NUMBER : TypeAST.Primitive.VOID;
+            case NOT -> left.equals(TypeAST.Primitive.BOOLEAN) ? TypeAST.Primitive.BOOLEAN : TypeAST.Primitive.VOID;
 
-                throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
-                        this.line);
-            }
-            case NOT -> {
-                if (left.equals(TypeAST.Primitive.BOOLEAN)) {
-                    yield TypeAST.Primitive.BOOLEAN;
-                }
-
-                throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
-                        this.line);
-            }
         };
+
+        if (type.equals(TypeAST.Primitive.VOID)) {
+            throw KaoriError.TypeError(String.format("invalid %s operation for %s", operator, left),
+                    this.line);
+        }
+
+        return type;
     }
 
     @Override

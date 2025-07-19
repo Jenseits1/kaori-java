@@ -184,9 +184,4 @@ public class Interpreter extends Visitor<Object> {
         this.define(statement.name(), func);
 
     }
-
-    @Override
-    public void visitFunctionDeclStatement(StatementAST.FunctionDecl statement) {
-        this.declare(statement.name(), null);
-    }
 }
