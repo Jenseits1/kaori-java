@@ -12,8 +12,8 @@ import com.kaori.memory.Environment;
 public class TypeChecker extends Visitor<TypeAST> {
     private final Environment<TypeAST> environment;
 
-    public TypeChecker(List<DeclarationAST> declarations) {
-        super(declarations);
+    public TypeChecker(StatementAST.Block block) {
+        super(block);
         this.environment = new Environment<>();
     }
 

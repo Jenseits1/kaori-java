@@ -11,8 +11,6 @@ public class Environment<T> {
     public Environment() {
         this.declarations = new ArrayList<>();
         this.scopeReferences = new Stack<>();
-
-        this.enterScope();
     }
 
     public T get(int distance) {

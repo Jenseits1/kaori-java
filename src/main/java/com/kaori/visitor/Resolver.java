@@ -11,8 +11,8 @@ import com.kaori.memory.Environment;
 public class Resolver extends Visitor<Resolver.ResolutionStatus> {
     public final Environment<ResolutionStatus> environment;
 
-    public Resolver(List<DeclarationAST> declarations) {
-        super(declarations);
+    public Resolver(StatementAST.Block block) {
+        super(block);
 
         this.environment = new Environment<>();
     }
@@ -147,8 +147,8 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
         ResolutionStatus status = this.getStatus(distance);
 
-        if (status == ResolutionStatus.DECLARED) {
-            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
+        if (status == ResolutionStatus.DEFINED) {
+            throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
         }
 
         this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);

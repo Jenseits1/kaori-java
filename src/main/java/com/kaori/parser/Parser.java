@@ -539,7 +539,7 @@ public class Parser {
         return statement;
     }
 
-    private List<DeclarationAST> start() {
+    private StatementAST.Block start() {
         List<DeclarationAST> declarations = new ArrayList<>();
 
         while (!this.tokens.atEnd()) {
@@ -548,12 +548,10 @@ public class Parser {
 
         }
 
-        return declarations;
+        return new StatementAST.Block(1, declarations);
     }
 
-    public List<DeclarationAST> parse() {
-        List<DeclarationAST> declarations = start();
-
-        return declarations;
+    public StatementAST.Block parse() {
+        return start();
     }
 }

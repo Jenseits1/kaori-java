@@ -1,7 +1,5 @@
 package com.kaori.visitor;
 
-import java.util.List;
-
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
@@ -12,8 +10,8 @@ import com.kaori.memory.FunctionObject;
 public class Interpreter extends Visitor<Object> {
     private final Environment<Object> environment;
 
-    public Interpreter(List<DeclarationAST> declarations) {
-        super(declarations);
+    public Interpreter(StatementAST.Block block) {
+        super(block);
         this.environment = new Environment<>();
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.ast.DeclarationAST;
-
+import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 
@@ -39,7 +39,7 @@ public class Main {
 
             Parser parser = new Parser(tokenStream);
 
-            List<DeclarationAST> ast = parser.parse();
+            StatementAST.Block ast = parser.parse();
 
             List<Visitor<?>> visitors = new ArrayList<>();
 

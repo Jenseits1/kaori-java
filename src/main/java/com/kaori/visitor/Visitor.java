@@ -8,31 +8,20 @@ import com.kaori.ast.StatementAST;
 
 public abstract class Visitor<T> {
     protected int line;
-    protected final List<DeclarationAST> declarations;
+    protected final StatementAST.Block block;
 
-    public Visitor(List<DeclarationAST> declarations) {
+    public Visitor(StatementAST.Block block) {
         this.line = 1;
-        this.declarations = declarations;
+        this.block = block;
 
     }
 
     public void run() {
-        this.visitDeclarations(declarations);
+        this.visitBlockStatement(block);
     }
 
     protected void visitDeclarations(List<DeclarationAST> declarations) {
         for (DeclarationAST declaration : declarations) {
-            if (declaration instanceof DeclarationAST.Function) {
-                this.line = declaration.line();
-                this.visit(declaration);
-            }
-        }
-
-        for (DeclarationAST declaration : declarations) {
-            if (declaration instanceof DeclarationAST.Function) {
-                continue;
-            }
-
             this.line = declaration.line();
             this.visit(declaration);
         }

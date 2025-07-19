@@ -1,11 +1,15 @@
 
 
-foo(5);
-
-def foo(n: f64) -> f64 {
-    print(n + 10);
+def foo(n: f64) -> void {
+    print(n);
+    bar(n);
 }
 
+def bar(n: f64) -> void {
+    print(n + 5);
+}
+
+foo(10);
 
 
 
