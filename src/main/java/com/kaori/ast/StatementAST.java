@@ -3,8 +3,6 @@ package com.kaori.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.visitor.Resolver.ResolutionStatus;
-
 public interface StatementAST {
 	int line();
 

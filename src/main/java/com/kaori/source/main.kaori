@@ -1,6 +1,17 @@
 
 
 
-if 1 > 2 {
-    print(5);
+def foo(n: f64) -> void {
+    if n > 0 {
+        bar(n - 1);
+    }
+    
 }
+
+def bar(n: f64) -> void {
+    if n > 0 {
+        foo(n - 1);
+    }
+}
+
+foo(10);
