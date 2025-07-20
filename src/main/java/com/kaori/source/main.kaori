@@ -2,7 +2,7 @@
 
 def foo(n: f64) -> void {
     print(n);
-    bar(n);
+    bar(true);
 }
 
 def bar(n: f64) -> void {

@@ -5,13 +5,16 @@ import java.util.List;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
+import com.kaori.memory.Environment;
 
 public abstract class Visitor<T> {
     protected int line;
+    protected final Environment<T> environment;
     protected final StatementAST.Block block;
 
     public Visitor(StatementAST.Block block) {
         this.line = 1;
+        this.environment = new Environment<>();
         this.block = block;
 
     }
@@ -22,6 +25,13 @@ public abstract class Visitor<T> {
 
     protected void visitDeclarations(List<DeclarationAST> declarations) {
         for (DeclarationAST declaration : declarations) {
+            if (declaration instanceof DeclarationAST.Function decl) {
+                this.line = declaration.line();
+                this.visitFunctionDeclaration(decl);
+            }
+        }
+
+        for (DeclarationAST declaration : declarations) {
             this.line = declaration.line();
             this.visit(declaration);
         }
@@ -31,7 +41,7 @@ public abstract class Visitor<T> {
         if (declaration instanceof DeclarationAST.Variable decl) {
             this.visitVariableDeclaration(decl);
         } else if (declaration instanceof DeclarationAST.Function decl) {
-            this.visitFunctionDeclaration(decl);
+            this.visitFunctionDefinition(decl);
         } else if (declaration instanceof StatementAST stmt) {
             this.visit(stmt);
         } else {
@@ -117,5 +127,7 @@ public abstract class Visitor<T> {
     public abstract void visitVariableDeclaration(DeclarationAST.Variable declaration);
 
     public abstract void visitFunctionDeclaration(DeclarationAST.Function declaration);
+
+    public abstract void visitFunctionDefinition(DeclarationAST.Function declaration);
 
 }

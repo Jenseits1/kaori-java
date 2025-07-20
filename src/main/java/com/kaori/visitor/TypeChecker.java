@@ -7,14 +7,10 @@ import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.Environment;
 
 public class TypeChecker extends Visitor<TypeAST> {
-    private final Environment<TypeAST> environment;
-
     public TypeChecker(StatementAST.Block block) {
         super(block);
-        this.environment = new Environment<>();
     }
 
     @Override
@@ -208,7 +204,10 @@ public class TypeChecker extends Visitor<TypeAST> {
         int distance = identifier.distance();
 
         this.environment.define(identifier.name(), declaration.type(), distance);
+    }
 
+    @Override
+    public void visitFunctionDefinition(DeclarationAST.Function declaration) {
         this.environment.enterScope();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {

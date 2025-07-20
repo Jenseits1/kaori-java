@@ -1,18 +1,16 @@
 package com.kaori.visitor;
 
+import java.util.List;
+
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.Environment;
 import com.kaori.memory.FunctionObject;
 
 public class Interpreter extends Visitor<Object> {
-    private final Environment<Object> environment;
-
     public Interpreter(StatementAST.Block block) {
         super(block);
-        this.environment = new Environment<>();
     }
 
     @Override
@@ -191,13 +189,13 @@ public class Interpreter extends Visitor<Object> {
         ExpressionAST.Identifier identifier = declaration.name();
         int distance = identifier.distance();
 
-        if (declaration.block() == null) {
-            this.environment.define(identifier.name(), null, distance);
-            return;
-        }
-
         FunctionObject functionObject = new FunctionObject(declaration.parameters(),
                 declaration.block().declarations());
         this.environment.define(identifier.name(), functionObject, distance);
+    }
+
+    @Override
+    public void visitFunctionDefinition(DeclarationAST.Function declaration) {
+
     }
 }

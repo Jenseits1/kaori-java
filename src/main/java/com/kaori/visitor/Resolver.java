@@ -3,18 +3,17 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.ast.DeclarationAST;
+import com.kaori.ast.DeclarationAST.Function;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
 import com.kaori.memory.Environment;
 
 public class Resolver extends Visitor<Resolver.ResolutionStatus> {
-    public final Environment<ResolutionStatus> environment;
 
     public Resolver(StatementAST.Block block) {
         super(block);
 
-        this.environment = new Environment<>();
     }
 
     public static enum ResolutionStatus {
@@ -147,14 +146,17 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
         ResolutionStatus status = this.getStatus(distance);
 
-        if (status == ResolutionStatus.DEFINED) {
-            throw KaoriError.ResolveError(identifier.name() + " is already defined", this.line);
+        if (status == ResolutionStatus.DECLARED) {
+            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
 
         this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
 
         identifier.setDistance(distance);
+    }
 
+    @Override
+    public void visitFunctionDefinition(DeclarationAST.Function declaration) {
         this.environment.enterScope();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {
