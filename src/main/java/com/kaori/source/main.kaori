@@ -1,13 +1,15 @@
 
+def bar(n: f64) -> void {
+    print(n + 10);
+}
 
 def foo(n: f64) -> void {
-    print(n);
-    bar(true);
+    if n > 0 {
+        foo(n - 1);
+    }
 }
 
-def bar(n: f64) -> void {
-    print(n + 5);
-}
+
 
 foo(10);
 

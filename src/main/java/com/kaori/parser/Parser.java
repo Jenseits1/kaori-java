@@ -18,341 +18,44 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    /* Expressions */
-    private ExpressionAST functionCall(ExpressionAST callee) {
-        if (this.tokens.getCurrent() != TokenKind.LEFT_PAREN) {
-            return callee;
-        }
-
-        this.tokens.consume(TokenKind.LEFT_PAREN);
-
-        List<ExpressionAST> arguments = new ArrayList<>();
-
-        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
-            ExpressionAST argument = this.expression();
-            arguments.add(argument);
-
-            if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
-                break;
-            }
-
-            this.tokens.consume(TokenKind.COMMA);
-        }
-
-        this.tokens.consume(TokenKind.RIGHT_PAREN);
-
-        ExpressionAST call = new ExpressionAST.FunctionCall(callee, arguments);
-
-        return this.functionCall(call);
+    public StatementAST.Block parse() {
+        return start();
     }
 
-    private ExpressionAST postfixUnary(ExpressionAST.Identifier identifier) {
-        return switch (this.tokens.getCurrent()) {
-            case INCREMENT -> {
-                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
-                ExpressionAST add = new ExpressionAST.BinaryExpression(identifier, literal,
-                        ExpressionAST.BinaryOperator.PLUS);
-                this.tokens.consume();
-                yield new ExpressionAST.Assign(identifier, add);
-            }
-            case DECREMENT -> {
-                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
-                ExpressionAST subtract = new ExpressionAST.BinaryExpression(identifier, literal,
-                        ExpressionAST.BinaryOperator.MINUS);
-                this.tokens.consume();
-                yield new ExpressionAST.Assign(identifier, subtract);
-            }
-            case LEFT_PAREN -> this.functionCall(identifier);
-            default -> identifier;
-        };
-    }
-
-    private ExpressionAST parenthesis() {
-        this.tokens.consume(TokenKind.LEFT_PAREN);
-
-        ExpressionAST expression = this.expression();
-
-        this.tokens.consume(TokenKind.RIGHT_PAREN);
-
-        return expression;
-    }
-
-    private ExpressionAST.Identifier identifier() {
-        String lexeme = this.tokens.getLexeme();
-        this.tokens.consume(TokenKind.IDENTIFIER);
-
-        return new ExpressionAST.Identifier(lexeme);
-    }
-
-    private ExpressionAST primary() {
-        if (this.tokens.atEnd()) {
-            throw KaoriError.SyntaxError("expected a valid operand", this.tokens.getLine());
-        }
-
-        return switch (this.tokens.getCurrent()) {
-            case BOOLEAN_LITERAL -> {
-                String lexeme = this.tokens.getLexeme();
-                boolean value = Boolean.parseBoolean(lexeme);
-                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.BOOLEAN, value);
-                this.tokens.consume();
-
-                yield literal;
-            }
-            case STRING_LITERAL -> {
-                String lexeme = this.tokens.getLexeme();
-                String value = lexeme.substring(1, lexeme.length() - 1);
-                TypeAST type = TypeAST.Primitive.STRING;
-                ExpressionAST literal = new ExpressionAST.Literal(type, value);
-                this.tokens.consume();
-
-                yield literal;
-            }
-            case NUMBER_LITERAL -> {
-                String lexeme = this.tokens.getLexeme();
-                Double value = Double.parseDouble(lexeme);
-                TypeAST type = TypeAST.Primitive.NUMBER;
-                ExpressionAST literal = new ExpressionAST.Literal(type, value);
-                this.tokens.consume();
-
-                yield literal;
-            }
-            case IDENTIFIER -> {
-                ExpressionAST.Identifier identifier = this.identifier();
-                yield this.postfixUnary(identifier);
-
-            }
-
-            case LEFT_PAREN -> this.parenthesis();
-            default -> throw KaoriError.SyntaxError(
-                    String.format("expected valid operand instead of %s", this.tokens.getCurrent()),
-                    this.tokens.getLine());
-        };
-    }
-
-    private ExpressionAST prefixUnary() {
-        return switch (this.tokens.getCurrent()) {
-            case MINUS -> {
-                this.tokens.consume();
-                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.MINUS);
-            }
-            case NOT -> {
-                this.tokens.consume();
-                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.NOT);
-            }
-            case PLUS -> {
-                this.tokens.consume();
-                yield this.prefixUnary();
-
-            }
-            default -> this.primary();
-        };
-    }
-
-    private ExpressionAST factor() {
-        ExpressionAST left = this.prefixUnary();
+    private StatementAST.Block start() {
+        List<DeclarationAST> declarations = new ArrayList<>();
 
         while (!this.tokens.atEnd()) {
-            TokenKind operator = this.tokens.getCurrent();
+            DeclarationAST declaration = this.declaration();
+            declarations.add(declaration);
 
-            switch (operator) {
-                case MULTIPLY -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.prefixUnary();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MULTIPLY);
-                }
-                case DIVIDE -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.prefixUnary();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.DIVIDE);
-                }
-                case MODULO -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.prefixUnary();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MODULO);
-                }
-                default -> {
-                    return left;
-                }
-            }
         }
 
-        return left;
+        return new StatementAST.Block(1, declarations);
     }
 
-    private ExpressionAST term() {
-        ExpressionAST left = this.factor();
-
-        while (!this.tokens.atEnd()) {
-            TokenKind operator = this.tokens.getCurrent();
-
-            switch (operator) {
-                case PLUS -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.factor();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.PLUS);
-                }
-                case MINUS -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.factor();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MINUS);
-                }
-                default -> {
-                    return left;
-                }
-            }
-        }
-
-        return left;
-    }
-
-    private ExpressionAST comparison() {
-        ExpressionAST left = this.term();
-
-        while (!this.tokens.atEnd()) {
-            TokenKind operator = this.tokens.getCurrent();
-
-            switch (operator) {
-                case GREATER -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.GREATER);
-                }
-                case GREATER_EQUAL -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.GREATER_EQUAL);
-                }
-                case LESS -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.LESS);
-                }
-                case LESS_EQUAL -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.term();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.LESS_EQUAL);
-                }
-                default -> {
-                    return left;
-                }
-            }
-        }
-
-        return left;
-    }
-
-    private ExpressionAST equality() {
-        ExpressionAST left = this.comparison();
-
-        while (!this.tokens.atEnd()) {
-            TokenKind operator = this.tokens.getCurrent();
-
-            switch (operator) {
-                case EQUAL -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.comparison();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.EQUAL);
-                }
-                case NOT_EQUAL -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.comparison();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.NOT_EQUAL);
-                }
-                default -> {
-                    return left;
-                }
-            }
-        }
-
-        return left;
-    }
-
-    private ExpressionAST and() {
-        ExpressionAST left = this.equality();
-
-        while (!this.tokens.atEnd()) {
-            TokenKind operator = this.tokens.getCurrent();
-
-            switch (operator) {
-                case AND -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.equality();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.AND);
-                }
-                default -> {
-                    return left;
-                }
-            }
-        }
-
-        return left;
-    }
-
-    private ExpressionAST or() {
-        ExpressionAST left = this.and();
-
-        while (!this.tokens.atEnd()) {
-            TokenKind operator = this.tokens.getCurrent();
-
-            switch (operator) {
-                case OR -> {
-                    this.tokens.consume();
-                    ExpressionAST right = this.and();
-                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.OR);
-                }
-                default -> {
-                    return left;
-                }
-            }
-        }
-
-        return left;
-    }
-
-    private ExpressionAST assign() {
-        ExpressionAST.Identifier left = this.identifier();
-        this.tokens.consume(TokenKind.ASSIGN);
-        ExpressionAST right = this.expression();
-
-        return new ExpressionAST.Assign(left, right);
-    }
-
-    private ExpressionAST expression() {
-        if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.ASSIGN)) {
-            return this.assign();
-        }
-
-        return this.or();
-    }
-
-    /* Types */
-    private TypeAST type() {
-        TypeAST type = switch (this.tokens.getCurrent()) {
-            case IDENTIFIER -> this.primitiveType();
-            default ->
-                throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());
+    /*
+     * ─────────────────────────────
+     * Declarations
+     * ─────────────────────────────
+     */
+    private DeclarationAST declaration() {
+        DeclarationAST declaration = switch (this.tokens.getCurrent()) {
+            case FUNCTION -> this.functionDeclaration();
+            default -> this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON) ? this.variableDeclaration()
+                    : this.statement();
         };
 
-        return type;
+        if (declaration instanceof StatementAST.Print || declaration instanceof DeclarationAST.Variable
+                || declaration instanceof StatementAST.Expr)
+
+        {
+            this.tokens.consume(TokenKind.SEMICOLON);
+        }
+
+        return declaration;
     }
 
-    private TypeAST primitiveType() {
-        String lexeme = this.tokens.getLexeme();
-        this.tokens.consume(TokenKind.IDENTIFIER);
-
-        TypeAST type = switch (lexeme) {
-            case "str" -> TypeAST.Primitive.STRING;
-            case "bool" -> TypeAST.Primitive.BOOLEAN;
-            case "f64" -> TypeAST.Primitive.NUMBER;
-            case "void" -> TypeAST.Primitive.VOID;
-            default ->
-                throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());
-        };
-
-        return type;
-    }
-
-    /* Declarations */
     private DeclarationAST.Variable variableDeclaration() {
         int line = this.tokens.getLine();
 
@@ -409,7 +112,11 @@ public class Parser {
         return new DeclarationAST.Function(line, name, parameters, type, block);
     }
 
-    /* Statements */
+    /*
+     * ─────────────────────────────
+     * Statements
+     * ─────────────────────────────
+     */
     private StatementAST.Expr expressionStatement() {
         int line = this.tokens.getLine();
 
@@ -506,28 +213,8 @@ public class Parser {
         return new StatementAST.ForLoop(line, variable, condition, increment, block);
     }
 
-    private DeclarationAST declaration() {
-        DeclarationAST declaration = switch (this.tokens.getCurrent()) {
-            case FUNCTION -> this.functionDeclaration();
-            default -> {
-                if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.COLON)) {
-                    yield this.variableDeclaration();
-                }
-
-                yield this.statement();
-            }
-        };
-
-        if (declaration instanceof StatementAST.Print || declaration instanceof DeclarationAST.Variable
-                || declaration instanceof StatementAST.Expr) {
-            this.tokens.consume(TokenKind.SEMICOLON);
-        }
-
-        return declaration;
-    }
-
     private StatementAST statement() {
-        StatementAST statement = switch (this.tokens.getCurrent()) {
+        return switch (this.tokens.getCurrent()) {
             case PRINT -> this.printStatement();
             case LEFT_BRACE -> this.blockStatement();
             case IF -> this.ifStatement();
@@ -535,23 +222,341 @@ public class Parser {
             case FOR -> this.forLoopStatement();
             default -> this.expressionStatement();
         };
-
-        return statement;
     }
 
-    private StatementAST.Block start() {
-        List<DeclarationAST> declarations = new ArrayList<>();
-
-        while (!this.tokens.atEnd()) {
-            DeclarationAST declaration = this.declaration();
-            declarations.add(declaration);
-
+    /*
+     * ─────────────────────────────
+     * Expressions
+     * ─────────────────────────────
+     */
+    private ExpressionAST expression() {
+        if (this.tokens.lookAhead(TokenKind.IDENTIFIER, TokenKind.ASSIGN)) {
+            return this.assign();
         }
 
-        return new StatementAST.Block(1, declarations);
+        return this.or();
     }
 
-    public StatementAST.Block parse() {
-        return start();
+    private ExpressionAST assign() {
+        ExpressionAST.Identifier left = this.identifier();
+        this.tokens.consume(TokenKind.ASSIGN);
+        ExpressionAST right = this.expression();
+
+        return new ExpressionAST.Assign(left, right);
     }
+
+    private ExpressionAST or() {
+        ExpressionAST left = this.and();
+
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
+
+            switch (operator) {
+                case OR -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.and();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.OR);
+                }
+                default -> {
+                    return left;
+                }
+            }
+        }
+
+        return left;
+    }
+
+    private ExpressionAST and() {
+        ExpressionAST left = this.equality();
+
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
+
+            switch (operator) {
+                case AND -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.equality();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.AND);
+                }
+                default -> {
+                    return left;
+                }
+            }
+        }
+
+        return left;
+    }
+
+    private ExpressionAST equality() {
+        ExpressionAST left = this.comparison();
+
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
+
+            switch (operator) {
+                case EQUAL -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.comparison();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.EQUAL);
+                }
+                case NOT_EQUAL -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.comparison();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.NOT_EQUAL);
+                }
+                default -> {
+                    return left;
+                }
+            }
+        }
+
+        return left;
+    }
+
+    private ExpressionAST comparison() {
+        ExpressionAST left = this.term();
+
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
+
+            switch (operator) {
+                case GREATER -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.GREATER);
+                }
+                case GREATER_EQUAL -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.GREATER_EQUAL);
+                }
+                case LESS -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.LESS);
+                }
+                case LESS_EQUAL -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.term();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.LESS_EQUAL);
+                }
+                default -> {
+                    return left;
+                }
+            }
+        }
+
+        return left;
+    }
+
+    private ExpressionAST term() {
+        ExpressionAST left = this.factor();
+
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
+
+            switch (operator) {
+                case PLUS -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.factor();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.PLUS);
+                }
+                case MINUS -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.factor();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MINUS);
+                }
+                default -> {
+                    return left;
+                }
+            }
+        }
+
+        return left;
+    }
+
+    private ExpressionAST factor() {
+        ExpressionAST left = this.prefixUnary();
+
+        while (!this.tokens.atEnd()) {
+            TokenKind operator = this.tokens.getCurrent();
+
+            switch (operator) {
+                case MULTIPLY -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.prefixUnary();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MULTIPLY);
+                }
+                case DIVIDE -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.prefixUnary();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.DIVIDE);
+                }
+                case MODULO -> {
+                    this.tokens.consume();
+                    ExpressionAST right = this.prefixUnary();
+                    left = new ExpressionAST.BinaryExpression(left, right, ExpressionAST.BinaryOperator.MODULO);
+                }
+                default -> {
+                    return left;
+                }
+            }
+        }
+
+        return left;
+    }
+
+    private ExpressionAST prefixUnary() {
+        return switch (this.tokens.getCurrent()) {
+            case MINUS -> {
+                this.tokens.consume();
+                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.MINUS);
+            }
+            case NOT -> {
+                this.tokens.consume();
+                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.NOT);
+            }
+            case PLUS -> {
+                this.tokens.consume();
+                yield this.prefixUnary();
+
+            }
+            default -> this.primary();
+        };
+    }
+
+    private ExpressionAST primary() {
+        return switch (this.tokens.getCurrent()) {
+            case BOOLEAN_LITERAL -> {
+                String lexeme = this.tokens.getLexeme();
+                boolean value = Boolean.parseBoolean(lexeme);
+                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.BOOLEAN, value);
+                this.tokens.consume();
+
+                yield literal;
+            }
+            case STRING_LITERAL -> {
+                String lexeme = this.tokens.getLexeme();
+                String value = lexeme.substring(1, lexeme.length() - 1);
+                TypeAST type = TypeAST.Primitive.STRING;
+                ExpressionAST literal = new ExpressionAST.Literal(type, value);
+                this.tokens.consume();
+
+                yield literal;
+            }
+            case NUMBER_LITERAL -> {
+                String lexeme = this.tokens.getLexeme();
+                Double value = Double.parseDouble(lexeme);
+                TypeAST type = TypeAST.Primitive.NUMBER;
+                ExpressionAST literal = new ExpressionAST.Literal(type, value);
+                this.tokens.consume();
+
+                yield literal;
+            }
+            case IDENTIFIER -> {
+                ExpressionAST.Identifier identifier = this.identifier();
+                yield this.postfixUnary(identifier);
+
+            }
+            case LEFT_PAREN -> this.parenthesis();
+            default -> throw KaoriError.SyntaxError("expected a valid operand", this.tokens.getLine());
+        };
+    }
+
+    private ExpressionAST.Identifier identifier() {
+        String lexeme = this.tokens.getLexeme();
+        this.tokens.consume(TokenKind.IDENTIFIER);
+
+        return new ExpressionAST.Identifier(lexeme);
+    }
+
+    private ExpressionAST parenthesis() {
+        this.tokens.consume(TokenKind.LEFT_PAREN);
+
+        ExpressionAST expression = this.expression();
+
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
+
+        return expression;
+    }
+
+    private ExpressionAST postfixUnary(ExpressionAST.Identifier identifier) {
+        return switch (this.tokens.getCurrent()) {
+            case INCREMENT -> {
+                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
+                ExpressionAST add = new ExpressionAST.BinaryExpression(identifier, literal,
+                        ExpressionAST.BinaryOperator.PLUS);
+                this.tokens.consume();
+                yield new ExpressionAST.Assign(identifier, add);
+            }
+            case DECREMENT -> {
+                ExpressionAST literal = new ExpressionAST.Literal(TypeAST.Primitive.NUMBER, 1.0);
+                ExpressionAST subtract = new ExpressionAST.BinaryExpression(identifier, literal,
+                        ExpressionAST.BinaryOperator.MINUS);
+                this.tokens.consume();
+                yield new ExpressionAST.Assign(identifier, subtract);
+            }
+            case LEFT_PAREN -> this.functionCall(identifier);
+            default -> identifier;
+        };
+    }
+
+    private ExpressionAST functionCall(ExpressionAST callee) {
+        if (this.tokens.getCurrent() != TokenKind.LEFT_PAREN) {
+            return callee;
+        }
+
+        this.tokens.consume(TokenKind.LEFT_PAREN);
+
+        List<ExpressionAST> arguments = new ArrayList<>();
+
+        while (!this.tokens.atEnd() && this.tokens.getCurrent() != TokenKind.RIGHT_PAREN) {
+            ExpressionAST argument = this.expression();
+            arguments.add(argument);
+
+            if (this.tokens.getCurrent() == TokenKind.RIGHT_PAREN) {
+                break;
+            }
+
+            this.tokens.consume(TokenKind.COMMA);
+        }
+
+        this.tokens.consume(TokenKind.RIGHT_PAREN);
+
+        ExpressionAST call = new ExpressionAST.FunctionCall(callee, arguments);
+
+        return this.functionCall(call);
+    }
+
+    /*
+     * ─────────────────────────────
+     * Types
+     * ─────────────────────────────
+     */
+    private TypeAST type() {
+        TypeAST type = switch (this.tokens.getCurrent()) {
+            case IDENTIFIER -> this.primitiveType();
+            default ->
+                throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());
+        };
+
+        return type;
+    }
+
+    private TypeAST primitiveType() {
+        String lexeme = this.tokens.getLexeme();
+        this.tokens.consume(TokenKind.IDENTIFIER);
+
+        TypeAST type = switch (lexeme) {
+            case "str" -> TypeAST.Primitive.STRING;
+            case "bool" -> TypeAST.Primitive.BOOLEAN;
+            case "f64" -> TypeAST.Primitive.NUMBER;
+            case "void" -> TypeAST.Primitive.VOID;
+            default ->
+                throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());
+        };
+
+        return type;
+    }
+
 }

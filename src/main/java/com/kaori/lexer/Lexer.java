@@ -17,6 +17,39 @@ public class Lexer {
         this.source = source;
     }
 
+    private void reset() {
+        this.index = 0;
+        this.line = 1;
+        this.tokens = new ArrayList<>();
+    }
+
+    public List<Token> scan() {
+        this.reset();
+        this.start();
+
+        return tokens;
+    }
+
+    private void start() {
+        while (!this.atEnd(this.index)) {
+            char c = this.source.charAt(this.index);
+
+            if (Character.isWhitespace(c)) {
+                this.scanWhiteSpace();
+            } else if (Character.isDigit(c)) {
+                this.scanNumber();
+            } else if (Character.isLetter(c)) {
+                this.scanIdentifierOrKeyword();
+            } else if (c == '"') {
+                this.scanStringLiteral();
+            } else if (this.lookAhead("/*", this.index)) {
+                this.scanComment();
+            } else {
+                this.scanSymbol();
+            }
+        }
+    }
+
     private void advance(int steps) {
         for (int i = 0; i < steps; i++) {
             if (this.source.charAt(this.index) == '\n') {
@@ -196,38 +229,4 @@ public class Lexer {
 
         this.createToken(kind, size);
     }
-
-    private void reset() {
-        this.index = 0;
-        this.line = 1;
-        this.tokens = new ArrayList<>();
-    }
-
-    private void start() {
-        while (!this.atEnd(this.index)) {
-            char c = this.source.charAt(this.index);
-
-            if (Character.isWhitespace(c)) {
-                this.scanWhiteSpace();
-            } else if (Character.isDigit(c)) {
-                this.scanNumber();
-            } else if (Character.isLetter(c)) {
-                this.scanIdentifierOrKeyword();
-            } else if (c == '"') {
-                this.scanStringLiteral();
-            } else if (this.lookAhead("/*", this.index)) {
-                this.scanComment();
-            } else {
-                this.scanSymbol();
-            }
-        }
-    }
-
-    public List<Token> scan() {
-        this.reset();
-        this.start();
-
-        return tokens;
-    }
-
 }
