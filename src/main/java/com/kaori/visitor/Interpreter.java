@@ -115,6 +115,8 @@ public class Interpreter extends Visitor<Object> {
         this.environment.exitScope();
 
         return null;
+
+        // "foo", "n",
     }
 
     @Override

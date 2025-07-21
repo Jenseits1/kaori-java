@@ -1,16 +1,15 @@
 package com.kaori.memory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 public class Environment<T> {
-    public final List<Declaration<T>> declarations;
-    public final Stack<Integer> scopeReferences;
+    public final Stack<Declaration<T>> declarations;
+    public int scopeDepth;
 
     public Environment() {
-        this.declarations = new ArrayList<>();
-        this.scopeReferences = new Stack<>();
+        this.declarations = new Stack<>();
+
+        this.scopeDepth = 0;
     }
 
     public T get(int distance) {
@@ -21,21 +20,23 @@ public class Environment<T> {
     }
 
     public void define(String identifier, T value, int distance) {
-        Declaration<T> declaration = new Declaration<>(identifier, value);
-
         if (distance == 0) {
+            Declaration<T> declaration = new Declaration<>(identifier, value, this.scopeDepth);
             this.declarations.add(declaration);
         } else {
             int reference = this.declarations.size() - distance;
-            this.declarations.set(reference, declaration);
+            Declaration<T> declaration = this.declarations.get(reference);
+            declaration.value = value;
         }
     }
 
     public int searchInner(String identifier) {
-        int reference = this.scopeReferences.peek();
-
-        for (int i = declarations.size() - 1; i >= reference; i--) {
+        for (int i = declarations.size() - 1; i >= 0; i--) {
             Declaration<T> declaration = declarations.get(i);
+
+            if (declaration.scopeDepth < this.scopeDepth) {
+                break;
+            }
 
             if (declaration.identifier.equals(identifier)) {
                 int distance = this.declarations.size() - i;
@@ -62,18 +63,14 @@ public class Environment<T> {
     }
 
     public void enterScope() {
-        int reference = this.declarations.size();
-
-        this.scopeReferences.add(reference);
+        this.scopeDepth++;
     }
 
     public void exitScope() {
-        int reference = this.scopeReferences.peek();
-
-        while (this.declarations.size() > reference) {
-            this.declarations.remove(declarations.size() - 1);
+        while (!this.declarations.empty() && this.declarations.peek().scopeDepth == this.scopeDepth) {
+            this.declarations.pop();
         }
 
-        this.scopeReferences.pop();
+        this.scopeDepth--;
     }
 }

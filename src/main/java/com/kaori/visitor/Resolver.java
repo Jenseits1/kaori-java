@@ -65,7 +65,7 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         }
 
         expression.setDistance(distance);
-
+        // "bar", "foo",
         return status;
     }
 
