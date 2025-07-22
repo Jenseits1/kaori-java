@@ -1,15 +1,23 @@
 package com.kaori.visitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
+import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
+import com.kaori.memory.CallStack;
 import com.kaori.memory.FunctionObject;
 import com.kaori.memory.resolver.DeclarationRef;
 
 public class Interpreter extends Visitor<Object> {
+    public final CallStack<Object> callStack;
+
     public Interpreter(StatementAST.Block block) {
         super(block);
+        this.callStack = new CallStack<>();
     }
 
     @Override
@@ -69,7 +77,7 @@ public class Interpreter extends Visitor<Object> {
         ExpressionAST.Identifier identifier = expression.left();
         DeclarationRef reference = identifier.reference();
 
-        this.environment.define(identifier.name(), value, reference);
+        this.callStack.define(value, reference);
 
         return value;
     }
@@ -82,7 +90,7 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
         DeclarationRef reference = expression.reference();
-        Object value = this.environment.get(reference);
+        Object value = this.callStack.get(reference);
 
         if (value == null) {
             throw KaoriError.RuntimeError(expression.name() + " is not defined", this.line);
@@ -95,23 +103,29 @@ public class Interpreter extends Visitor<Object> {
     public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
         FunctionObject functionObject = (FunctionObject) this.visit(expression.callee());
 
-        this.environment.enterFunction();
+        List<Object> arguments = new ArrayList<>();
 
-        int smallest = Math.min(expression.arguments().size(), functionObject.parameters().size());
-
-        for (int i = 0; i < smallest; i++) {
-            DeclarationAST.Variable parameter = functionObject.parameters().get(i);
-            ExpressionAST argument = expression.arguments().get(i);
-            parameter.setRight(argument);
+        for (ExpressionAST argument : expression.arguments()) {
+            arguments.add(this.visit(argument));
         }
+
+        this.callStack.enterFunction();
 
         for (StatementAST.Variable parameter : functionObject.parameters()) {
             this.visit(parameter);
         }
 
+        int smallest = Math.min(arguments.size(), functionObject.parameters().size());
+
+        for (int i = 0; i < smallest; i++) {
+            DeclarationRef reference = functionObject.parameters().get(i).left().reference();
+            Object argument = arguments.get(i);
+            this.callStack.define(argument, reference);
+        }
+
         this.visitDeclarations(functionObject.declarations());
 
-        this.environment.exitFunction();
+        this.callStack.exitFunction();
 
         return null;
 
@@ -127,9 +141,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.environment.enterScope();
         this.visitDeclarations(statement.declarations());
-        this.environment.exitScope();
     }
 
     @Override
@@ -182,7 +194,7 @@ public class Interpreter extends Visitor<Object> {
         ExpressionAST.Identifier identifier = declaration.left();
         DeclarationRef reference = identifier.reference();
 
-        this.environment.define(identifier.name(), right, reference);
+        this.callStack.define(right, reference);
     }
 
     @Override
@@ -192,7 +204,8 @@ public class Interpreter extends Visitor<Object> {
 
         FunctionObject functionObject = new FunctionObject(declaration.parameters(),
                 declaration.block().declarations());
-        this.environment.define(identifier.name(), functionObject, reference);
+
+        this.callStack.define(functionObject, reference);
     }
 
     @Override

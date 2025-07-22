@@ -14,7 +14,7 @@ public class CallStack<T> {
 
         final int stackMaxSize = 10_000;
 
-        stack.setSize(stackMaxSize);
+        // stack.setSize(stackMaxSize);
 
         this.framePointers.push(0);
     }
@@ -26,7 +26,12 @@ public class CallStack<T> {
             index += framePointers.peek();
         }
 
-        this.stack.set(index, value);
+        if (index >= this.stack.size()) {
+            this.stack.push(value);
+        } else {
+            this.stack.set(index, value);
+        }
+
     }
 
     public T get(DeclarationRef reference) {
@@ -37,5 +42,15 @@ public class CallStack<T> {
         }
 
         return this.stack.get(index);
+    }
+
+    public void enterFunction() {
+        int index = this.stack.size();
+
+        this.framePointers.push(index);
+    }
+
+    public void exitFunction() {
+        this.framePointers.pop();
     }
 }

@@ -129,6 +129,7 @@ public class Resolver extends Visitor<ResolutionStatus> {
             case UNRESOLVED -> this.environment.define(identifier.name());
         }
 
+        reference = this.environment.searchInner(identifier.name());
         identifier.setReference(reference);
     }
 
@@ -143,7 +144,7 @@ public class Resolver extends Visitor<ResolutionStatus> {
         }
 
         this.environment.define(identifier.name());
-
+        reference = this.environment.searchInner(identifier.name());
         identifier.setReference(reference);
     }
 

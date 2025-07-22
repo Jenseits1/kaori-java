@@ -1,20 +1,35 @@
-a: f64 = 15;
+/* a: f64 = 15;
 b: f64 = 10;
 c: f64 = 11;
 
 
+
+
+{ 
+    d: f64 = 10;
+    e: str = "";
+    print(d);
+    d = 7;
+    print(d);
+}
+ */
+
+bar(5);
+
 def bar(n: f64) -> void {
+    if n > 0 {
+        print(n);
+        foo(n - 1);
+    }
+}
+
+def foo(n: f64) -> void {
     if n > 0 {
         print(n);
         bar(n - 1);
     }
-
-
-    
 }
 
+foo(5);
 
 
-bar(5);
-d: f64;
-print(d);

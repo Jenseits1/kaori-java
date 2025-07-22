@@ -7,11 +7,15 @@ import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
+import com.kaori.memory.CallStack;
 import com.kaori.memory.resolver.DeclarationRef;
 
 public class TypeChecker extends Visitor<TypeAST> {
+    public final CallStack<TypeAST> callStack;
+
     public TypeChecker(StatementAST.Block block) {
         super(block);
+        this.callStack = new CallStack<>();
     }
 
     @Override
@@ -86,7 +90,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.environment.define(identifier.name(), right, identifier.reference());
+        this.callStack.define(right, identifier.reference());
 
         return right;
     }
@@ -98,7 +102,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier expression) {
-        return this.environment.get(expression.reference());
+        return this.callStack.get(expression.reference());
     }
 
     @Override
@@ -134,9 +138,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
-        this.environment.enterScope();
         this.visitDeclarations(statement.declarations());
-        this.environment.exitScope();
     }
 
     @Override
@@ -195,7 +197,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.environment.define(identifier.name(), right, identifier.reference());
+        this.callStack.define(right, identifier.reference());
     }
 
     @Override
@@ -204,12 +206,12 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         DeclarationRef reference = identifier.reference();
 
-        this.environment.define(identifier.name(), declaration.type(), reference);
+        this.callStack.define(declaration.type(), reference);
     }
 
     @Override
     public void visitFunctionDefinition(DeclarationAST.Function declaration) {
-        this.environment.enterFunction();
+        this.callStack.enterFunction();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {
             this.visit(parameter);
@@ -219,7 +221,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         this.visitDeclarations(declarations);
 
-        this.environment.exitFunction();
+        this.callStack.exitFunction();
     }
 
 }
