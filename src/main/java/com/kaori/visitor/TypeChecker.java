@@ -7,6 +7,7 @@ import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
+import com.kaori.memory.DeclarationRef;
 
 public class TypeChecker extends Visitor<TypeAST> {
     public TypeChecker(StatementAST.Block block) {
@@ -85,7 +86,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.environment.define(identifier.name(), right, identifier.distance());
+        this.environment.define(identifier.name(), right, identifier.reference());
 
         return right;
     }
@@ -97,7 +98,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier expression) {
-        return this.environment.get(expression.distance());
+        return this.environment.get(expression.reference());
     }
 
     @Override
@@ -194,21 +195,21 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.environment.define(identifier.name(), right, identifier.distance());
+        this.environment.define(identifier.name(), right, identifier.reference());
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
         ExpressionAST.Identifier identifier = declaration.name();
 
-        int distance = identifier.distance();
+        DeclarationRef reference = identifier.reference();
 
-        this.environment.define(identifier.name(), declaration.type(), distance);
+        this.environment.define(identifier.name(), declaration.type(), reference);
     }
 
     @Override
     public void visitFunctionDefinition(DeclarationAST.Function declaration) {
-        this.environment.enterScope();
+        this.environment.enterFunction();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {
             this.visit(parameter);
@@ -218,7 +219,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         this.visitDeclarations(declarations);
 
-        this.environment.exitScope();
+        this.environment.exitFunction();
     }
 
 }

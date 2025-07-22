@@ -3,27 +3,21 @@ package com.kaori.visitor;
 import java.util.List;
 
 import com.kaori.ast.DeclarationAST;
-import com.kaori.ast.DeclarationAST.Function;
+
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
+import com.kaori.memory.DeclarationRef;
 import com.kaori.memory.Environment;
+import com.kaori.memory.ResolutionStatus;
 
-public class Resolver extends Visitor<Resolver.ResolutionStatus> {
+public class Resolver extends Visitor<ResolutionStatus> {
+    protected final Environment environment;
 
     public Resolver(StatementAST.Block block) {
         super(block);
+        this.environment = new Environment();
 
-    }
-
-    public static enum ResolutionStatus {
-        UNDECLARED,
-        DECLARED,
-        DEFINED
-    }
-
-    private ResolutionStatus getStatus(int distance) {
-        return distance == 0 ? ResolutionStatus.UNDECLARED : this.environment.get(distance);
     }
 
     /* Expressions */
@@ -32,14 +26,14 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         this.visit(expression.left());
         this.visit(expression.right());
 
-        return ResolutionStatus.DEFINED;
+        return ResolutionStatus.RESOLVED;
     }
 
     @Override
     public ResolutionStatus visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
         this.visit(expression.left());
 
-        return ResolutionStatus.DEFINED;
+        return ResolutionStatus.RESOLVED;
     }
 
     @Override
@@ -47,25 +41,25 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
         this.visit(expression.left());
         this.visit(expression.right());
 
-        return ResolutionStatus.DEFINED;
+        return ResolutionStatus.RESOLVED;
     }
 
     @Override
     public ResolutionStatus visitLiteral(ExpressionAST.Literal expression) {
-        return ResolutionStatus.DEFINED;
+        return ResolutionStatus.RESOLVED;
     }
 
     @Override
     public ResolutionStatus visitIdentifier(ExpressionAST.Identifier expression) {
-        int distance = this.environment.search(expression.name());
-        ResolutionStatus status = this.getStatus(distance);
+        DeclarationRef reference = this.environment.search(expression.name());
+        ResolutionStatus status = this.environment.get(reference);
 
-        if (status == ResolutionStatus.UNDECLARED) {
+        if (status == ResolutionStatus.UNRESOLVED) {
             throw KaoriError.ResolveError(expression.name() + " is not declared", this.line);
         }
 
-        expression.setDistance(distance);
-        // "bar", "foo",
+        expression.setReference(reference);
+
         return status;
     }
 
@@ -126,38 +120,45 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
         this.visit(declaration.right());
 
-        int distance = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = this.getStatus(distance);
+        DeclarationRef reference = this.environment.searchInner(identifier.name());
+        ResolutionStatus status = this.environment.get(reference);
 
         switch (status) {
-            case DECLARED, DEFINED ->
+            case RESOLVED ->
                 throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-            case UNDECLARED -> this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
+            case UNRESOLVED -> this.environment.define(identifier.name(), ResolutionStatus.RESOLVED, reference);
         }
 
-        identifier.setDistance(distance);
+        identifier.setReference(reference);
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
         ExpressionAST.Identifier identifier = declaration.name();
+        DeclarationRef reference = this.environment.searchInner(identifier.name());
 
-        int distance = this.environment.searchInner(identifier.name());
+        ResolutionStatus status = this.environment.get(reference);
 
-        ResolutionStatus status = this.getStatus(distance);
-
-        if (status == ResolutionStatus.DECLARED) {
+        if (status == ResolutionStatus.RESOLVED) {
             throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
 
-        this.environment.define(identifier.name(), ResolutionStatus.DECLARED, distance);
+        this.environment.define(identifier.name(), ResolutionStatus.RESOLVED, reference);
 
-        identifier.setDistance(distance);
+        identifier.setReference(reference);
     }
 
     @Override
     public void visitFunctionDefinition(DeclarationAST.Function declaration) {
-        this.environment.enterScope();
+
+        int currentFrame = this.environment.currentFrame;
+
+        if (currentFrame > 0) {
+            throw KaoriError.ResolveError(declaration.name().name() + " cannot be declared inside another function",
+                    this.line);
+        }
+
+        this.environment.enterFunction();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {
             this.visit(parameter);
@@ -167,7 +168,7 @@ public class Resolver extends Visitor<Resolver.ResolutionStatus> {
 
         this.visitDeclarations(declarations);
 
-        this.environment.exitScope();
+        this.environment.exitFunction();
     }
 
 }

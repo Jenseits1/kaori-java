@@ -1,11 +1,10 @@
 package com.kaori.visitor;
 
-import java.util.List;
-
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
+import com.kaori.memory.DeclarationRef;
 import com.kaori.memory.FunctionObject;
 
 public class Interpreter extends Visitor<Object> {
@@ -68,9 +67,9 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(ExpressionAST.Assign expression) {
         Object value = this.visit(expression.right());
         ExpressionAST.Identifier identifier = expression.left();
-        int distance = identifier.distance();
+        DeclarationRef reference = identifier.reference();
 
-        this.environment.define(identifier.name(), value, distance);
+        this.environment.define(identifier.name(), value, reference);
 
         return value;
     }
@@ -82,8 +81,8 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
-        int distance = expression.distance();
-        Object value = this.environment.get(distance);
+        DeclarationRef reference = expression.reference();
+        Object value = this.environment.get(reference);
 
         if (value == null) {
             throw KaoriError.RuntimeError(expression.name() + " is not defined", this.line);
@@ -96,7 +95,7 @@ public class Interpreter extends Visitor<Object> {
     public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
         FunctionObject functionObject = (FunctionObject) this.visit(expression.callee());
 
-        this.environment.enterScope();
+        this.environment.enterFunction();
 
         int smallest = Math.min(expression.arguments().size(), functionObject.parameters().size());
 
@@ -112,7 +111,7 @@ public class Interpreter extends Visitor<Object> {
 
         this.visitDeclarations(functionObject.declarations());
 
-        this.environment.exitScope();
+        this.environment.exitFunction();
 
         return null;
 
@@ -181,19 +180,19 @@ public class Interpreter extends Visitor<Object> {
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
         Object right = this.visit(declaration.right());
         ExpressionAST.Identifier identifier = declaration.left();
-        int distance = identifier.distance();
+        DeclarationRef reference = identifier.reference();
 
-        this.environment.define(identifier.name(), right, distance);
+        this.environment.define(identifier.name(), right, reference);
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
         ExpressionAST.Identifier identifier = declaration.name();
-        int distance = identifier.distance();
+        DeclarationRef reference = identifier.reference();
 
         FunctionObject functionObject = new FunctionObject(declaration.parameters(),
                 declaration.block().declarations());
-        this.environment.define(identifier.name(), functionObject, distance);
+        this.environment.define(identifier.name(), functionObject, reference);
     }
 
     @Override

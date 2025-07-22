@@ -5,16 +5,14 @@ import java.util.List;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
-import com.kaori.memory.Environment;
 
 public abstract class Visitor<T> {
     protected int line;
-    protected final Environment<T> environment;
+
     protected final StatementAST.Block block;
 
     public Visitor(StatementAST.Block block) {
         this.line = 1;
-        this.environment = new Environment<>();
         this.block = block;
 
     }

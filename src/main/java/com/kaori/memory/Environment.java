@@ -2,64 +2,83 @@ package com.kaori.memory;
 
 import java.util.Stack;
 
-public class Environment<T> {
-    public final Stack<Declaration<T>> declarations;
+public class Environment {
+    public final Stack<Declaration> declarations;
     public int scopeDepth;
+    public int currentFrame;
 
     public Environment() {
         this.declarations = new Stack<>();
-
         this.scopeDepth = 0;
+        this.currentFrame = 0;
     }
 
-    public T get(int distance) {
-        int reference = this.declarations.size() - distance;
-        Declaration<T> declaration = declarations.get(reference);
+    public ResolutionStatus get(DeclarationRef reference) {
+        if (reference == null) {
+            return ResolutionStatus.UNRESOLVED;
+        }
 
-        return declaration.value;
+        return ResolutionStatus.RESOLVED;
     }
 
-    public void define(String identifier, T value, int distance) {
-        if (distance == 0) {
-            Declaration<T> declaration = new Declaration<>(identifier, value, this.scopeDepth);
+    public void define(String identifier, ResolutionStatus value, DeclarationRef reference) {
+        if (reference == null) {
+            Declaration declaration = new Declaration(identifier, value, scopeDepth);
             this.declarations.add(declaration);
+            return;
+        }
+
+        if (reference.local()) {
+            int index = this.currentFrame + reference.offset();
+
+            Declaration declaration = this.declarations.get(index);
+            declaration.value = value;
         } else {
-            int reference = this.declarations.size() - distance;
-            Declaration<T> declaration = this.declarations.get(reference);
+            int index = reference.offset();
+
+            Declaration declaration = this.declarations.get(index);
             declaration.value = value;
         }
     }
 
-    public int searchInner(String identifier) {
-        for (int i = declarations.size() - 1; i >= 0; i--) {
-            Declaration<T> declaration = declarations.get(i);
+    public DeclarationRef searchInner(String identifier) {
+        for (int index = declarations.size() - 1; index >= 0; index--) {
+            Declaration declaration = declarations.get(index);
 
             if (declaration.scopeDepth < this.scopeDepth) {
                 break;
             }
 
             if (declaration.identifier.equals(identifier)) {
-                int distance = this.declarations.size() - i;
+                int start = this.currentFrame;
+                boolean local = index >= start;
+                int offset = local ? index - start : index;
 
-                return distance;
+                DeclarationRef reference = new DeclarationRef(offset, local);
+
+                return reference;
             }
         }
 
-        return 0;
+        return null;
     }
 
-    public int search(String identifier) {
-        for (int i = declarations.size() - 1; i >= 0; i--) {
-            Declaration<T> declaration = declarations.get(i);
+    public DeclarationRef search(String identifier) {
+        for (int index = declarations.size() - 1; index >= 0; index--) {
+            Declaration declaration = declarations.get(index);
 
             if (declaration.identifier.equals(identifier)) {
-                int distance = this.declarations.size() - i;
+                int start = this.currentFrame;
+                boolean local = index >= start;
+                int offset = local ? index - start : index;
 
-                return distance;
+                DeclarationRef reference = new DeclarationRef(offset, local);
+
+                return reference;
             }
         }
 
-        return 0;
+        return null;
     }
 
     public void enterScope() {
@@ -72,5 +91,17 @@ public class Environment<T> {
         }
 
         this.scopeDepth--;
+    }
+
+    public void enterFunction() {
+        this.currentFrame = this.declarations.size();
+
+        this.enterScope();
+    }
+
+    public void exitFunction() {
+        this.currentFrame = 0;
+
+        this.exitScope();
     }
 }
