@@ -2,7 +2,7 @@ package com.kaori.ast;
 
 import java.util.List;
 
-import com.kaori.memory.DeclarationRef;
+import com.kaori.memory.resolver.DeclarationRef;
 
 public interface ExpressionAST {
     public static enum BinaryOperator implements ExpressionAST {

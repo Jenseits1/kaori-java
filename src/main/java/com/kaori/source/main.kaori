@@ -9,7 +9,12 @@ def bar(n: f64) -> void {
         bar(n - 1);
     }
 
+
     
 }
 
+
+
 bar(5);
+d: f64;
+print(d);

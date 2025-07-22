@@ -4,8 +4,8 @@ import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.DeclarationRef;
 import com.kaori.memory.FunctionObject;
+import com.kaori.memory.resolver.DeclarationRef;
 
 public class Interpreter extends Visitor<Object> {
     public Interpreter(StatementAST.Block block) {
