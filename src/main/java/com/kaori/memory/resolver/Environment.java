@@ -17,7 +17,7 @@ public class Environment {
         return reference == null ? ResolutionStatus.UNRESOLVED : ResolutionStatus.RESOLVED;
     }
 
-    public void define(String identifier) {
+    public void declare(String identifier) {
         int offset = this.declarations.size() - this.currentFrame;
         boolean local = this.currentFrame > 0;
         int scopeDepth = this.scopeDepth;
@@ -25,7 +25,6 @@ public class Environment {
         Declaration declaration = new Declaration(identifier, scopeDepth, reference);
 
         this.declarations.add(declaration);
-
     }
 
     public DeclarationRef searchInner(String identifier) {

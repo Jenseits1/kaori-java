@@ -8,7 +8,6 @@ import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
 import com.kaori.memory.CallStack;
-import com.kaori.memory.resolver.DeclarationRef;
 
 public class TypeChecker extends Visitor<TypeAST> {
     public final CallStack<TypeAST> callStack;
@@ -186,8 +185,6 @@ public class TypeChecker extends Visitor<TypeAST> {
     /* Declarations */
     @Override
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
-        ExpressionAST.Identifier identifier = declaration.left();
-
         TypeAST left = declaration.type();
         TypeAST right = this.visit(declaration.right());
 
@@ -196,17 +193,12 @@ public class TypeChecker extends Visitor<TypeAST> {
                     String.format("invalid variable declaration with type %s for type %s", left, right),
                     this.line);
         }
-
-        this.callStack.define(right, identifier.reference());
+        this.callStack.declare(left);
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
-        ExpressionAST.Identifier identifier = declaration.name();
-
-        DeclarationRef reference = identifier.reference();
-
-        this.callStack.define(declaration.type(), reference);
+        this.callStack.declare(declaration.type());
     }
 
     @Override

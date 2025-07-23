@@ -36,7 +36,7 @@
 
 ## Grammar
 
-```rust
+```text
 program                  -> declaration* EOF
 
 type                     -> function_type | primitive_type

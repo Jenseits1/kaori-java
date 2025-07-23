@@ -126,11 +126,8 @@ public class Resolver extends Visitor<ResolutionStatus> {
         switch (status) {
             case RESOLVED ->
                 throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-            case UNRESOLVED -> this.environment.define(identifier.name());
+            case UNRESOLVED -> this.environment.declare(identifier.name());
         }
-
-        reference = this.environment.searchInner(identifier.name());
-        identifier.setReference(reference);
     }
 
     @Override
@@ -143,9 +140,7 @@ public class Resolver extends Visitor<ResolutionStatus> {
             throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
 
-        this.environment.define(identifier.name());
-        reference = this.environment.searchInner(identifier.name());
-        identifier.setReference(reference);
+        this.environment.declare(identifier.name());
     }
 
     @Override

@@ -104,22 +104,23 @@ public class Interpreter extends Visitor<Object> {
 
         List<Object> arguments = new ArrayList<>();
 
-        for (ExpressionAST argument : expression.arguments()) {
-            arguments.add(this.visit(argument));
+        for (int i = 0; i < functionObject.parameters().size(); i++) {
+            if (i < expression.arguments().size()) {
+                ExpressionAST argument = expression.arguments().get(i);
+                arguments.add(this.visit(argument));
+            } else {
+                arguments.add(null);
+            }
+
         }
 
         this.callStack.enterFunction();
 
-        for (StatementAST.Variable parameter : functionObject.parameters()) {
-            this.visit(parameter);
-        }
-
-        int smallest = Math.min(arguments.size(), functionObject.parameters().size());
-
-        for (int i = 0; i < smallest; i++) {
-            DeclarationRef reference = functionObject.parameters().get(i).left().reference();
+        for (int i = 0; i < functionObject.parameters().size(); i++) {
+            Object defaultValue = this.visit(functionObject.parameters().get(i).right());
             Object argument = arguments.get(i);
-            this.callStack.define(argument, reference);
+
+            this.callStack.declare(argument == null ? defaultValue : argument);
         }
 
         this.visitDeclarations(functionObject.declarations());
@@ -127,8 +128,6 @@ public class Interpreter extends Visitor<Object> {
         this.callStack.exitFunction();
 
         return null;
-
-        // "foo", "n",
     }
 
     @Override
@@ -190,21 +189,16 @@ public class Interpreter extends Visitor<Object> {
     @Override
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
         Object right = this.visit(declaration.right());
-        ExpressionAST.Identifier identifier = declaration.left();
-        DeclarationRef reference = identifier.reference();
 
-        this.callStack.define(right, reference);
+        this.callStack.declare(right);
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
-        ExpressionAST.Identifier identifier = declaration.name();
-        DeclarationRef reference = identifier.reference();
-
         FunctionObject functionObject = new FunctionObject(declaration.parameters(),
                 declaration.block().declarations());
 
-        this.callStack.define(functionObject, reference);
+        this.callStack.declare(functionObject);
     }
 
     @Override

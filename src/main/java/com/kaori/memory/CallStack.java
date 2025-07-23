@@ -6,17 +6,30 @@ import com.kaori.memory.resolver.DeclarationRef;
 
 public class CallStack<T> {
     public final Stack<T> stack;
-    public final Stack<Integer> framePointers;
+    private final Stack<Integer> framePointers;
+    private int index;
 
     public CallStack() {
         this.stack = new Stack<>();
         this.framePointers = new Stack<>();
+        this.index = 0;
 
-        final int stackMaxSize = 10_000;
+        final int stackMaxSize = 1_000;
 
-        // stack.setSize(stackMaxSize);
+        stack.setSize(stackMaxSize);
 
         this.framePointers.push(0);
+    }
+
+    public void updateIndex() {
+        this.index++;
+
+    }
+
+    public void declare(T value) {
+        this.stack.set(index, value);
+
+        this.updateIndex();
     }
 
     public void define(T value, DeclarationRef reference) {
@@ -26,12 +39,7 @@ public class CallStack<T> {
             index += framePointers.peek();
         }
 
-        if (index >= this.stack.size()) {
-            this.stack.push(value);
-        } else {
-            this.stack.set(index, value);
-        }
-
+        this.stack.set(index, value);
     }
 
     public T get(DeclarationRef reference) {
@@ -45,12 +53,10 @@ public class CallStack<T> {
     }
 
     public void enterFunction() {
-        int index = this.stack.size();
-
-        this.framePointers.push(index);
+        this.framePointers.push(this.index);
     }
 
     public void exitFunction() {
-        this.framePointers.pop();
+        this.index = this.framePointers.pop();
     }
 }
