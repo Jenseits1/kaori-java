@@ -21,7 +21,7 @@
     -   [x] `if / else` statements
     -   [x] `for` loops
     -   [x] `while` loops
-    -   [x] block_statement statements for scope (`{ ... }`)
+    -   [x] block statements for scope (`{ ... }`)
     -   [x] Output with `print` statements
     -   [x] Code comments (`/* this is a comment */`)
     -   [x] Functions

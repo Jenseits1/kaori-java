@@ -15,19 +15,20 @@ c: f64 = 11;
  */
 
 
-def bar(n: f64) -> void {
-    if n > 0 {
-        print(n);
-        foo(n - 1);
+iterations: f64 = 10000;
+
+def factorial() -> void {
+    n: f64 = 1;
+
+    for i: f64 = 1; i < 10; i++ {
+        n = n * i;
     }
+
+    print(n);
 }
 
-def foo(n: f64) -> void {
-    if n > 0 {
-        print(n);
-        bar(n - 1);
-    }
-    
+for i: f64 = 0; i < 10000; i++ {
+    factorial();
 }
 
-foo(100);
+
