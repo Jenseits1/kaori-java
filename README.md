@@ -36,7 +36,7 @@
 
 ## Grammar
 
-```ebnf
+```regex
 program                  -> declaration* EOF
 
 type                     -> function_type | primitive_type
