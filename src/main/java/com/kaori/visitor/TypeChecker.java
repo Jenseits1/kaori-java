@@ -13,8 +13,8 @@ import com.kaori.memory.resolver.DeclarationRef;
 public class TypeChecker extends Visitor<TypeAST> {
     public final CallStack<TypeAST> callStack;
 
-    public TypeChecker(StatementAST.Block block) {
-        super(block);
+    public TypeChecker(List<DeclarationAST> declarations) {
+        super(declarations);
         this.callStack = new CallStack<>();
     }
 

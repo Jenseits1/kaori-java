@@ -9,16 +9,16 @@ import com.kaori.ast.StatementAST;
 public abstract class Visitor<T> {
     protected int line;
 
-    protected final StatementAST.Block block;
+    protected final List<DeclarationAST> declarations;
 
-    public Visitor(StatementAST.Block block) {
+    public Visitor(List<DeclarationAST> declarations) {
         this.line = 1;
-        this.block = block;
+        this.declarations = declarations;
 
     }
 
     public void run() {
-        this.visitBlockStatement(block);
+        this.visitDeclarations(this.declarations);
     }
 
     protected void visitDeclarations(List<DeclarationAST> declarations) {

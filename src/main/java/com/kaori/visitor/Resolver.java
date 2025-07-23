@@ -14,8 +14,8 @@ import com.kaori.memory.resolver.ResolutionStatus;
 public class Resolver extends Visitor<ResolutionStatus> {
     protected final Environment environment;
 
-    public Resolver(StatementAST.Block block) {
-        super(block);
+    public Resolver(List<DeclarationAST> declarations) {
+        super(declarations);
         this.environment = new Environment();
 
     }

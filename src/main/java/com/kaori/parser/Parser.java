@@ -18,11 +18,11 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public StatementAST.Block parse() {
+    public List<DeclarationAST> parse() {
         return start();
     }
 
-    private StatementAST.Block start() {
+    private List<DeclarationAST> start() {
         List<DeclarationAST> declarations = new ArrayList<>();
 
         while (!this.tokens.atEnd()) {
@@ -31,7 +31,7 @@ public class Parser {
 
         }
 
-        return new StatementAST.Block(1, declarations);
+        return declarations;
     }
 
     /*

@@ -39,8 +39,9 @@
 ```text
 program                  -> declaration* EOF
 
-type                     -> function_type | bool | f64 | str
-function_type            -> ( [type [, type]*] ) => type
+type                     -> function_type | primitive_type
+primitive_type           -> bool | f64 | str
+function_type            -> ( [type [, type]*] ) -> type
 
 declaration              -> variable_declaration
                          | function_declaration | statement
