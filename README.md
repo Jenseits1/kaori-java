@@ -36,7 +36,7 @@
 
 ## Grammar
 
-```text
+```ebnf
 program                  -> declaration* EOF
 
 type                     -> function_type | primitive_type
@@ -83,19 +83,19 @@ comparison               -> term [[> | >= | < | <=] term]*
 
 term                     -> factor [[+ | -] factor]*
 
-factor                   -> unary [[* | /] unary]*
+factor                   -> prefix_unary [[* | /] prefix_unary]*
 
-unary                    -> [! | -] unary | primary
+prefix_unary             -> [! | -] unary | primary
 
-primary                  -> number
-                         | string
-                         | boolean
+primary                  -> number_literal
+                         | string_literal
+                         | boolean_literal
                          | postfix_unary
                          | ( expression )
 
-postfix_unary            -> identifier [++ | --]?
+postfix_unary            -> [identifier [++ | --]? | function_call]
 
-
+function_call             -> callee [(expression [, expression]*)]*
 ```
 
 ## Getting Started
