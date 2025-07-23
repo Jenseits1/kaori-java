@@ -145,14 +145,6 @@ public class Resolver extends Visitor<ResolutionStatus> {
 
     @Override
     public void visitFunctionDefinition(DeclarationAST.Function declaration) {
-
-        int currentFrame = this.environment.currentFrame;
-
-        if (currentFrame > 0) {
-            throw KaoriError.ResolveError(declaration.name().name() + " cannot be declared inside another function",
-                    this.line);
-        }
-
         this.environment.enterFunction();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {

@@ -3,14 +3,19 @@ package com.kaori.memory.resolver;
 import java.util.Stack;
 
 public class Environment {
-    public final Stack<Declaration> declarations;
-    public int scopeDepth;
-    public int currentFrame;
+    private final Stack<Declaration> declarations;
+    private int index;
+    private Stack<Integer> scopes;
+    private int currentFrame;
 
     public Environment() {
         this.declarations = new Stack<>();
-        this.scopeDepth = 0;
+        this.index = 0;
+        this.scopes = new Stack<>();
         this.currentFrame = 0;
+
+        this.declarations.setSize(1_000);
+        this.scopes.push(0);
     }
 
     public ResolutionStatus status(DeclarationRef reference) {
@@ -18,22 +23,22 @@ public class Environment {
     }
 
     public void declare(String identifier) {
-        int offset = this.declarations.size() - this.currentFrame;
+        int offset = this.index - this.currentFrame;
         boolean local = this.currentFrame > 0;
-        int scopeDepth = this.scopeDepth;
-        DeclarationRef reference = new DeclarationRef(offset, local);
-        Declaration declaration = new Declaration(identifier, scopeDepth, reference);
 
-        this.declarations.add(declaration);
+        DeclarationRef reference = new DeclarationRef(offset, local);
+        Declaration declaration = new Declaration(identifier, reference);
+
+        this.declarations.set(this.index, declaration);
+
+        this.index++;
     }
 
     public DeclarationRef searchInner(String identifier) {
-        for (int index = declarations.size() - 1; index >= 0; index--) {
-            Declaration declaration = declarations.get(index);
+        int top = this.index - 1;
 
-            if (declaration.scopeDepth() < this.scopeDepth) {
-                break;
-            }
+        for (int index = top; index >= this.scopes.peek(); index--) {
+            Declaration declaration = declarations.get(index);
 
             if (declaration.identifier().equals(identifier)) {
                 return declaration.reference();
@@ -44,7 +49,9 @@ public class Environment {
     }
 
     public DeclarationRef search(String identifier) {
-        for (int index = declarations.size() - 1; index >= 0; index--) {
+        int top = this.index - 1;
+
+        for (int index = top; index >= 0; index--) {
             Declaration declaration = declarations.get(index);
 
             if (declaration.identifier().equals(identifier)) {
@@ -56,19 +63,15 @@ public class Environment {
     }
 
     public void enterScope() {
-        this.scopeDepth++;
+        this.scopes.add(this.index);
     }
 
     public void exitScope() {
-        while (!this.declarations.empty() && this.declarations.peek().scopeDepth() == this.scopeDepth) {
-            this.declarations.pop();
-        }
-
-        this.scopeDepth--;
+        this.index = this.scopes.pop();
     }
 
     public void enterFunction() {
-        this.currentFrame = this.declarations.size();
+        this.currentFrame = this.index;
 
         this.enterScope();
     }

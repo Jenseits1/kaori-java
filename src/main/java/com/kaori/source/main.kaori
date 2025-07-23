@@ -17,12 +17,14 @@ c: f64 = 11;
 
 def bar(n: f64) -> void {
     if n > 0 {
+        print(n);
         foo(n - 1);
     }
 }
 
 def foo(n: f64) -> void {
     if n > 0 {
+        print(n);
         bar(n - 1);
     }
     
