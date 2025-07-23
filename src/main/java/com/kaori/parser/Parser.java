@@ -216,7 +216,6 @@ public class Parser {
     private StatementAST statement() {
         return switch (this.tokens.getCurrent()) {
             case PRINT -> this.printStatement();
-            case LEFT_BRACE -> this.blockStatement();
             case IF -> this.ifStatement();
             case WHILE -> this.whileLoopStatement();
             case FOR -> this.forLoopStatement();

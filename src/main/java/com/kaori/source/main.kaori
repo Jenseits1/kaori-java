@@ -14,7 +14,6 @@ c: f64 = 11;
 }
  */
 
-bar(5);
 
 def bar(n: f64) -> void {
     if n > 0 {
@@ -28,8 +27,8 @@ def foo(n: f64) -> void {
         print(n);
         bar(n - 1);
     }
+    
 }
 
 foo(5);
-
 

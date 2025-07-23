@@ -21,10 +21,10 @@
     -   [x] `if / else` statements
     -   [x] `for` loops
     -   [x] `while` loops
-    -   [x] Block statements for scope (`{ ... }`)
+    -   [x] block_statement statements for scope (`{ ... }`)
     -   [x] Output with `print` statements
     -   [x] Code comments (`/* this is a comment */`)
-    -   [ ] Functions
+    -   [x] Functions
     -   [ ] Native data structures (e.g., lists, maps)
     -   [ ] Bytecode generation
     -   [ ] Classes and inheritance
@@ -37,57 +37,64 @@
 ## Grammar
 
 ```text
-program                  -> statement* EOF
+program                  -> declaration* EOF
 
-type                     -> function_type | "bool" | "f64" | "str"
-function_type            -> "(" (type ("," type)*)? ")" "=>" type
+type                     -> function_type | bool | f64 | str
+function_type            -> ( [type [, type]*] ) => type
 
-statement                -> expr_stmt
-                         | print_stmt
-                         | block_stmt
-                         | if_stmt
-                         | while_stmt
-                         | for_stmt
-                         | variable_stmt
-                         | function_stmt
+declaration              -> variable_declaration
+                         | function_declaration | statement
 
-function_stmt            -> "def" identifier "(" variable_stmt* ")" ":" type (block_stmt | ";")
+variable_declaration     -> identifier : type = expression ;
 
-expr_stmt                -> expression ";"
+function_declaration     -> def identifier ( [variable_declaration*] ) : type block_statement
 
-block_stmt               -> "{" statement* "}"
+statement                -> expression_statement
+                         | print_statement
+                         | if_statement
+                         | while_statement
+                         | for_statement
+                         | block_statement
 
-variable_stmt            -> identifier ":" type = expression ";"
+expression_statement     -> expression ;
 
-print_stmt               -> "print" "(" expression ")" ";"
+print_statement          -> print ( expression ) ;
 
-if_stmt                  -> "if" expression block_stmt ("else" (if_stmt | block_stmt))?
+if_statement             -> if expression block_statement [else [if_statement | block_statement]]?
 
-while_stmt               -> "while" expression block_stmt
+while_statement          -> while expression block_statement
 
-for_stmt                 -> "for" variable_stmt ";" expression ";" expression block_stmt
+for_statement            -> for variable_declaration ; expression ; expression block_statement
 
-expression               -> assign | or
+block_statement          -> { declaration* }
 
-assign                   -> identifier "=" expression
+expression               -> assignment | logic_or
 
-logic_or                 -> logic_and ("||" logic_and)*
+assignment               -> identifier = expression
 
-logic_and                -> equality ("&&" equality)*
+logic_or                 -> logic_and [|| logic_and]*
 
-equality                 -> comparison (("!=" | "==") comparison)*
+logic_and                -> equality [&& equality]*
 
-comparison               -> term ((">" | ">=" | "<" | "<=") term)*
+equality                 -> comparison [[!= | ==] comparison]*
 
-term                     -> factor (("+" | "-") factor)*
+comparison               -> term [[> | >= | < | <=] term]*
 
-factor                   -> unary (("*" | "/") unary)*
+term                     -> factor [[+ | -] factor]*
 
-prefix_unary             -> ("!" | "-") unary | primary
+factor                   -> unary [[* | /] unary]*
 
-primary                  -> number | string | boolean | postfix_unary | "(" expression ")"
+unary                    -> [! | -] unary | primary
 
-postfix_unary            -> identifier ("++" | "--")?
+primary                  -> number
+                         | string
+                         | boolean
+                         | postfix_unary
+                         | ( expression )
+
+postfix_unary            -> identifier [++ | --]?
+
+
 ```
 
 ## Getting Started
