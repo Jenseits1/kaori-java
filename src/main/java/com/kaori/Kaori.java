@@ -1,7 +1,5 @@
 package com.kaori;
 
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,31 +15,44 @@ import com.kaori.visitor.TypeChecker;
 import com.kaori.visitor.Visitor;
 
 public class Kaori {
+    private final String source;
+    private TokenStream tokens;
+    private List<DeclarationAST> ast;
+
     public Kaori(String source) {
+        this.source = source;
+    }
+
+    public void start() {
         try {
-            Lexer lexer = new Lexer(source);
 
-            List<Token> tokens = lexer.scan();
+            this.setTokens();
+            this.setAst();
 
-            // System.out.println(gson.toJson(tokens));
-            TokenStream tokenStream = new TokenStream(tokens, source);
+            Resolver resolver = new Resolver(ast);
+            resolver.run();
 
-            Parser parser = new Parser(tokenStream);
+            TypeChecker typeChecker = new TypeChecker(ast);
+            typeChecker.run();
 
-            List<DeclarationAST> ast = parser.parse();
-
-            List<Visitor<?>> visitors = new ArrayList<>();
-
-            visitors.add(new Resolver(ast));
-            visitors.add(new TypeChecker(ast));
-            visitors.add(new Interpreter(ast));
-
-            for (Visitor<?> visitor : visitors) {
-                visitor.run();
-            }
+            Interpreter interpreter = new Interpreter(ast);
+            interpreter.run();
 
         } catch (KaoriError error) {
             System.out.println(error);
         }
+    }
+
+    private void setAst() {
+        Parser parser = new Parser(this.tokens);
+
+        this.ast = parser.parse();
+    }
+
+    private void setTokens() {
+        Lexer lexer = new Lexer(this.source);
+
+        List<Token> tokens = lexer.scan();
+        this.tokens = new TokenStream(tokens, source);
     }
 }

@@ -12,6 +12,10 @@ public class Main {
 
             String source = Files.readString(path);
 
+            Kaori app = new Kaori(source);
+
+            app.start();
+
         } catch (IOException error) {
             System.out.println(error);
         }

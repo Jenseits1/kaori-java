@@ -25,8 +25,9 @@
     -   [x] Output with `print` statements
     -   [x] Code comments (`/* this is a comment */`)
     -   [x] Functions
-    -   [ ] Native data structures (e.g., lists, maps)
     -   [ ] Bytecode generation
+    -   [ ] function and loop control flow (`break`, `continue`, `return`)
+    -   [ ] Native data structures (e.g., lists, maps)
     -   [ ] Classes and inheritance
 
 ## Technologies Used
