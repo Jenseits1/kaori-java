@@ -168,20 +168,6 @@ public class TypeChecker extends Visitor<TypeAST> {
         this.visit(statement.block());
     }
 
-    @Override
-    public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        this.visit(statement.variable());
-
-        TypeAST condition = this.visit(statement.condition());
-
-        if (!condition.equals(TypeAST.Primitive.BOOLEAN)) {
-            throw KaoriError.TypeError(String.format("invalid type for condition: %s", condition), this.line);
-        }
-
-        this.visit(statement.block());
-        this.visit(statement.increment());
-    }
-
     /* Declarations */
     @Override
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {

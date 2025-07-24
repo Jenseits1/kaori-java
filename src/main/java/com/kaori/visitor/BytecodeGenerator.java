@@ -2,6 +2,7 @@ package com.kaori.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
@@ -11,8 +12,11 @@ import com.kaori.memory.FunctionObject;
 import com.kaori.memory.resolver.DeclarationRef;
 
 public class BytecodeGenerator extends Visitor<Object> {
+    public final Stack<Object> bytecode;
+
     public BytecodeGenerator(List<DeclarationAST> declarations) {
         super(declarations);
+        this.bytecode = new Stack<>();
     }
 
     @Override
@@ -21,38 +25,6 @@ public class BytecodeGenerator extends Visitor<Object> {
         Object right = this.visit(expression.right());
         ExpressionAST.BinaryOperator operator = expression.operator();
 
-        return switch (operator) {
-            case PLUS -> (Double) left + (Double) right;
-            case MINUS -> (Double) left - (Double) right;
-            case MULTIPLY -> (Double) left * (Double) right;
-            case DIVIDE -> {
-                if ((Double) right == 0) {
-                    throw KaoriError.RuntimeError(
-                            String.format("invalid %s operation between %s and %s", operator, left, right),
-                            this.line);
-                }
-
-                yield (Double) left / (Double) right;
-            }
-
-            case MODULO -> {
-                if ((Double) right == 0) {
-                    throw KaoriError.RuntimeError(
-                            String.format("invalid %s operation between %s and %s", operator, left, right),
-                            this.line);
-                }
-
-                yield (Double) left % (Double) right;
-            }
-            case GREATER -> (Double) left > (Double) right;
-            case GREATER_EQUAL -> (Double) left >= (Double) right;
-            case LESS -> (Double) left < (Double) right;
-            case LESS_EQUAL -> (Double) left <= (Double) right;
-            case AND -> (Boolean) left && (Boolean) right;
-            case OR -> (Boolean) left || (Boolean) right;
-            case EQUAL -> left.equals(right);
-            case NOT_EQUAL -> !left.equals(right);
-        };
     }
 
     @Override

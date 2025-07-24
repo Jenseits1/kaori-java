@@ -170,21 +170,6 @@ public class Interpreter extends Visitor<Object> {
         }
     }
 
-    @Override
-    public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        this.visit(statement.variable());
-
-        while (true) {
-            Object condition = this.visit(statement.condition());
-
-            if ((Boolean) condition == false)
-                break;
-
-            this.visit(statement.block());
-            this.visit(statement.increment());
-        }
-    }
-
     /* Declarations */
     @Override
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {

@@ -193,7 +193,7 @@ public class Parser {
         return new StatementAST.WhileLoop(line, condition, block);
     }
 
-    private StatementAST.ForLoop forLoopStatement() {
+    private StatementAST.Block forLoopStatement() {
         int line = this.tokens.getLine();
 
         this.tokens.consume(TokenKind.FOR);
@@ -206,11 +206,20 @@ public class Parser {
 
         this.tokens.consume(TokenKind.SEMICOLON);
 
-        ExpressionAST increment = this.expression();
+        StatementAST.Expr increment = this.expressionStatement();
 
         StatementAST.Block block = this.blockStatement();
 
-        return new StatementAST.ForLoop(line, variable, condition, increment, block);
+        block.declarations().add(increment);
+
+        StatementAST whileLoop = new StatementAST.WhileLoop(line, condition, block);
+
+        List<DeclarationAST> declarations = new ArrayList<>();
+
+        declarations.add(variable);
+        declarations.add(whileLoop);
+
+        return new StatementAST.Block(line, declarations);
     }
 
     private StatementAST statement() {

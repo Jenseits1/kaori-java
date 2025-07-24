@@ -105,14 +105,6 @@ public class Resolver extends Visitor<ResolutionStatus> {
         this.visit(statement.block());
     }
 
-    @Override
-    public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        this.visit(statement.variable());
-        this.visit(statement.condition());
-        this.visit(statement.block());
-        this.visit(statement.increment());
-    }
-
     /* Declarations */
     @Override
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {

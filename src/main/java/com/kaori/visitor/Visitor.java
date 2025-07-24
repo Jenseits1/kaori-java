@@ -52,9 +52,6 @@ public abstract class Visitor<T> {
         if (statement instanceof StatementAST.Block stmt) {
             this.visitBlockStatement(stmt);
 
-        } else if (statement instanceof StatementAST.ForLoop stmt) {
-            this.visitForLoopStatement(stmt);
-
         } else if (statement instanceof StatementAST.Print stmt) {
             this.visitPrintStatement(stmt);
 
@@ -118,8 +115,6 @@ public abstract class Visitor<T> {
     public abstract void visitIfStatement(StatementAST.If statement);
 
     public abstract void visitWhileLoopStatement(StatementAST.WhileLoop statement);
-
-    public abstract void visitForLoopStatement(StatementAST.ForLoop statement);
 
     // Declarations
     public abstract void visitVariableDeclaration(DeclarationAST.Variable declaration);

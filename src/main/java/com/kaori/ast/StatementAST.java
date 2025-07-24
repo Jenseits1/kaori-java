@@ -28,13 +28,4 @@ public interface StatementAST extends DeclarationAST {
 			ExpressionAST condition,
 			Block block) implements StatementAST {
 	}
-
-	record ForLoop(
-			int line,
-			DeclarationAST.Variable variable,
-			ExpressionAST condition,
-			ExpressionAST increment,
-			Block block) implements StatementAST {
-	}
-
 }

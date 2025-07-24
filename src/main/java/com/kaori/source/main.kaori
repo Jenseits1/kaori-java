@@ -27,8 +27,8 @@ def factorial() -> void {
     print(n);
 }
 
-for i: f64 = 0; i < 10000; i++ {
-    factorial();
+for i: f64 = 0; i < 100; i++ {
+    print(i);
 }
 
-
+print(i);
