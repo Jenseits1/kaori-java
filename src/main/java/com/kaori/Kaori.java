@@ -1,18 +1,16 @@
 package com.kaori;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import com.kaori.ast.DeclarationAST;
+import com.kaori.compiler.Interpreter;
+import com.kaori.compiler.Resolver;
+import com.kaori.compiler.TypeChecker;
+
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 import com.kaori.parser.Parser;
 import com.kaori.token.Token;
 import com.kaori.token.TokenStream;
-import com.kaori.visitor.Interpreter;
-import com.kaori.visitor.Resolver;
-import com.kaori.visitor.TypeChecker;
-import com.kaori.visitor.Visitor;
 
 public class Kaori {
     private final String source;

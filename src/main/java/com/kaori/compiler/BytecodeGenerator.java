@@ -1,4 +1,4 @@
-package com.kaori.visitor;
+package com.kaori.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,10 @@ import java.util.Stack;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
-import com.kaori.error.KaoriError;
 import com.kaori.memory.FunctionObject;
 import com.kaori.memory.resolver.DeclarationRef;
+import com.kaori.vm.Instruction;
+import com.kaori.vm.Instruction.InstructionKind;
 
 public class BytecodeGenerator extends Visitor<Object> {
     public final Stack<Object> bytecode;
@@ -19,28 +20,64 @@ public class BytecodeGenerator extends Visitor<Object> {
         this.bytecode = new Stack<>();
     }
 
+    public void emit(InstructionKind kind) {
+        Instruction instruction = new Instruction(kind, 0);
+
+        this.bytecode.add(instruction);
+    }
+
+    public void emit(InstructionKind kind, int operand) {
+        Instruction instruction = new Instruction(kind, operand);
+
+        this.bytecode.add(instruction);
+    }
+
     @Override
     public Object visitBinaryExpression(ExpressionAST.BinaryExpression expression) {
-        Object left = this.visit(expression.left());
-        Object right = this.visit(expression.right());
+        this.visit(expression.left());
+        this.visit(expression.right());
+
         ExpressionAST.BinaryOperator operator = expression.operator();
 
+        InstructionKind kind = switch (operator) {
+            case PLUS -> InstructionKind.PLUS;
+            case MINUS -> InstructionKind.MINUS;
+            case MULTIPLY -> InstructionKind.MULTIPLY;
+            case DIVIDE -> InstructionKind.DIVIDE;
+            case MODULO -> InstructionKind.MODULO;
+            case GREATER -> InstructionKind.GREATER;
+            case GREATER_EQUAL -> InstructionKind.GREATER_EQUAL;
+            case LESS -> InstructionKind.LESS;
+            case LESS_EQUAL -> InstructionKind.LESS_EQUAL;
+            case AND -> InstructionKind.AND;
+            case OR -> InstructionKind.OR;
+            case EQUAL -> InstructionKind.EQUAL;
+            case NOT_EQUAL -> InstructionKind.NOT_EQUAL;
+        };
+
+        this.emit(kind);
+
+        return null;
     }
 
     @Override
     public Object visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
-        Object left = this.visit(expression.left());
+        this.visit(expression.left());
         ExpressionAST.UnaryOperator operator = expression.operator();
 
-        return switch (operator) {
-            case MINUS -> -(Double) left;
-            case NOT -> !(Boolean) left;
+        InstructionKind kind = switch (operator) {
+            case MINUS -> InstructionKind.MINUS;
+            case NOT -> InstructionKind.NOT;
         };
+
+        this.emit(kind);
+
+        return null;
     }
 
     @Override
     public Object visitAssign(ExpressionAST.Assign expression) {
-        Object value = this.visit(expression.right());
+        this.visit(expression.right());
         ExpressionAST.Identifier identifier = expression.left();
         DeclarationRef reference = identifier.reference();
 
@@ -56,11 +93,7 @@ public class BytecodeGenerator extends Visitor<Object> {
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
         DeclarationRef reference = expression.reference();
 
-        if (value == null) {
-            throw KaoriError.RuntimeError(expression.name() + " is not defined", this.line);
-        }
-
-        return value;
+        return null;
     }
 
     @Override
@@ -86,8 +119,6 @@ public class BytecodeGenerator extends Visitor<Object> {
         }
 
         this.visitDeclarations(functionObject.declarations());
-
-        this.callStack.exitFunction();
 
         return null;
     }
@@ -129,21 +160,6 @@ public class BytecodeGenerator extends Visitor<Object> {
                 break;
 
             this.visit(statement.block());
-        }
-    }
-
-    @Override
-    public void visitForLoopStatement(StatementAST.ForLoop statement) {
-        this.visit(statement.variable());
-
-        while (true) {
-            Object condition = this.visit(statement.condition());
-
-            if ((Boolean) condition == false)
-                break;
-
-            this.visit(statement.block());
-            this.visit(statement.increment());
         }
     }
 
