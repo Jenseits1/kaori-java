@@ -137,13 +137,20 @@ public class BytecodeGenerator extends Visitor<Object> {
 
     @Override
     public void visitIfStatement(StatementAST.If statement) {
-        Object condition = this.visit(statement.condition());
+        this.visit(statement.condition());
 
-        if ((Boolean) condition == true) {
-            this.visit(statement.thenBranch());
-        } else {
-            this.visit(statement.elseBranch());
-        }
+        int jumpElse = this.instructions.size();
+        this.emit(Opcode.JUMP_IF_FALSE, null);
+
+        this.visit(statement.thenBranch());
+
+        int jumpEnd = this.instructions.size();
+        this.emit(Opcode.JUMP, null);
+
+        this.instructions.get(jumpElse).setOperand(this.instructions.size());
+        this.visit(statement.elseBranch());
+
+        this.instructions.get(jumpEnd).setOperand(this.instructions.size());
     }
 
     @Override
@@ -163,7 +170,7 @@ public class BytecodeGenerator extends Visitor<Object> {
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
         this.visit(declaration.right());
 
-        this.emit(Opcode.LOAD_LOCAL);
+        this.emit(Opcode.STORE_LOCAL, declaration.left.offset());
     }
 
     @Override

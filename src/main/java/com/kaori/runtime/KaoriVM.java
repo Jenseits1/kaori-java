@@ -18,6 +18,14 @@ public class KaoriVM {
         this.index = 0;
     }
 
+    public void advance() {
+        this.index++;
+    }
+
+    public void jumpTo(Object index) {
+        this.index = (Integer) index;
+    }
+
     public void run() {
         while (this.index < instructions.size()) {
             Instruction instruction = instructions.get(index);
@@ -35,11 +43,16 @@ public class KaoriVM {
                         GREATER,
                         GREATER_EQUAL,
                         LESS,
-                        LESS_EQUAL ->
+                        LESS_EQUAL -> {
                     this.evalBinary(instruction.opcode());
+                    this.advance();
+                }
+
                 case NOT,
-                        NEGATE ->
+                        NEGATE -> {
                     this.evalUnary(instruction.opcode());
+                    this.advance();
+                }
 
                 case LOAD_LOCAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_LOCAL");
                 case LOAD_GLOBAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_GLOBAL");
@@ -48,23 +61,31 @@ public class KaoriVM {
                     throw new UnsupportedOperationException("Instruction not implemented: STORE_GLOBAL");
 
                 case PUSH_CONST -> {
-                    Object value = instruction.operand();
+                    this.stack.push(instruction.operand());
 
-                    this.stack.push(value);
+                    this.advance();
                 }
 
-                case JUMP_IF_FALSE ->
-                    throw new UnsupportedOperationException("Instruction not implemented: JUMP_IF_FALSE");
-                case JUMP_IF_TRUE ->
-                    throw new UnsupportedOperationException("Instruction not implemented: JUMP_IF_TRUE");
+                case JUMP_IF_FALSE -> {
+                    Boolean condition = (Boolean) this.stack.pop();
 
+                    if (condition == false) {
+                        this.jumpTo(instruction.operand());
+                    } else {
+                        this.advance();
+                    }
+
+                }
+                case JUMP -> {
+                    this.jumpTo(instruction.operand());
+                }
                 case PRINT -> {
                     Object value = this.stack.pop();
                     System.out.println(value);
+                    this.advance();
                 }
             }
 
-            this.index++;
         }
 
     }

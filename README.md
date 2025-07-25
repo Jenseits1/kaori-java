@@ -25,8 +25,8 @@
     -   [x] Output with `print` statements
     -   [x] Code comments (`/* this is a comment */`)
     -   [x] Functions
-    -   [ ] Bytecode generation
-
+    -   [x] Bytecode generation
+    -   [x] Virtual machine to interpret bytecode
     -   [ ] function and loop control flow (`break`, `continue`, `return`)
     -   [ ] Native data structures (e.g., lists, maps)
     -   [ ] Classes and inheritance

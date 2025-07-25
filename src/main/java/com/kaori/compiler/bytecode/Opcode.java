@@ -25,8 +25,7 @@ public enum Opcode {
 
     PUSH_CONST,
 
+    JUMP,
     JUMP_IF_FALSE,
-    JUMP_IF_TRUE,
-
     PRINT
 }

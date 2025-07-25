@@ -19,7 +19,6 @@ import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.Parser;
 import com.kaori.error.KaoriError;
 import com.kaori.runtime.KaoriVM;
-import com.kaori.slowinterpreter.Interpreter;
 
 public class Kaori {
     public void start() {
@@ -43,7 +42,7 @@ public class Kaori {
 
             System.out.println(bytecode);
             KaoriVM vm = new KaoriVM(bytecode);
-
+            vm.run();
         } catch (KaoriError error) {
             System.out.println(error);
         } catch (IOException error) {
