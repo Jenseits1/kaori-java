@@ -1,4 +1,4 @@
-package com.kaori.vm;
+package com.kaori.runtime;
 
 import java.util.Stack;
 
@@ -21,7 +21,6 @@ public class CallStack<T> {
 
     public void updateIndex() {
         this.index++;
-
     }
 
     public void declare(T value) {

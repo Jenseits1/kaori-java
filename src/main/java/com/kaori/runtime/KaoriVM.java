@@ -1,16 +1,16 @@
-package com.kaori.vm;
+package com.kaori.runtime;
 
 import java.util.List;
 import java.util.Stack;
 
-import com.kaori.vm.Instruction.InstructionKind;
+import com.kaori.runtime.Instruction.InstructionKind;
 
-public class VirtualMachine {
+public class KaoriVM {
     private final List<Instruction> bytecode;
     private final Stack<Object> stack;
     private int index;
 
-    public VirtualMachine(List<Instruction> bytecode) {
+    public KaoriVM(List<Instruction> bytecode) {
         this.bytecode = bytecode;
         this.stack = new Stack<>();
         this.index = 0;
@@ -20,7 +20,7 @@ public class VirtualMachine {
         while (this.index < bytecode.size()) {
             Instruction instruction = bytecode.get(index);
 
-            switch (instruction.kind) {
+            switch (instruction.kind()) {
                 case PLUS,
                         MINUS,
                         MULTIPLY,
@@ -34,10 +34,10 @@ public class VirtualMachine {
                         GREATER_EQUAL,
                         LESS,
                         LESS_EQUAL ->
-                    this.evalBinary(instruction.kind);
+                    this.evalBinary(instruction.kind());
                 case NOT,
                         NEGATE ->
-                    this.evalUnary(instruction.kind);
+                    this.evalUnary(instruction.kind());
 
                 case LOAD_LOCAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_LOCAL");
                 case LOAD_GLOBAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_GLOBAL");
@@ -46,7 +46,7 @@ public class VirtualMachine {
                     throw new UnsupportedOperationException("Instruction not implemented: STORE_GLOBAL");
 
                 case PUSH_CONST -> {
-                    Object value = instruction.operand;
+                    Object value = instruction.operand();
 
                     this.stack.push(value);
                 }

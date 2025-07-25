@@ -6,13 +6,13 @@ public class Environment<T> {
     private final Stack<T> declarations;
     private int index;
     private Stack<Integer> scopes;
-    private int currentFrame;
+    private int framePointer;
 
     public Environment() {
         this.declarations = new Stack<>();
         this.index = 0;
         this.scopes = new Stack<>();
-        this.currentFrame = 0;
+        this.framePointer = 0;
 
         this.declarations.setSize(1_000);
         this.scopes.push(0);
@@ -25,7 +25,7 @@ public class Environment<T> {
 
     public void define(T value, int offset, boolean local) {
         if (local) {
-            offset = this.currentFrame + offset;
+            offset = this.framePointer + offset;
         }
 
         this.declarations.set(offset, value);
@@ -33,7 +33,7 @@ public class Environment<T> {
 
     public T get(int offset, boolean local) {
         if (local) {
-            offset = this.currentFrame + offset;
+            offset = this.framePointer + offset;
         }
 
         return this.declarations.get(offset);
@@ -46,11 +46,11 @@ public class Environment<T> {
             T declaration = this.declarations.get(i);
 
             if (declaration.equals(identifier)) {
-                boolean local = i >= this.currentFrame;
+                boolean local = i >= this.framePointer;
                 int offset = i;
 
                 if (local) {
-                    offset = offset - this.currentFrame;
+                    offset = offset - this.framePointer;
                 }
 
                 Resolution resolution = new Resolution(offset, local);
@@ -69,11 +69,11 @@ public class Environment<T> {
             T declaration = this.declarations.get(i);
 
             if (declaration.equals(identifier)) {
-                boolean local = i >= this.currentFrame;
+                boolean local = i >= this.framePointer;
                 int offset = i;
 
                 if (local) {
-                    offset = offset - this.currentFrame;
+                    offset = offset - this.framePointer;
                 }
 
                 Resolution resolution = new Resolution(offset, local);
@@ -94,18 +94,18 @@ public class Environment<T> {
     }
 
     public void enterFunction() {
-        this.currentFrame = this.index;
+        this.framePointer = this.index;
 
         this.enterScope();
     }
 
     public void exitFunction() {
-        this.currentFrame = 0;
+        this.framePointer = 0;
 
         this.exitScope();
     }
 
     public boolean insideFunction() {
-        return this.currentFrame > 0;
+        return this.framePointer > 0;
     }
 }

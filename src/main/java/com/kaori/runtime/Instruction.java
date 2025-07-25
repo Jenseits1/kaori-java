@@ -1,9 +1,6 @@
-package com.kaori.vm;
+package com.kaori.runtime;
 
-public class Instruction {
-    public final InstructionKind kind;
-    public final Object operand;
-
+public record Instruction(InstructionKind kind, Object operand) {
     public static enum InstructionKind {
         PLUS,
         MINUS,
@@ -31,8 +28,4 @@ public class Instruction {
         PRINT
     }
 
-    public Instruction(InstructionKind kind, Object operand) {
-        this.kind = kind;
-        this.operand = operand;
-    }
 }

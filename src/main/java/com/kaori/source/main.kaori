@@ -14,7 +14,7 @@ c: f64 = 11;
 }
  */
 
-/* 
+
 iterations: f64 = 10000;
 
 def factorial() -> void {
@@ -47,12 +47,4 @@ def bar(n: f64) -> void {
     }
 }
 
-foo(5); */
-
-def foo() -> void {
-   
-}
-
-def bar() -> void {
-        
-}
+foo(5);
