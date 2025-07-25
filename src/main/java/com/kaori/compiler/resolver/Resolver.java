@@ -1,4 +1,4 @@
-package com.kaori.compiler;
+package com.kaori.compiler.resolver;
 
 import java.util.List;
 
@@ -6,10 +6,8 @@ import com.kaori.ast.DeclarationAST;
 
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
+import com.kaori.compiler.Visitor;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.resolver.DeclarationRef;
-import com.kaori.memory.resolver.Environment;
-import com.kaori.memory.resolver.ResolutionStatus;
 
 public class Resolver extends Visitor<ResolutionStatus> {
     protected final Environment environment;

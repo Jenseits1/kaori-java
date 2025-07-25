@@ -1,4 +1,4 @@
-package com.kaori.compiler;
+package com.kaori.treewalk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,11 @@ import java.util.List;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
+import com.kaori.compiler.Visitor;
+import com.kaori.compiler.resolver.DeclarationRef;
+import com.kaori.compiler.resolver.FunctionObject;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.CallStack;
-import com.kaori.memory.FunctionObject;
-import com.kaori.memory.resolver.DeclarationRef;
+import com.kaori.vm.CallStack;
 
 public class Interpreter extends Visitor<Object> {
     public final CallStack<Object> callStack;

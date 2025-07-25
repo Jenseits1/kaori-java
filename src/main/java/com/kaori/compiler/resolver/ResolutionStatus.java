@@ -1,4 +1,4 @@
-package com.kaori.memory.resolver;
+package com.kaori.compiler.resolver;
 
 public enum ResolutionStatus {
     UNRESOLVED,

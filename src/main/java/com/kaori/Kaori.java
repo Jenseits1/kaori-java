@@ -6,15 +6,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.compiler.BytecodeGenerator;
-import com.kaori.compiler.Interpreter;
-import com.kaori.compiler.Resolver;
 import com.kaori.compiler.TypeChecker;
-
+import com.kaori.compiler.resolver.Resolver;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
 import com.kaori.parser.Parser;
 import com.kaori.token.Token;
 import com.kaori.token.TokenStream;
+import com.kaori.treewalk.Interpreter;
+import com.kaori.vm.VirtualMachine;
 
 public class Kaori {
     private final String source;
@@ -45,7 +45,10 @@ public class Kaori {
 
             BytecodeGenerator bytecode = new BytecodeGenerator(ast);
 
-            System.out.println(gson.toJson(bytecode.generateBytecode()));
+            // System.out.println(gson.toJson(bytecode.generateBytecode()));
+
+            VirtualMachine vm = new VirtualMachine(bytecode.generateBytecode());
+            vm.run();
 
         } catch (KaoriError error) {
             System.out.println(error);

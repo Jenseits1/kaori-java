@@ -7,7 +7,7 @@ import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
-import com.kaori.memory.CallStack;
+import com.kaori.vm.CallStack;
 
 public class TypeChecker extends Visitor<TypeAST> {
     public final CallStack<TypeAST> callStack;

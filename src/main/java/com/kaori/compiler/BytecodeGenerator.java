@@ -6,8 +6,8 @@ import java.util.List;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
-import com.kaori.memory.FunctionObject;
-import com.kaori.memory.resolver.DeclarationRef;
+import com.kaori.compiler.resolver.DeclarationRef;
+
 import com.kaori.vm.Instruction;
 import com.kaori.vm.Instruction.InstructionKind;
 
@@ -68,6 +68,7 @@ public class BytecodeGenerator extends Visitor<Object> {
     @Override
     public Object visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
         this.visit(expression.left());
+
         ExpressionAST.UnaryOperator operator = expression.operator();
 
         InstructionKind kind = switch (operator) {
@@ -83,8 +84,15 @@ public class BytecodeGenerator extends Visitor<Object> {
     @Override
     public Object visitAssign(ExpressionAST.Assign expression) {
         this.visit(expression.right());
+
         ExpressionAST.Identifier identifier = expression.left();
         DeclarationRef reference = identifier.reference();
+
+        if (reference.local()) {
+            this.emit(InstructionKind.STORE_LOCAL, reference.offset());
+        } else {
+            this.emit(InstructionKind.STORE_GLOBAL, reference.offset());
+        }
 
         return null;
     }
@@ -99,13 +107,11 @@ public class BytecodeGenerator extends Visitor<Object> {
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
         DeclarationRef reference = expression.reference();
-        boolean local = reference.local();
-        int offset = reference.offset();
 
-        if (local) {
-            this.emit(InstructionKind.LOAD_LOCAL, offset);
+        if (reference.local()) {
+            this.emit(InstructionKind.LOAD_LOCAL, reference.offset());
         } else {
-            this.emit(InstructionKind.LOAD_GLOBAL, offset);
+            this.emit(InstructionKind.LOAD_GLOBAL, reference.offset());
         }
 
         return null;
@@ -160,14 +166,13 @@ public class BytecodeGenerator extends Visitor<Object> {
     /* Declarations */
     @Override
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
-        Object right = this.visit(declaration.right());
+        this.visit(declaration.right());
 
+        this.emit(InstructionKind.LOAD_LOCAL);
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
-        FunctionObject functionObject = new FunctionObject(declaration.parameters(),
-                declaration.block().declarations());
 
     }
 

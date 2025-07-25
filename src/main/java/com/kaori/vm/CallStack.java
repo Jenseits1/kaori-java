@@ -1,8 +1,8 @@
-package com.kaori.memory;
+package com.kaori.vm;
 
 import java.util.Stack;
 
-import com.kaori.memory.resolver.DeclarationRef;
+import com.kaori.compiler.resolver.DeclarationRef;
 
 public class CallStack<T> {
     public final Stack<T> stack;

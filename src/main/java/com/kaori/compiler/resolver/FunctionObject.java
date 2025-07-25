@@ -1,4 +1,4 @@
-package com.kaori.memory;
+package com.kaori.compiler.resolver;
 
 import java.util.List;
 
