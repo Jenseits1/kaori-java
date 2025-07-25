@@ -20,7 +20,6 @@ public class Environment<T> {
 
     public void declare(T value) {
         this.declarations.set(this.index, value);
-
         this.index++;
     }
 
@@ -43,12 +42,16 @@ public class Environment<T> {
     public Resolution searchInner(String identifier) {
         int top = this.index - 1;
 
-        for (int index = top; index >= this.scopes.peek(); index--) {
-            T declaration = this.declarations.get(index);
+        for (int i = top; i >= this.scopes.peek(); i--) {
+            T declaration = this.declarations.get(i);
 
             if (declaration.equals(identifier)) {
-                int offset = this.index - this.currentFrame;
-                boolean local = this.currentFrame > 0;
+                boolean local = i >= this.currentFrame;
+                int offset = i;
+
+                if (local) {
+                    offset = offset - this.currentFrame;
+                }
 
                 Resolution resolution = new Resolution(offset, local);
 
@@ -62,12 +65,16 @@ public class Environment<T> {
     public Resolution search(String identifier) {
         int top = this.index - 1;
 
-        for (int index = top; index >= 0; index--) {
-            T declaration = this.declarations.get(index);
+        for (int i = top; i >= 0; i--) {
+            T declaration = this.declarations.get(i);
 
             if (declaration.equals(identifier)) {
-                int offset = this.index - this.currentFrame;
-                boolean local = this.currentFrame > 0;
+                boolean local = i >= this.currentFrame;
+                int offset = i;
+
+                if (local) {
+                    offset = offset - this.currentFrame;
+                }
 
                 Resolution resolution = new Resolution(offset, local);
 

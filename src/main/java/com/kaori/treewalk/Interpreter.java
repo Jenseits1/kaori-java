@@ -75,9 +75,8 @@ public class Interpreter extends Visitor<Object> {
     public Object visitAssign(ExpressionAST.Assign expression) {
         Object value = this.visit(expression.right());
         ExpressionAST.Identifier identifier = expression.left();
-        DeclarationRef reference = identifier.reference();
 
-        this.callStack.define(value, reference);
+        this.callStack.define(value, identifier.offset(), identifier.local());
 
         return value;
     }
@@ -89,8 +88,7 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
-        DeclarationRef reference = expression.reference();
-        Object value = this.callStack.get(reference);
+        Object value = this.callStack.get(expression.offset(), expression.local());
 
         if (value == null) {
             throw KaoriError.RuntimeError(expression.name() + " is not defined", this.line);
