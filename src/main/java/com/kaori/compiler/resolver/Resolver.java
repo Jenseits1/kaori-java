@@ -9,67 +9,66 @@ import com.kaori.ast.StatementAST;
 import com.kaori.compiler.Visitor;
 import com.kaori.error.KaoriError;
 
-public class Resolver extends Visitor<ResolutionStatus> {
-    protected final Environment environment;
+public class Resolver extends Visitor<Object> {
+    private final Environment<String> environment;
 
     public Resolver(List<DeclarationAST> declarations) {
         super(declarations);
-        this.environment = new Environment();
+        this.environment = new Environment<String>();
 
     }
 
     /* Expressions */
     @Override
-    public ResolutionStatus visitBinaryExpression(ExpressionAST.BinaryExpression expression) {
+    public Object visitBinaryExpression(ExpressionAST.BinaryExpression expression) {
         this.visit(expression.left());
         this.visit(expression.right());
 
-        return ResolutionStatus.RESOLVED;
+        return null;
     }
 
     @Override
-    public ResolutionStatus visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
+    public Object visitUnaryExpression(ExpressionAST.UnaryExpression expression) {
         this.visit(expression.left());
 
-        return ResolutionStatus.RESOLVED;
+        return null;
     }
 
     @Override
-    public ResolutionStatus visitAssign(ExpressionAST.Assign expression) {
+    public Object visitAssign(ExpressionAST.Assign expression) {
         this.visit(expression.left());
         this.visit(expression.right());
 
-        return ResolutionStatus.RESOLVED;
+        return null;
     }
 
     @Override
-    public ResolutionStatus visitLiteral(ExpressionAST.Literal expression) {
-        return ResolutionStatus.RESOLVED;
+    public Object visitLiteral(ExpressionAST.Literal expression) {
+        return null;
     }
 
     @Override
-    public ResolutionStatus visitIdentifier(ExpressionAST.Identifier expression) {
-        DeclarationRef reference = this.environment.search(expression.name());
-        ResolutionStatus status = this.environment.status(reference);
+    public Object visitIdentifier(ExpressionAST.Identifier expression) {
+        Resolution resolution = this.environment.search(expression.name());
 
-        if (status == ResolutionStatus.UNRESOLVED) {
+        if (resolution == null) {
             throw KaoriError.ResolveError(expression.name() + " is not declared", this.line);
         }
 
-        expression.setReference(reference);
+        expression.setReference(resolution.offset(), resolution.local());
 
-        return ResolutionStatus.RESOLVED;
+        return null;
     }
 
     @Override
-    public ResolutionStatus visitFunctionCall(ExpressionAST.FunctionCall expression) {
+    public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
         this.visit(expression.callee());
 
         for (ExpressionAST argument : expression.arguments()) {
             this.visit(argument);
         }
 
-        return ResolutionStatus.RESOLVED;
+        return null;
     }
 
     /* Statements */
@@ -110,27 +109,27 @@ public class Resolver extends Visitor<ResolutionStatus> {
 
         this.visit(declaration.right());
 
-        DeclarationRef reference = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = this.environment.status(reference);
+        Resolution resolution = this.environment.searchInner(identifier.name());
 
-        switch (status) {
-            case RESOLVED ->
-                throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
-            case UNRESOLVED -> this.environment.declare(identifier.name());
+        if (resolution == null) {
+            this.environment.define(identifier.name());
+        } else {
+            throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
         ExpressionAST.Identifier identifier = declaration.name();
-        DeclarationRef reference = this.environment.searchInner(identifier.name());
-        ResolutionStatus status = this.environment.status(reference);
 
-        if (status == ResolutionStatus.RESOLVED) {
+        Resolution resolution = this.environment.searchInner(identifier.name());
+
+        if (resolution == null) {
+            this.environment.define(identifier.name());
+        } else {
             throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
 
-        this.environment.declare(identifier.name());
     }
 
     @Override

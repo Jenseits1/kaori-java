@@ -2,8 +2,8 @@ package com.kaori.compiler.resolver;
 
 import java.util.Stack;
 
-public class Environment {
-    private final Stack<Declaration> declarations;
+public class Environment<T> {
+    private final Stack<T> declarations;
     private int index;
     private Stack<Integer> scopes;
     private int currentFrame;
@@ -18,44 +18,44 @@ public class Environment {
         this.scopes.push(0);
     }
 
-    public ResolutionStatus status(DeclarationRef reference) {
-        return reference == null ? ResolutionStatus.UNRESOLVED : ResolutionStatus.RESOLVED;
-    }
-
-    public void declare(String identifier) {
-        int offset = this.index - this.currentFrame;
-        boolean local = this.currentFrame > 0;
-
-        DeclarationRef reference = new DeclarationRef(offset, local);
-        Declaration declaration = new Declaration(identifier, reference);
-
-        this.declarations.set(this.index, declaration);
+    public void define(T value) {
+        this.declarations.set(this.index, value);
 
         this.index++;
     }
 
-    public DeclarationRef searchInner(String identifier) {
+    public Resolution searchInner(String identifier) {
         int top = this.index - 1;
 
         for (int index = top; index >= this.scopes.peek(); index--) {
-            Declaration declaration = declarations.get(index);
+            T declaration = this.declarations.get(index);
 
-            if (declaration.identifier().equals(identifier)) {
-                return declaration.reference();
+            if (declaration.equals(identifier)) {
+                int offset = this.index - this.currentFrame;
+                boolean local = this.currentFrame > 0;
+
+                Resolution resolution = new Resolution(offset, local);
+
+                return resolution;
             }
         }
 
         return null;
     }
 
-    public DeclarationRef search(String identifier) {
+    public Resolution search(String identifier) {
         int top = this.index - 1;
 
         for (int index = top; index >= 0; index--) {
-            Declaration declaration = declarations.get(index);
+            T declaration = this.declarations.get(index);
 
-            if (declaration.identifier().equals(identifier)) {
-                return declaration.reference();
+            if (declaration.equals(identifier)) {
+                int offset = this.index - this.currentFrame;
+                boolean local = this.currentFrame > 0;
+
+                Resolution resolution = new Resolution(offset, local);
+
+                return resolution;
             }
         }
 

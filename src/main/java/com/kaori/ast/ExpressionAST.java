@@ -2,8 +2,6 @@ package com.kaori.ast;
 
 import java.util.List;
 
-import com.kaori.compiler.resolver.DeclarationRef;
-
 public interface ExpressionAST {
     public static enum BinaryOperator implements ExpressionAST {
         PLUS("+"),
@@ -63,23 +61,31 @@ public interface ExpressionAST {
 
     public class Identifier implements ExpressionAST {
         private final String name;
-        private DeclarationRef reference;
+        private int offset;
+        private boolean local;
 
         public Identifier(String name) {
             this.name = name;
-            this.reference = null;
+            this.offset = -1;
+            this.local = false;
         }
 
         public String name() {
             return this.name;
         }
 
-        public DeclarationRef reference() {
-            return this.reference;
+        public int offset() {
+            return this.offset;
         }
 
-        public void setReference(DeclarationRef reference) {
-            this.reference = reference;
+        public boolean local() {
+            return this.local;
         }
+
+        public void setReference(int offset, boolean local) {
+            this.offset = offset;
+            this.local = local;
+        }
+
     }
 }

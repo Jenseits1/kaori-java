@@ -6,15 +6,16 @@ import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
+import com.kaori.compiler.resolver.Environment;
 import com.kaori.error.KaoriError;
-import com.kaori.vm.CallStack;
 
 public class TypeChecker extends Visitor<TypeAST> {
-    public final CallStack<TypeAST> callStack;
+    private final Environment<TypeAST> environment;
 
     public TypeChecker(List<DeclarationAST> declarations) {
         super(declarations);
-        this.callStack = new CallStack<>();
+        this.environment = new Environment<>();
+
     }
 
     @Override

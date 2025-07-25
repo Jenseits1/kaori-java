@@ -6,7 +6,6 @@ import java.util.List;
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
-import com.kaori.compiler.resolver.DeclarationRef;
 
 import com.kaori.vm.Instruction;
 import com.kaori.vm.Instruction.InstructionKind;
@@ -86,12 +85,11 @@ public class BytecodeGenerator extends Visitor<Object> {
         this.visit(expression.right());
 
         ExpressionAST.Identifier identifier = expression.left();
-        DeclarationRef reference = identifier.reference();
 
-        if (reference.local()) {
-            this.emit(InstructionKind.STORE_LOCAL, reference.offset());
+        if (identifier.local()) {
+            this.emit(InstructionKind.STORE_LOCAL, identifier.offset());
         } else {
-            this.emit(InstructionKind.STORE_GLOBAL, reference.offset());
+            this.emit(InstructionKind.STORE_GLOBAL, identifier.offset());
         }
 
         return null;
@@ -106,12 +104,11 @@ public class BytecodeGenerator extends Visitor<Object> {
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
-        DeclarationRef reference = expression.reference();
 
-        if (reference.local()) {
-            this.emit(InstructionKind.LOAD_LOCAL, reference.offset());
+        if (expression.local()) {
+            this.emit(InstructionKind.LOAD_LOCAL, expression.offset());
         } else {
-            this.emit(InstructionKind.LOAD_GLOBAL, reference.offset());
+            this.emit(InstructionKind.LOAD_GLOBAL, expression.offset());
         }
 
         return null;
