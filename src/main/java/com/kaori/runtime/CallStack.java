@@ -4,11 +4,13 @@ import java.util.Stack;
 
 public class CallStack {
     public final Stack<Object> stack;
+    private final Stack<Integer> scopes;
     private final Stack<Integer> framePointers;
     private int index;
 
     public CallStack() {
         this.stack = new Stack<>();
+        this.scopes = new Stack<>();
         this.framePointers = new Stack<>();
         this.index = 0;
 
@@ -71,5 +73,13 @@ public class CallStack {
 
     public void exitFunction() {
         this.index = this.framePointers.pop();
+    }
+
+    public void enterScope() {
+        this.scopes.add(this.index);
+    }
+
+    public void exitScope() {
+        this.index = this.scopes.pop();
     }
 }

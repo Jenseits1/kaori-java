@@ -202,14 +202,14 @@ public class Parser {
 
         StatementAST.Block block = this.blockStatement();
 
-        block.declarations().add(increment);
-
-        StatementAST whileLoop = new StatementAST.WhileLoop(line, condition, block);
+        StatementAST.WhileLoop whileLoop = new StatementAST.WhileLoop(line, condition, block);
 
         List<DeclarationAST> declarations = new ArrayList<>();
 
         declarations.add(variable);
         declarations.add(whileLoop);
+
+        whileLoop.block().declarations().add(increment);
 
         return new StatementAST.Block(line, declarations);
     }

@@ -14,8 +14,9 @@ public class Environment<T> {
         this.scopes = new Stack<>();
         this.framePointer = 0;
 
-        this.declarations.setSize(1_000);
         this.scopes.push(0);
+        this.declarations.setSize(1_000);
+
     }
 
     public void declare(T value) {

@@ -24,6 +24,9 @@ public enum Opcode {
     STORE_LOCAL,
     STORE_GLOBAL,
 
+    ENTER_SCOPE,
+    EXIT_SCOPE,
+
     PUSH_CONST,
 
     JUMP,

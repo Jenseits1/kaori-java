@@ -127,7 +127,9 @@ public class BytecodeGenerator extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
+        this.emit(Opcode.ENTER_SCOPE);
         this.visitDeclarations(statement.declarations());
+        this.emit(Opcode.EXIT_SCOPE);
     }
 
     @Override

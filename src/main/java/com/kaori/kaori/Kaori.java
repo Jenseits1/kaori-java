@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.compiler.bytecode.Bytecode;
 import com.kaori.compiler.bytecode.BytecodeGenerator;
-import com.kaori.compiler.bytecode.Instruction;
+
 import com.kaori.compiler.lexer.Lexer;
 import com.kaori.compiler.lexer.Token;
 import com.kaori.compiler.lexer.TokenStream;
@@ -19,6 +19,7 @@ import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.Parser;
 import com.kaori.error.KaoriError;
 import com.kaori.runtime.KaoriVM;
+import com.kaori.slowinterpreter.Interpreter;
 
 public class Kaori {
     public void start() {
@@ -40,8 +41,10 @@ public class Kaori {
             BytecodeGenerator generator = new BytecodeGenerator(declarations);
             Bytecode bytecode = generator.bytecode();
 
-            System.out.println(bytecode);
             KaoriVM vm = new KaoriVM(bytecode);
+            // System.out.println(bytecode);
+            Interpreter interpreter = new Interpreter(declarations);
+            // interpreter.run();
             vm.run();
         } catch (KaoriError error) {
             System.out.println(error);

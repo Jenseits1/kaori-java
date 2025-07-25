@@ -110,6 +110,15 @@ public class KaoriVM {
                 case JUMP -> {
                     this.jumpTo(instruction.operand());
                 }
+
+                case ENTER_SCOPE -> {
+                    this.callStack.enterScope();
+                    this.advance();
+                }
+                case EXIT_SCOPE -> {
+                    this.callStack.exitScope();
+                    this.advance();
+                }
                 case PRINT -> {
                     Object top = this.stack.pop();
                     System.out.println(top);

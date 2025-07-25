@@ -136,7 +136,9 @@ public class Interpreter extends Visitor<Object> {
 
     @Override
     public void visitBlockStatement(StatementAST.Block statement) {
+        this.callStack.enterScope();
         this.visitDeclarations(statement.declarations());
+        this.callStack.exitScope();
     }
 
     @Override
