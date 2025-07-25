@@ -15,8 +15,8 @@ c: f64 = 11;
  */
 
 
-a: f64 = 5 * 11;
-b: f64 = 77;
+for i: f64 = 0; i < 1000; i++ {
+    print(i);
+}
 
-
-print(a > b);
+print(i);

@@ -155,14 +155,18 @@ public class BytecodeGenerator extends Visitor<Object> {
 
     @Override
     public void visitWhileLoopStatement(StatementAST.WhileLoop statement) {
-        while (true) {
-            Object condition = this.visit(statement.condition());
+        int jumpCondition = this.instructions.size();
 
-            if ((Boolean) condition == false)
-                break;
+        this.visit(statement.condition());
 
-            this.visit(statement.block());
-        }
+        int jumpEnd = this.instructions.size();
+        this.emit(Opcode.JUMP_IF_FALSE, null);
+
+        this.visit(statement.block());
+
+        this.emit(Opcode.JUMP, jumpCondition);
+
+        this.instructions.get(jumpEnd).setOperand(this.instructions.size());
     }
 
     /* Declarations */
