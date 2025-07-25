@@ -1,13 +1,13 @@
-package com.kaori.compiler;
+package com.kaori.compiler.bytecode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.parser.DeclarationAST;
-import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.StatementAST;
-import com.kaori.runtime.Instruction;
-import com.kaori.runtime.Instruction.InstructionKind;
+import com.kaori.compiler.Visitor;
+import com.kaori.compiler.bytecode.Instruction.InstructionKind;
+import com.kaori.compiler.syntax.DeclarationAST;
+import com.kaori.compiler.syntax.ExpressionAST;
+import com.kaori.compiler.syntax.StatementAST;
 
 public class BytecodeGenerator extends Visitor<Object> {
     public final List<Instruction> bytecode;

@@ -1,4 +1,4 @@
-package com.kaori.runtime;
+package com.kaori.compiler.bytecode;
 
 public record Instruction(InstructionKind kind, Object operand) {
     public static enum InstructionKind {

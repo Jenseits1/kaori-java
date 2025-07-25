@@ -1,4 +1,4 @@
-package com.kaori.token;
+package com.kaori.compiler.lexer;
 
 public enum TokenKind {
     // Arithmetic operators

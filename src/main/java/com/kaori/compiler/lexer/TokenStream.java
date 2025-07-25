@@ -1,4 +1,4 @@
-package com.kaori.token;
+package com.kaori.compiler.lexer;
 
 import java.util.List;
 

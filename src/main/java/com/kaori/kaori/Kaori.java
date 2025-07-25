@@ -1,42 +1,40 @@
 package com.kaori.kaori;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kaori.compiler.Resolver;
-import com.kaori.compiler.TypeChecker;
+import com.kaori.compiler.lexer.Lexer;
+import com.kaori.compiler.lexer.Token;
+import com.kaori.compiler.lexer.TokenStream;
+import com.kaori.compiler.semantic.Resolver;
+import com.kaori.compiler.semantic.TypeChecker;
+import com.kaori.compiler.syntax.DeclarationAST;
+import com.kaori.compiler.syntax.Parser;
 import com.kaori.error.KaoriError;
-import com.kaori.lexer.Lexer;
-import com.kaori.parser.DeclarationAST;
-import com.kaori.parser.Parser;
-import com.kaori.token.Token;
-import com.kaori.token.TokenStream;
 import com.kaori.treewalk.Interpreter;
 
 public class Kaori {
-    private final String source;
-    private TokenStream tokens;
-    private List<DeclarationAST> ast;
-
-    public Kaori(String source) {
-        this.source = source;
-    }
-
     public void start() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
 
-            this.setTokens();
-            this.setAst();
+            Path path = Path.of("src/main/java/com/kaori/kaori/main.kaori");
+            String source = Files.readString(path);
 
-            Resolver resolver = new Resolver(ast);
+            TokenStream tokens = this.tokens(source);
+            List<DeclarationAST> declarations = this.declarations(tokens);
+
+            Resolver resolver = new Resolver(declarations);
             resolver.run();
 
-            TypeChecker typeChecker = new TypeChecker(ast);
+            TypeChecker typeChecker = new TypeChecker(declarations);
             typeChecker.run();
 
-            Interpreter interpreter = new Interpreter(ast);
+            Interpreter interpreter = new Interpreter(declarations);
             interpreter.run();
 
             /*
@@ -50,19 +48,21 @@ public class Kaori {
 
         } catch (KaoriError error) {
             System.out.println(error);
+        } catch (IOException error) {
+            System.out.println(error);
         }
     }
 
-    private void setAst() {
-        Parser parser = new Parser(this.tokens);
+    private List<DeclarationAST> declarations(TokenStream tokens) {
+        Parser parser = new Parser(tokens);
 
-        this.ast = parser.parse();
+        return parser.declarations();
     }
 
-    private void setTokens() {
-        Lexer lexer = new Lexer(this.source);
-
+    private TokenStream tokens(String source) {
+        Lexer lexer = new Lexer(source);
         List<Token> tokens = lexer.scan();
-        this.tokens = new TokenStream(tokens, source);
+
+        return new TokenStream(tokens, source);
     }
 }

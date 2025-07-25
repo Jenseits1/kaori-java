@@ -1,11 +1,11 @@
-package com.kaori.parser;
+package com.kaori.compiler.syntax;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kaori.compiler.lexer.TokenKind;
+import com.kaori.compiler.lexer.TokenStream;
 import com.kaori.error.KaoriError;
-import com.kaori.token.TokenKind;
-import com.kaori.token.TokenStream;
 
 public class Parser {
     private final TokenStream tokens;
@@ -14,11 +14,7 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    public List<DeclarationAST> parse() {
-        return start();
-    }
-
-    private List<DeclarationAST> start() {
+    public List<DeclarationAST> declarations() {
         List<DeclarationAST> declarations = new ArrayList<>();
 
         while (!this.tokens.atEnd()) {

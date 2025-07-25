@@ -3,7 +3,8 @@ package com.kaori.runtime;
 import java.util.List;
 import java.util.Stack;
 
-import com.kaori.runtime.Instruction.InstructionKind;
+import com.kaori.compiler.bytecode.Instruction;
+import com.kaori.compiler.bytecode.Instruction.InstructionKind;
 
 public class KaoriVM {
     private final List<Instruction> bytecode;

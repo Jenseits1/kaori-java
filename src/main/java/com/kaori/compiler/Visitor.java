@@ -2,9 +2,9 @@ package com.kaori.compiler;
 
 import java.util.List;
 
-import com.kaori.parser.DeclarationAST;
-import com.kaori.parser.ExpressionAST;
-import com.kaori.parser.StatementAST;
+import com.kaori.compiler.syntax.DeclarationAST;
+import com.kaori.compiler.syntax.ExpressionAST;
+import com.kaori.compiler.syntax.StatementAST;
 
 public abstract class Visitor<T> {
     protected int line;
