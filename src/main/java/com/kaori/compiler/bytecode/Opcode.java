@@ -18,6 +18,7 @@ public enum Opcode {
     NOT,
     NEGATE,
 
+    DECLARE,
     LOAD_LOCAL,
     LOAD_GLOBAL,
     STORE_LOCAL,
@@ -27,5 +28,5 @@ public enum Opcode {
 
     JUMP,
     JUMP_IF_FALSE,
-    PRINT
+    PRINT,
 }

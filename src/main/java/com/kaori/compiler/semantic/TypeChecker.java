@@ -3,6 +3,7 @@ package com.kaori.compiler.semantic;
 import java.util.List;
 
 import com.kaori.compiler.Visitor;
+import com.kaori.compiler.environment.Environment;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.ExpressionAST;
 import com.kaori.compiler.syntax.StatementAST;

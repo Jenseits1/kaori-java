@@ -2,8 +2,8 @@ package com.kaori.runtime;
 
 import java.util.Stack;
 
-public class CallStack<T> {
-    public final Stack<T> stack;
+public class CallStack {
+    public final Stack<Object> stack;
     private final Stack<Integer> framePointers;
     private int index;
 
@@ -23,13 +23,13 @@ public class CallStack<T> {
         this.index++;
     }
 
-    public void declare(T value) {
+    public void declare(Object value) {
         this.stack.set(index, value);
 
         this.updateIndex();
     }
 
-    public void define(T value, int offset, boolean local) {
+    public void define(Object value, int offset, boolean local) {
         if (local) {
             offset = framePointers.peek() + offset;
         }
@@ -37,7 +37,7 @@ public class CallStack<T> {
         this.stack.set(offset, value);
     }
 
-    public T get(int offset, boolean local) {
+    public Object get(int offset, boolean local) {
         if (local) {
             offset = framePointers.peek() + offset;
         }

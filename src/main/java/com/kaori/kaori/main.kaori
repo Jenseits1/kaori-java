@@ -15,7 +15,7 @@ c: f64 = 11;
  */
 
 
-if (7 * 2 / 9 - 1.5 == 11) {
+if (11 == 11) {
     print("first");
 } else if (1 < 2)  {
     print("second");

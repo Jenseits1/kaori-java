@@ -10,11 +10,13 @@ import com.kaori.compiler.bytecode.Opcode;
 public class KaoriVM {
     private final List<Instruction> instructions;
     private final Stack<Object> stack;
+    private final CallStack callStack;
     private int index;
 
     public KaoriVM(Bytecode bytecode) {
         this.instructions = bytecode.instructions();
         this.stack = new Stack<>();
+        this.callStack = new CallStack<>();
         this.index = 0;
     }
 
@@ -59,7 +61,10 @@ public class KaoriVM {
                 case STORE_LOCAL -> throw new UnsupportedOperationException("Instruction not implemented: STORE_LOCAL");
                 case STORE_GLOBAL ->
                     throw new UnsupportedOperationException("Instruction not implemented: STORE_GLOBAL");
-
+                case DECLARE -> {
+                    Object top = this.stack.pop();
+                    this.callStack.declare(top);
+                }
                 case PUSH_CONST -> {
                     this.stack.push(instruction.operand());
 

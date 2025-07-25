@@ -170,7 +170,7 @@ public class BytecodeGenerator extends Visitor<Object> {
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
         this.visit(declaration.right());
 
-        this.emit(Opcode.STORE_LOCAL, declaration.left.offset());
+        this.emit(Opcode.DECLARE);
     }
 
     @Override
