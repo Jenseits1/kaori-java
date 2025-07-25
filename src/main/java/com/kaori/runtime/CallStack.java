@@ -19,7 +19,7 @@ public class CallStack {
         this.framePointers.push(0);
     }
 
-    public void updateIndex() {
+    private void updateIndex() {
         this.index++;
     }
 
@@ -43,6 +43,26 @@ public class CallStack {
         }
 
         return this.stack.get(offset);
+    }
+
+    public Object loadLocal(int offset) {
+        offset = framePointers.peek() + offset;
+
+        return this.stack.get(offset);
+    }
+
+    public Object loadGlobal(int offset) {
+        return this.stack.get(offset);
+    }
+
+    public void storeLocal(Object value, int offset) {
+        offset = framePointers.peek() + offset;
+
+        this.stack.set(offset, value);
+    }
+
+    public void storeGlobal(Object value, int offset) {
+        this.stack.set(offset, value);
     }
 
     public void enterFunction() {

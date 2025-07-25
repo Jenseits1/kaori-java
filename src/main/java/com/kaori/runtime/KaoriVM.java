@@ -16,7 +16,7 @@ public class KaoriVM {
     public KaoriVM(Bytecode bytecode) {
         this.instructions = bytecode.instructions();
         this.stack = new Stack<>();
-        this.callStack = new CallStack<>();
+        this.callStack = new CallStack();
         this.index = 0;
     }
 
@@ -56,14 +56,40 @@ public class KaoriVM {
                     this.advance();
                 }
 
-                case LOAD_LOCAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_LOCAL");
-                case LOAD_GLOBAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_GLOBAL");
-                case STORE_LOCAL -> throw new UnsupportedOperationException("Instruction not implemented: STORE_LOCAL");
-                case STORE_GLOBAL ->
-                    throw new UnsupportedOperationException("Instruction not implemented: STORE_GLOBAL");
+                case LOAD_LOCAL -> {
+                    int offset = (Integer) instruction.operand();
+                    Object value = this.callStack.loadLocal(offset);
+
+                    this.stack.add(value);
+                    this.advance();
+                }
+                case LOAD_GLOBAL -> {
+                    int offset = (Integer) instruction.operand();
+                    Object value = this.callStack.loadGlobal(offset);
+
+                    this.stack.add(value);
+                    this.advance();
+                }
+                case STORE_LOCAL -> {
+                    int offset = (Integer) instruction.operand();
+                    Object top = this.stack.pop();
+
+                    this.callStack.storeLocal(top, offset);
+                    this.advance();
+                }
+                case STORE_GLOBAL -> {
+                    int offset = (Integer) instruction.operand();
+                    Object top = this.stack.pop();
+
+                    this.callStack.storeGlobal(top, offset);
+                    this.advance();
+                }
+
                 case DECLARE -> {
                     Object top = this.stack.pop();
                     this.callStack.declare(top);
+
+                    this.advance();
                 }
                 case PUSH_CONST -> {
                     this.stack.push(instruction.operand());
@@ -72,9 +98,9 @@ public class KaoriVM {
                 }
 
                 case JUMP_IF_FALSE -> {
-                    Boolean condition = (Boolean) this.stack.pop();
+                    Object top = this.stack.pop();
 
-                    if (condition == false) {
+                    if ((Boolean) top == false) {
                         this.jumpTo(instruction.operand());
                     } else {
                         this.advance();
@@ -85,8 +111,9 @@ public class KaoriVM {
                     this.jumpTo(instruction.operand());
                 }
                 case PRINT -> {
-                    Object value = this.stack.pop();
-                    System.out.println(value);
+                    Object top = this.stack.pop();
+                    System.out.println(top);
+
                     this.advance();
                 }
             }

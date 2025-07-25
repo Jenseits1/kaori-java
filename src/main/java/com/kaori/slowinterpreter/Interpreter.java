@@ -11,11 +11,11 @@ import com.kaori.error.KaoriError;
 import com.kaori.runtime.CallStack;
 
 public class Interpreter extends Visitor<Object> {
-    public final CallStack<Object> callStack;
+    public final CallStack callStack;
 
     public Interpreter(List<DeclarationAST> declarations) {
         super(declarations);
-        this.callStack = new CallStack<>();
+        this.callStack = new CallStack();
     }
 
     @Override
