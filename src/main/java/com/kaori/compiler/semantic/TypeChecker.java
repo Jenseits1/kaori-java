@@ -2,12 +2,12 @@ package com.kaori.compiler;
 
 import java.util.List;
 
-import com.kaori.ast.DeclarationAST;
-import com.kaori.ast.ExpressionAST;
-import com.kaori.ast.StatementAST;
-import com.kaori.ast.TypeAST;
 import com.kaori.compiler.environment.Environment;
 import com.kaori.error.KaoriError;
+import com.kaori.parser.DeclarationAST;
+import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.StatementAST;
+import com.kaori.parser.TypeAST;
 
 public class TypeChecker extends Visitor<TypeAST> {
     private final Environment<TypeAST> environment;

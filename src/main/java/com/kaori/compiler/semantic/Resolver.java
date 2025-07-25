@@ -2,13 +2,12 @@ package com.kaori.compiler;
 
 import java.util.List;
 
-import com.kaori.ast.DeclarationAST;
-
-import com.kaori.ast.ExpressionAST;
-import com.kaori.ast.StatementAST;
 import com.kaori.compiler.environment.Environment;
 import com.kaori.compiler.environment.Resolution;
 import com.kaori.error.KaoriError;
+import com.kaori.parser.DeclarationAST;
+import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.StatementAST;
 
 public class Resolver extends Visitor<Object> {
     private final Environment<String> environment;

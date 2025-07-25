@@ -3,10 +3,6 @@ package com.kaori.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.ast.DeclarationAST;
-import com.kaori.ast.ExpressionAST;
-import com.kaori.ast.StatementAST;
-import com.kaori.ast.TypeAST;
 import com.kaori.error.KaoriError;
 import com.kaori.token.TokenKind;
 import com.kaori.token.TokenStream;

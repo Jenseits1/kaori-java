@@ -1,6 +1,10 @@
-package com.kaori.ast;
+package com.kaori.parser;
 
 import java.util.List;
+
+import com.kaori.parser.ExpressionAST.Identifier;
+import com.kaori.parser.StatementAST.Block;
+import com.kaori.parser.TypeAST.Function;
 
 public interface DeclarationAST {
 	int line();

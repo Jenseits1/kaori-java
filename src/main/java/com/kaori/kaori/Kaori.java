@@ -1,14 +1,14 @@
-package com.kaori;
+package com.kaori.kaori;
 
 import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.kaori.ast.DeclarationAST;
 import com.kaori.compiler.Resolver;
 import com.kaori.compiler.TypeChecker;
 import com.kaori.error.KaoriError;
 import com.kaori.lexer.Lexer;
+import com.kaori.parser.DeclarationAST;
 import com.kaori.parser.Parser;
 import com.kaori.token.Token;
 import com.kaori.token.TokenStream;

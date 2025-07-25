@@ -3,12 +3,12 @@ package com.kaori.treewalk;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.ast.DeclarationAST;
-import com.kaori.ast.ExpressionAST;
-import com.kaori.ast.StatementAST;
 import com.kaori.compiler.Visitor;
 import com.kaori.error.KaoriError;
-import com.kaori.vm.CallStack;
+import com.kaori.parser.DeclarationAST;
+import com.kaori.parser.ExpressionAST;
+import com.kaori.parser.StatementAST;
+import com.kaori.runtime.CallStack;
 
 public class Interpreter extends Visitor<Object> {
     public final CallStack<Object> callStack;
