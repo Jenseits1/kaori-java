@@ -7,6 +7,9 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kaori.compiler.bytecode.Bytecode;
+import com.kaori.compiler.bytecode.BytecodeGenerator;
+import com.kaori.compiler.bytecode.Instruction;
 import com.kaori.compiler.lexer.Lexer;
 import com.kaori.compiler.lexer.Token;
 import com.kaori.compiler.lexer.TokenStream;
@@ -15,7 +18,8 @@ import com.kaori.compiler.semantic.TypeChecker;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.Parser;
 import com.kaori.error.KaoriError;
-import com.kaori.treewalk.Interpreter;
+import com.kaori.runtime.KaoriVM;
+import com.kaori.slowinterpreter.Interpreter;
 
 public class Kaori {
     public void start() {
@@ -34,17 +38,11 @@ public class Kaori {
             TypeChecker typeChecker = new TypeChecker(declarations);
             typeChecker.run();
 
-            Interpreter interpreter = new Interpreter(declarations);
-            interpreter.run();
+            BytecodeGenerator generator = new BytecodeGenerator(declarations);
+            Bytecode bytecode = generator.bytecode();
 
-            /*
-             * BytecodeGenerator bytecode = new BytecodeGenerator(ast);
-             * 
-             * System.out.println(gson.toJson(bytecode.generateBytecode()));
-             * 
-             * VirtualMachine vm = new VirtualMachine(bytecode.generateBytecode());
-             * vm.run();
-             */
+            System.out.println(bytecode);
+            KaoriVM vm = new KaoriVM(bytecode);
 
         } catch (KaoriError error) {
             System.out.println(error);

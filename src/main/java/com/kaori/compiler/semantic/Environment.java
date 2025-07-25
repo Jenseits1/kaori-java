@@ -1,4 +1,4 @@
-package com.kaori.compiler.environment;
+package com.kaori.compiler.semantic;
 
 import java.util.Stack;
 

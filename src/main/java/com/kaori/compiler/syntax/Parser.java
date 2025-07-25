@@ -410,7 +410,7 @@ public class Parser {
         return switch (this.tokens.getCurrent()) {
             case MINUS -> {
                 this.tokens.consume();
-                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.MINUS);
+                yield new ExpressionAST.UnaryExpression(this.prefixUnary(), ExpressionAST.UnaryOperator.NEGATE);
             }
             case NOT -> {
                 this.tokens.consume();

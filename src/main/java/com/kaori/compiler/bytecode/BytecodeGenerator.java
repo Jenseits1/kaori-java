@@ -9,29 +9,29 @@ import com.kaori.compiler.syntax.ExpressionAST;
 import com.kaori.compiler.syntax.StatementAST;
 
 public class BytecodeGenerator extends Visitor<Object> {
-    public final List<Instruction> bytecode;
+    public final List<Instruction> instructions;
 
     public BytecodeGenerator(List<DeclarationAST> declarations) {
         super(declarations);
-        this.bytecode = new ArrayList<>();
+        this.instructions = new ArrayList<>();
     }
 
-    public List<Instruction> generateBytecode() {
+    public Bytecode bytecode() {
         this.visitDeclarations(this.declarations);
 
-        return this.bytecode;
+        return new Bytecode(instructions);
     }
 
-    public void emit(InstructionKind kind) {
-        Instruction instruction = new Instruction(kind, null);
+    public void emit(Opcode opcode) {
+        Instruction instruction = new Instruction(opcode, null);
 
-        this.bytecode.add(instruction);
+        this.instructions.add(instruction);
     }
 
-    public void emit(InstructionKind kind, Object operand) {
-        Instruction instruction = new Instruction(kind, operand);
+    public void emit(Opcode opcode, Object operand) {
+        Instruction instruction = new Instruction(opcode, operand);
 
-        this.bytecode.add(instruction);
+        this.instructions.add(instruction);
     }
 
     @Override
@@ -41,23 +41,23 @@ public class BytecodeGenerator extends Visitor<Object> {
 
         ExpressionAST.BinaryOperator operator = expression.operator();
 
-        InstructionKind kind = switch (operator) {
-            case PLUS -> InstructionKind.PLUS;
-            case MINUS -> InstructionKind.MINUS;
-            case MULTIPLY -> InstructionKind.MULTIPLY;
-            case DIVIDE -> InstructionKind.DIVIDE;
-            case MODULO -> InstructionKind.MODULO;
-            case GREATER -> InstructionKind.GREATER;
-            case GREATER_EQUAL -> InstructionKind.GREATER_EQUAL;
-            case LESS -> InstructionKind.LESS;
-            case LESS_EQUAL -> InstructionKind.LESS_EQUAL;
-            case AND -> InstructionKind.AND;
-            case OR -> InstructionKind.OR;
-            case EQUAL -> InstructionKind.EQUAL;
-            case NOT_EQUAL -> InstructionKind.NOT_EQUAL;
+        Opcode opcode = switch (operator) {
+            case PLUS -> Opcode.PLUS;
+            case MINUS -> Opcode.MINUS;
+            case MULTIPLY -> Opcode.MULTIPLY;
+            case DIVIDE -> Opcode.DIVIDE;
+            case MODULO -> Opcode.MODULO;
+            case GREATER -> Opcode.GREATER;
+            case GREATER_EQUAL -> Opcode.GREATER_EQUAL;
+            case LESS -> Opcode.LESS;
+            case LESS_EQUAL -> Opcode.LESS_EQUAL;
+            case AND -> Opcode.AND;
+            case OR -> Opcode.OR;
+            case EQUAL -> Opcode.EQUAL;
+            case NOT_EQUAL -> Opcode.NOT_EQUAL;
         };
 
-        this.emit(kind);
+        this.emit(opcode);
 
         return null;
     }
@@ -68,12 +68,12 @@ public class BytecodeGenerator extends Visitor<Object> {
 
         ExpressionAST.UnaryOperator operator = expression.operator();
 
-        InstructionKind kind = switch (operator) {
-            case MINUS -> InstructionKind.MINUS;
-            case NOT -> InstructionKind.NOT;
+        Opcode opcode = switch (operator) {
+            case NEGATE -> Opcode.NEGATE;
+            case NOT -> Opcode.NOT;
         };
 
-        this.emit(kind);
+        this.emit(opcode);
 
         return null;
     }
@@ -85,9 +85,9 @@ public class BytecodeGenerator extends Visitor<Object> {
         ExpressionAST.Identifier identifier = expression.left();
 
         if (identifier.local()) {
-            this.emit(InstructionKind.STORE_LOCAL, identifier.offset());
+            this.emit(Opcode.STORE_LOCAL, identifier.offset());
         } else {
-            this.emit(InstructionKind.STORE_GLOBAL, identifier.offset());
+            this.emit(Opcode.STORE_GLOBAL, identifier.offset());
         }
 
         return null;
@@ -95,7 +95,7 @@ public class BytecodeGenerator extends Visitor<Object> {
 
     @Override
     public Object visitLiteral(ExpressionAST.Literal expression) {
-        this.emit(InstructionKind.PUSH_CONST, expression.value());
+        this.emit(Opcode.PUSH_CONST, expression.value());
 
         return null;
     }
@@ -104,9 +104,9 @@ public class BytecodeGenerator extends Visitor<Object> {
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
 
         if (expression.local()) {
-            this.emit(InstructionKind.LOAD_LOCAL, expression.offset());
+            this.emit(Opcode.LOAD_LOCAL, expression.offset());
         } else {
-            this.emit(InstructionKind.LOAD_GLOBAL, expression.offset());
+            this.emit(Opcode.LOAD_GLOBAL, expression.offset());
         }
 
         return null;
@@ -122,7 +122,7 @@ public class BytecodeGenerator extends Visitor<Object> {
     public void visitPrintStatement(StatementAST.Print statement) {
         this.visit(statement.expression());
 
-        this.emit(InstructionKind.PRINT);
+        this.emit(Opcode.PRINT);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class BytecodeGenerator extends Visitor<Object> {
     public void visitVariableDeclaration(DeclarationAST.Variable declaration) {
         this.visit(declaration.right());
 
-        this.emit(InstructionKind.LOAD_LOCAL);
+        this.emit(Opcode.LOAD_LOCAL);
     }
 
     @Override

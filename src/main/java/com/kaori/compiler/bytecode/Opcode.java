@@ -1,6 +1,6 @@
 package com.kaori.compiler.bytecode;
 
-public enum InstructionKind {
+public enum Opcode {
     PLUS,
     MINUS,
     MULTIPLY,
@@ -14,6 +14,7 @@ public enum InstructionKind {
     GREATER_EQUAL,
     LESS,
     LESS_EQUAL,
+
     NOT,
     NEGATE,
 
@@ -21,8 +22,11 @@ public enum InstructionKind {
     LOAD_GLOBAL,
     STORE_LOCAL,
     STORE_GLOBAL,
+
     PUSH_CONST,
+
     JUMP_IF_FALSE,
     JUMP_IF_TRUE,
+
     PRINT
 }

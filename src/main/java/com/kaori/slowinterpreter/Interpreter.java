@@ -1,4 +1,4 @@
-package com.kaori.treewalk;
+package com.kaori.slowinterpreter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class Interpreter extends Visitor<Object> {
         ExpressionAST.UnaryOperator operator = expression.operator();
 
         return switch (operator) {
-            case MINUS -> -(Double) left;
+            case NEGATE -> -(Double) left;
             case NOT -> !(Boolean) left;
         };
     }

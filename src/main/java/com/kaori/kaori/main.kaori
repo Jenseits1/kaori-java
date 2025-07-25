@@ -5,7 +5,7 @@ c: f64 = 11;
 
 
 
-{ 
+{
     d: f64 = 10;
     e: str = "";
     print(d);
@@ -15,36 +15,4 @@ c: f64 = 11;
  */
 
 
-iterations: f64 = 10000;
-
-def factorial() -> void {
-    n: f64 = 1;
-
-    for i: f64 = 1; i < 10; i++ {
-        n = n * i;
-    }
-
-    print(n);
-}
-
-for i: f64 = 0; i < 100; i++ {
-    print(i);
-}
-
-
-
-def foo(n: f64) -> f64 {
-    if n > 0 {
-        print(n);
-        bar(n - 1);
-    }
-}
-
-def bar(n: f64) -> void {
-    if n > 0 {
-        print(n);
-        foo(n - 1);
-    }
-}
-
-foo(5);
+2 + 5;

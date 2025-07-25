@@ -3,25 +3,26 @@ package com.kaori.runtime;
 import java.util.List;
 import java.util.Stack;
 
+import com.kaori.compiler.bytecode.Bytecode;
 import com.kaori.compiler.bytecode.Instruction;
-import com.kaori.compiler.bytecode.InstructionKind;
+import com.kaori.compiler.bytecode.Opcode;
 
 public class KaoriVM {
-    private final List<Instruction> bytecode;
+    private final List<Instruction> instructions;
     private final Stack<Object> stack;
     private int index;
 
-    public KaoriVM(List<Instruction> bytecode) {
-        this.bytecode = bytecode;
+    public KaoriVM(Bytecode bytecode) {
+        this.instructions = bytecode.instructions();
         this.stack = new Stack<>();
         this.index = 0;
     }
 
     public void run() {
-        while (this.index < bytecode.size()) {
-            Instruction instruction = bytecode.get(index);
+        while (this.index < instructions.size()) {
+            Instruction instruction = instructions.get(index);
 
-            switch (instruction.kind()) {
+            switch (instruction.opcode()) {
                 case PLUS,
                         MINUS,
                         MULTIPLY,
@@ -35,10 +36,10 @@ public class KaoriVM {
                         GREATER_EQUAL,
                         LESS,
                         LESS_EQUAL ->
-                    this.evalBinary(instruction.kind());
+                    this.evalBinary(instruction.opcode());
                 case NOT,
                         NEGATE ->
-                    this.evalUnary(instruction.kind());
+                    this.evalUnary(instruction.opcode());
 
                 case LOAD_LOCAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_LOCAL");
                 case LOAD_GLOBAL -> throw new UnsupportedOperationException("Instruction not implemented: LOAD_GLOBAL");
@@ -68,11 +69,11 @@ public class KaoriVM {
 
     }
 
-    public void evalBinary(InstructionKind kind) {
+    public void evalBinary(Opcode opcode) {
         Object right = this.stack.pop();
         Object left = this.stack.pop();
 
-        switch (kind) {
+        switch (opcode) {
             case PLUS -> this.stack.push((Double) left + (Double) right);
             case MINUS -> this.stack.push((Double) left - (Double) right);
             case MULTIPLY -> this.stack.push((Double) left * (Double) right);
@@ -91,10 +92,10 @@ public class KaoriVM {
         }
     }
 
-    public void evalUnary(InstructionKind kind) {
+    public void evalUnary(Opcode opcode) {
         Object left = this.stack.pop();
 
-        switch (kind) {
+        switch (opcode) {
             case NOT -> this.stack.push(!(Boolean) left);
             case NEGATE -> this.stack.push(-(Double) left);
         }

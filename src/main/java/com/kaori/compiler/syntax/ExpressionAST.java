@@ -30,7 +30,7 @@ public interface ExpressionAST {
     }
 
     public static enum UnaryOperator {
-        MINUS("-"),
+        NEGATE("-"),
         NOT("!");
 
         public final String label;

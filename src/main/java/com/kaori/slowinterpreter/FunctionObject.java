@@ -1,4 +1,4 @@
-package com.kaori.treewalk;
+package com.kaori.slowinterpreter;
 
 import java.util.List;
 

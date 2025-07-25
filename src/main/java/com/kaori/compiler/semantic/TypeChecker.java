@@ -3,7 +3,6 @@ package com.kaori.compiler.semantic;
 import java.util.List;
 
 import com.kaori.compiler.Visitor;
-import com.kaori.compiler.environment.Environment;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.ExpressionAST;
 import com.kaori.compiler.syntax.StatementAST;
@@ -65,7 +64,7 @@ public class TypeChecker extends Visitor<TypeAST> {
         ExpressionAST.UnaryOperator operator = expression.operator();
 
         TypeAST type = switch (operator) {
-            case MINUS -> left.equals(TypeAST.Primitive.NUMBER) ? TypeAST.Primitive.NUMBER : TypeAST.Primitive.VOID;
+            case NEGATE -> left.equals(TypeAST.Primitive.NUMBER) ? TypeAST.Primitive.NUMBER : TypeAST.Primitive.VOID;
             case NOT -> left.equals(TypeAST.Primitive.BOOLEAN) ? TypeAST.Primitive.BOOLEAN : TypeAST.Primitive.VOID;
 
         };
