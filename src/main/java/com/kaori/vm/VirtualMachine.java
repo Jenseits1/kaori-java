@@ -6,18 +6,18 @@ import java.util.Stack;
 import com.kaori.vm.Instruction.InstructionKind;
 
 public class VirtualMachine {
-    public final List<Instruction> bytecode;
-    public final Stack<Object> stack;
+    private final List<Instruction> bytecode;
+    private final Stack<Object> stack;
+    private int index;
 
     public VirtualMachine(List<Instruction> bytecode) {
         this.bytecode = bytecode;
         this.stack = new Stack<>();
+        this.index = 0;
     }
 
     public void run() {
-        int index = 0;
-
-        while (index < bytecode.size()) {
+        while (this.index < bytecode.size()) {
             Instruction instruction = bytecode.get(index);
 
             switch (instruction.kind) {
@@ -62,8 +62,7 @@ public class VirtualMachine {
                 }
             }
 
-            index++;
-
+            this.index++;
         }
 
     }

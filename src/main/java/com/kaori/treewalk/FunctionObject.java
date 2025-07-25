@@ -1,4 +1,4 @@
-package com.kaori.compiler.resolver;
+package com.kaori.treewalk;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.ast.TypeAST;
-import com.kaori.compiler.resolver.Environment;
+import com.kaori.compiler.environment.Environment;
 import com.kaori.error.KaoriError;
 
 public class TypeChecker extends Visitor<TypeAST> {

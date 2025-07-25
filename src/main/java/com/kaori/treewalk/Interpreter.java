@@ -7,8 +7,6 @@ import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
 import com.kaori.ast.StatementAST;
 import com.kaori.compiler.Visitor;
-
-import com.kaori.compiler.resolver.FunctionObject;
 import com.kaori.error.KaoriError;
 import com.kaori.vm.CallStack;
 

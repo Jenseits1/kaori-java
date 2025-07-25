@@ -1,4 +1,4 @@
-package com.kaori.compiler.resolver;
+package com.kaori.compiler.environment;
 
 import java.util.Stack;
 
@@ -103,5 +103,9 @@ public class Environment<T> {
         this.currentFrame = 0;
 
         this.exitScope();
+    }
+
+    public boolean insideFunction() {
+        return this.currentFrame > 0;
     }
 }
