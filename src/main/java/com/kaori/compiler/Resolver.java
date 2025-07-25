@@ -123,6 +123,10 @@ public class Resolver extends Visitor<Object> {
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
         ExpressionAST.Identifier identifier = declaration.name();
 
+        if (this.environment.insideFunction()) {
+            throw KaoriError.ResolveError(identifier.name() + " can't be declared inside another function", this.line);
+        }
+
         Resolution resolution = this.environment.searchInner(identifier.name());
 
         if (resolution == null) {

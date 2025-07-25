@@ -50,7 +50,9 @@ def bar(n: f64) -> void {
 foo(5); */
 
 def foo() -> void {
-    def bar() -> void {
+   
+}
+
+def bar() -> void {
         
-    }
 }
