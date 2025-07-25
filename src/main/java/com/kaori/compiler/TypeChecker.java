@@ -90,7 +90,7 @@ public class TypeChecker extends Visitor<TypeAST> {
                     this.line);
         }
 
-        this.callStack.define(right, identifier.reference());
+        this.environment.define(right, identifier.offset(), identifier.local());
 
         return right;
     }
@@ -102,7 +102,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
     @Override
     public TypeAST visitIdentifier(ExpressionAST.Identifier expression) {
-        return this.callStack.get(expression.reference());
+        return this.environment.get(expression.offset(), expression.local());
     }
 
     @Override
@@ -180,17 +180,18 @@ public class TypeChecker extends Visitor<TypeAST> {
                     String.format("invalid variable declaration with type %s for type %s", left, right),
                     this.line);
         }
-        this.callStack.declare(left);
+
+        this.environment.declare(left);
     }
 
     @Override
     public void visitFunctionDeclaration(DeclarationAST.Function declaration) {
-        this.callStack.declare(declaration.type());
+        this.environment.declare(declaration.type());
     }
 
     @Override
     public void visitFunctionDefinition(DeclarationAST.Function declaration) {
-        this.callStack.enterFunction();
+        this.environment.enterFunction();
 
         for (DeclarationAST.Variable parameter : declaration.parameters()) {
             this.visit(parameter);
@@ -200,7 +201,7 @@ public class TypeChecker extends Visitor<TypeAST> {
 
         this.visitDeclarations(declarations);
 
-        this.callStack.exitFunction();
+        this.environment.exitFunction();
     }
 
 }

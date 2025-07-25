@@ -112,7 +112,7 @@ public class Resolver extends Visitor<Object> {
         Resolution resolution = this.environment.searchInner(identifier.name());
 
         if (resolution == null) {
-            this.environment.define(identifier.name());
+            this.environment.declare(identifier.name());
         } else {
             throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }
@@ -125,7 +125,7 @@ public class Resolver extends Visitor<Object> {
         Resolution resolution = this.environment.searchInner(identifier.name());
 
         if (resolution == null) {
-            this.environment.define(identifier.name());
+            this.environment.declare(identifier.name());
         } else {
             throw KaoriError.ResolveError(identifier.name() + " is already declared", this.line);
         }

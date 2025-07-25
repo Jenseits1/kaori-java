@@ -18,10 +18,26 @@ public class Environment<T> {
         this.scopes.push(0);
     }
 
-    public void define(T value) {
+    public void declare(T value) {
         this.declarations.set(this.index, value);
 
         this.index++;
+    }
+
+    public void define(T value, int offset, boolean local) {
+        if (local) {
+            offset = this.currentFrame + offset;
+        }
+
+        this.declarations.set(offset, value);
+    }
+
+    public T get(int offset, boolean local) {
+        if (local) {
+            offset = this.currentFrame + offset;
+        }
+
+        return this.declarations.get(offset);
     }
 
     public Resolution searchInner(String identifier) {

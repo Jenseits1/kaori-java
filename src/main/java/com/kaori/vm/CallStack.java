@@ -2,8 +2,6 @@ package com.kaori.vm;
 
 import java.util.Stack;
 
-import com.kaori.compiler.resolver.DeclarationRef;
-
 public class CallStack<T> {
     public final Stack<T> stack;
     private final Stack<Integer> framePointers;
@@ -32,24 +30,20 @@ public class CallStack<T> {
         this.updateIndex();
     }
 
-    public void define(T value, DeclarationRef reference) {
-        int index = reference.offset();
-
-        if (reference.local()) {
-            index += framePointers.peek();
+    public void define(T value, int offset, boolean local) {
+        if (local) {
+            offset = framePointers.peek() + offset;
         }
 
-        this.stack.set(index, value);
+        this.stack.set(offset, value);
     }
 
-    public T get(DeclarationRef reference) {
-        int index = reference.offset();
-
-        if (reference.local()) {
-            index += framePointers.peek();
+    public T get(int offset, boolean local) {
+        if (local) {
+            offset = framePointers.peek() + offset;
         }
 
-        return this.stack.get(index);
+        return this.stack.get(offset);
     }
 
     public void enterFunction() {
