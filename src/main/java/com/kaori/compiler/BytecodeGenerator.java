@@ -2,7 +2,6 @@ package com.kaori.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import com.kaori.ast.DeclarationAST;
 import com.kaori.ast.ExpressionAST;
@@ -13,20 +12,26 @@ import com.kaori.vm.Instruction;
 import com.kaori.vm.Instruction.InstructionKind;
 
 public class BytecodeGenerator extends Visitor<Object> {
-    public final Stack<Object> bytecode;
+    public final List<Instruction> bytecode;
 
     public BytecodeGenerator(List<DeclarationAST> declarations) {
         super(declarations);
-        this.bytecode = new Stack<>();
+        this.bytecode = new ArrayList<>();
+    }
+
+    public List<Instruction> generateBytecode() {
+        this.visitDeclarations(this.declarations);
+
+        return this.bytecode;
     }
 
     public void emit(InstructionKind kind) {
-        Instruction instruction = new Instruction(kind, 0);
+        Instruction instruction = new Instruction(kind, null);
 
         this.bytecode.add(instruction);
     }
 
-    public void emit(InstructionKind kind, int operand) {
+    public void emit(InstructionKind kind, Object operand) {
         Instruction instruction = new Instruction(kind, operand);
 
         this.bytecode.add(instruction);
@@ -81,53 +86,42 @@ public class BytecodeGenerator extends Visitor<Object> {
         ExpressionAST.Identifier identifier = expression.left();
         DeclarationRef reference = identifier.reference();
 
-        return value;
+        return null;
     }
 
     @Override
     public Object visitLiteral(ExpressionAST.Literal expression) {
-        return expression.value();
+        this.emit(InstructionKind.PUSH_CONST, expression.value());
+
+        return null;
     }
 
     @Override
     public Object visitIdentifier(ExpressionAST.Identifier expression) {
         DeclarationRef reference = expression.reference();
+        boolean local = reference.local();
+        int offset = reference.offset();
+
+        if (local) {
+            this.emit(InstructionKind.LOAD_LOCAL, offset);
+        } else {
+            this.emit(InstructionKind.LOAD_GLOBAL, offset);
+        }
 
         return null;
     }
 
     @Override
     public Object visitFunctionCall(ExpressionAST.FunctionCall expression) {
-        FunctionObject functionObject = (FunctionObject) this.visit(expression.callee());
-
-        List<Object> arguments = new ArrayList<>();
-
-        for (int i = 0; i < functionObject.parameters().size(); i++) {
-            if (i < expression.arguments().size()) {
-                ExpressionAST argument = expression.arguments().get(i);
-                arguments.add(this.visit(argument));
-            } else {
-                arguments.add(null);
-            }
-
-        }
-
-        for (int i = 0; i < functionObject.parameters().size(); i++) {
-            Object defaultValue = this.visit(functionObject.parameters().get(i).right());
-            Object argument = arguments.get(i);
-
-        }
-
-        this.visitDeclarations(functionObject.declarations());
 
         return null;
     }
 
     @Override
     public void visitPrintStatement(StatementAST.Print statement) {
-        Object expression = this.visit(statement.expression());
+        this.visit(statement.expression());
 
-        System.out.println(expression);
+        this.emit(InstructionKind.PRINT);
     }
 
     @Override

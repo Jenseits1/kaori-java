@@ -2,7 +2,7 @@ package com.kaori.vm;
 
 public class Instruction {
     public final InstructionKind kind;
-    public final int operand;
+    public final Object operand;
 
     public static enum InstructionKind {
         PLUS,
@@ -28,9 +28,10 @@ public class Instruction {
         PUSH_CONST,
         JUMP_IF_FALSE,
         JUMP_IF_TRUE,
+        PRINT
     }
 
-    public Instruction(InstructionKind kind, int operand) {
+    public Instruction(InstructionKind kind, Object operand) {
         this.kind = kind;
         this.operand = operand;
     }
