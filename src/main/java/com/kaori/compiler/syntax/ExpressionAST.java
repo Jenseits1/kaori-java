@@ -3,7 +3,7 @@ package com.kaori.compiler.syntax;
 import java.util.List;
 
 public interface ExpressionAST {
-    public static enum BinaryOperator implements ExpressionAST {
+    public static enum BinaryOperator {
         PLUS("+"),
         MINUS("-"),
         MULTIPLY("*"),
@@ -29,7 +29,7 @@ public interface ExpressionAST {
         }
     }
 
-    public static enum UnaryOperator implements ExpressionAST {
+    public static enum UnaryOperator {
         MINUS("-"),
         NOT("!");
 

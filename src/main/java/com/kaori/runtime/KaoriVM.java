@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Stack;
 
 import com.kaori.compiler.bytecode.Instruction;
-import com.kaori.compiler.bytecode.Instruction.InstructionKind;
+import com.kaori.compiler.bytecode.InstructionKind;
 
 public class KaoriVM {
     private final List<Instruction> bytecode;

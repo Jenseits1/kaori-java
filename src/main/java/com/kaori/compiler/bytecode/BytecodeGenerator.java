@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kaori.compiler.Visitor;
-import com.kaori.compiler.bytecode.Instruction.InstructionKind;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.ExpressionAST;
 import com.kaori.compiler.syntax.StatementAST;
