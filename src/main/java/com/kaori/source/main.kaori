@@ -1,0 +1,11 @@
+
+
+a: f64 = 5;
+b: str = "hello world";
+c: bool = true;
+
+for i: f64 = 0; i < 5; i++ {
+    for j: f64 = 0; j < 11; j++ {
+        print(i + j);
+    }
+}

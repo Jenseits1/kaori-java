@@ -1,9 +1,0 @@
-fn main() {
-    let a = 5;
-    let s = String::from("hi");
-
-    let d = s.clone();
-
-    println!("{}", s);
-    println!("Hello, world!");
-}

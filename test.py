@@ -1,11 +1,17 @@
+import time
 
+count = 0.0
 
-def foo (a, b):
-   print(a + b)
+start = time.time()
 
-foo(1, 5)
+for i in range(10_000_000):
+    if i % 2 == 0:
+        count += 1
+    else:
+        count -= 1
 
-def foo(a):
-   print(a)
+end = time.time()
 
-foo(5)
+print(f"Count: {count}")
+print(f"Elapsed time: {(end - start)*1000:.2f} ms")
+print(count)

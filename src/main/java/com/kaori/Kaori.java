@@ -1,5 +1,6 @@
-package com.kaori.kaori;
+package com.kaori;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kaori.compiler.bytecode.Bytecode;
 import com.kaori.compiler.bytecode.BytecodeGenerator;
-
 import com.kaori.compiler.lexer.Lexer;
 import com.kaori.compiler.lexer.Token;
 import com.kaori.compiler.lexer.TokenStream;
@@ -18,18 +18,15 @@ import com.kaori.compiler.semantic.TypeChecker;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.Parser;
 import com.kaori.error.KaoriError;
-import com.kaori.slowinterpreter.Interpreter;
 import com.kaori.vm.KaoriVM;
 
 public class Kaori {
     public void start() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
 
-            Path path = Path.of("src/main/java/com/kaori/kaori/main.kaori");
+            Path path = Path.of("src/main/java/com/kaori/source/main.kaori");
             String source = Files.readString(path);
 
-            long start = System.nanoTime();
             TokenStream tokens = this.tokens(source);
             List<DeclarationAST> declarations = this.declarations(tokens);
 
@@ -42,19 +39,7 @@ public class Kaori {
             BytecodeGenerator generator = new BytecodeGenerator(declarations);
             Bytecode bytecode = generator.bytecode();
 
-            KaoriVM vm = new KaoriVM(bytecode);
-            Interpreter interpreter = new Interpreter(declarations);
-
-            interpreter.run();
-            long end = System.nanoTime();
-            System.out.println((end - start) / 1_000_000);
-
-            start = System.nanoTime();
-            vm.run();
-
-            end = System.nanoTime();
-
-            System.out.println((end - start) / 1_000_000);
+            this.generateBytecodeJson(bytecode);
 
         } catch (KaoriError error) {
             System.out.println(error);
@@ -67,6 +52,17 @@ public class Kaori {
         Parser parser = new Parser(tokens);
 
         return parser.declarations();
+    }
+
+    private void generateBytecodeJson(Bytecode bytecode) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        try (FileWriter writer = new FileWriter("src/main/java/com/kaori/source/bytecode.json")) {
+            gson.toJson(bytecode, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private TokenStream tokens(String source) {
