@@ -1,22 +1,20 @@
-package com.kaori.runtime;
+package com.kaori.vm;
 
 import java.util.Stack;
 
 public class CallStack {
-    public final Stack<Object> stack;
+    public final Object[] stack;
     private final Stack<Integer> scopes;
     private final Stack<Integer> framePointers;
     private int index;
 
     public CallStack() {
-        this.stack = new Stack<>();
+        final int stackMaxSize = 1_000;
+
+        this.stack = new Object[stackMaxSize];
         this.scopes = new Stack<>();
         this.framePointers = new Stack<>();
         this.index = 0;
-
-        final int stackMaxSize = 1_000;
-
-        stack.setSize(stackMaxSize);
 
         this.framePointers.push(0);
     }
@@ -26,7 +24,7 @@ public class CallStack {
     }
 
     public void declare(Object value) {
-        this.stack.set(index, value);
+        this.stack[index] = value;
 
         this.updateIndex();
     }
@@ -36,7 +34,7 @@ public class CallStack {
             offset = framePointers.peek() + offset;
         }
 
-        this.stack.set(offset, value);
+        this.stack[offset] = value;
     }
 
     public Object get(int offset, boolean local) {
@@ -44,27 +42,27 @@ public class CallStack {
             offset = framePointers.peek() + offset;
         }
 
-        return this.stack.get(offset);
+        return this.stack[offset];
     }
 
     public Object loadLocal(int offset) {
         offset = framePointers.peek() + offset;
 
-        return this.stack.get(offset);
+        return this.stack[offset];
     }
 
     public Object loadGlobal(int offset) {
-        return this.stack.get(offset);
+        return this.stack[offset];
     }
 
     public void storeLocal(Object value, int offset) {
         offset = framePointers.peek() + offset;
 
-        this.stack.set(offset, value);
+        this.stack[offset] = value;
     }
 
     public void storeGlobal(Object value, int offset) {
-        this.stack.set(offset, value);
+        this.stack[offset] = value;
     }
 
     public void enterFunction() {

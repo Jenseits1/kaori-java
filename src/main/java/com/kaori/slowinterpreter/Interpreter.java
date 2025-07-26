@@ -8,7 +8,7 @@ import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.ExpressionAST;
 import com.kaori.compiler.syntax.StatementAST;
 import com.kaori.error.KaoriError;
-import com.kaori.runtime.CallStack;
+import com.kaori.vm.CallStack;
 
 public class Interpreter extends Visitor<Object> {
     public final CallStack callStack;

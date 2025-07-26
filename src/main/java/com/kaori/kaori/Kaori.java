@@ -18,8 +18,8 @@ import com.kaori.compiler.semantic.TypeChecker;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.Parser;
 import com.kaori.error.KaoriError;
-import com.kaori.runtime.KaoriVM;
 import com.kaori.slowinterpreter.Interpreter;
+import com.kaori.vm.KaoriVM;
 
 public class Kaori {
     public void start() {
@@ -29,6 +29,7 @@ public class Kaori {
             Path path = Path.of("src/main/java/com/kaori/kaori/main.kaori");
             String source = Files.readString(path);
 
+            long start = System.nanoTime();
             TokenStream tokens = this.tokens(source);
             List<DeclarationAST> declarations = this.declarations(tokens);
 
@@ -42,10 +43,19 @@ public class Kaori {
             Bytecode bytecode = generator.bytecode();
 
             KaoriVM vm = new KaoriVM(bytecode);
-            // System.out.println(bytecode);
             Interpreter interpreter = new Interpreter(declarations);
-            // interpreter.run();
+
+            interpreter.run();
+            long end = System.nanoTime();
+            System.out.println((end - start) / 1_000_000);
+
+            start = System.nanoTime();
             vm.run();
+
+            end = System.nanoTime();
+
+            System.out.println((end - start) / 1_000_000);
+
         } catch (KaoriError error) {
             System.out.println(error);
         } catch (IOException error) {

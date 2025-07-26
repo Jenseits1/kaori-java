@@ -1,4 +1,4 @@
-package com.kaori.runtime;
+package com.kaori.vm;
 
 import java.util.List;
 import java.util.Stack;
@@ -18,6 +18,7 @@ public class KaoriVM {
         this.stack = new Stack<>();
         this.callStack = new CallStack();
         this.index = 0;
+        this.stack.setSize(1000);
     }
 
     public void advance() {
