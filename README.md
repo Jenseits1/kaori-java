@@ -1,6 +1,7 @@
 # 🎻 Kaori - Programming Language
 
-**Kaori** is an interpreted statically typed programming language built with **Java 17**
+Kaori is an interpreted, statically typed programming language originally built with Java 17.
+🚧 Note: The Java version is now discontinued. Kaori is currently being rewritten in Rust
 
 ## Features
 
@@ -25,8 +26,8 @@
     -   [x] Output with `print` statements
     -   [x] Code comments (`/* this is a comment */`)
     -   [x] Functions
-    -   [x] Bytecode generation
-    -   [x] Virtual machine to interpret bytecode
+    -   [ ] Bytecode generation
+    -   [ ] Virtual machine to interpret bytecode
     -   [ ] function and loop control flow (`break`, `continue`, `return`)
     -   [ ] Native data structures (e.g., lists, maps)
     -   [ ] Classes and inheritance
@@ -147,34 +148,6 @@ To enter the interactive mode (REPL):
 ```bash
 java -jar target/kaori.jar
 ```
-
-## Contributing
-
-Contributions are warmly welcome!
-
-### Ways to Contribute:
-
--   🚨 Report bugs
--   ✨ Propose new features or syntax ideas
--   🧪 Add new test cases
--   📚 Improve the documentation
-
-### Steps:
-
-1. Fork the repo
-2. Create a new branch:
-
-    ```bash
-    git checkout -b feature/my-feature
-    ```
-
-3. Make your changes and commit:
-
-    ```bash
-    git commit -m 'feat: add my feature'
-    ```
-
-4. Push and open a PR
 
 ## 💖 Name Inspiration
 

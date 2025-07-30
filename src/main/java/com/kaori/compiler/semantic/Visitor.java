@@ -1,4 +1,4 @@
-package com.kaori.compiler;
+package com.kaori.compiler.semantic;
 
 import java.util.List;
 

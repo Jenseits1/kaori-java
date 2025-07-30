@@ -1,11 +1,18 @@
-
-
 a: f64 = 5;
-b: str = "hello world";
+b: str = "hello";
 c: bool = true;
+d: f64 = 10;
+count: f64 = 0;
 
-for i: f64 = 0; i < 5; i++ {
-    for j: f64 = 0; j < 11; j++ {
-        print(i + j);
+for i: f64 = 0; i < 10000; i++ {
+    for j: f64 = 0; j < 1000; j++ {
+        count = count + a * d % 7;
+        if c {
+            count = count + 1;
+        } else {
+            count = count - 1;
+        }
     }
 }
+
+print(count);

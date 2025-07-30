@@ -1,21 +1,20 @@
-package com.kaori.slowinterpreter;
+package com.kaori.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kaori.compiler.Visitor;
+import com.kaori.compiler.semantic.Visitor;
 import com.kaori.compiler.syntax.DeclarationAST;
 import com.kaori.compiler.syntax.ExpressionAST;
 import com.kaori.compiler.syntax.StatementAST;
 import com.kaori.error.KaoriError;
-import com.kaori.vm.CallStack;
 
 public class Interpreter extends Visitor<Object> {
-    public final CallStack callStack;
+    public final CallStack<Object> callStack;
 
     public Interpreter(List<DeclarationAST> declarations) {
         super(declarations);
-        this.callStack = new CallStack();
+        this.callStack = new CallStack<>();
     }
 
     @Override

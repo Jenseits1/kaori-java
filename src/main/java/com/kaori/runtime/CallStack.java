@@ -1,9 +1,9 @@
-package com.kaori.vm;
+package com.kaori.runtime;
 
 import java.util.Stack;
 
-public class CallStack {
-    public final Object[] stack;
+public class CallStack<T> {
+    public final Stack<T> stack;
     private final Stack<Integer> scopes;
     private final Stack<Integer> framePointers;
     private int index;
@@ -11,11 +11,12 @@ public class CallStack {
     public CallStack() {
         final int stackMaxSize = 1_000;
 
-        this.stack = new Object[stackMaxSize];
+        this.stack = new Stack<>();
         this.scopes = new Stack<>();
         this.framePointers = new Stack<>();
         this.index = 0;
 
+        this.stack.setSize(stackMaxSize);
         this.framePointers.push(0);
     }
 
@@ -23,46 +24,46 @@ public class CallStack {
         this.index++;
     }
 
-    public void declare(Object value) {
-        this.stack[index] = value;
+    public void declare(T value) {
+        this.stack.set(index, value);
 
         this.updateIndex();
     }
 
-    public void define(Object value, int offset, boolean local) {
+    public void define(T value, int offset, boolean local) {
         if (local) {
             offset = framePointers.peek() + offset;
         }
 
-        this.stack[offset] = value;
+        this.stack.set(offset, value);
     }
 
-    public Object get(int offset, boolean local) {
+    public T get(int offset, boolean local) {
         if (local) {
             offset = framePointers.peek() + offset;
         }
 
-        return this.stack[offset];
+        return this.stack.get(offset);
     }
 
-    public Object loadLocal(int offset) {
+    public T loadLocal(int offset) {
         offset = framePointers.peek() + offset;
 
-        return this.stack[offset];
+        return this.stack.get(offset);
     }
 
-    public Object loadGlobal(int offset) {
-        return this.stack[offset];
+    public T loadGlobal(int offset) {
+        return this.stack.get(offset);
     }
 
-    public void storeLocal(Object value, int offset) {
+    public void storeLocal(T value, int offset) {
         offset = framePointers.peek() + offset;
 
-        this.stack[offset] = value;
+        this.stack.set(offset, value);
     }
 
-    public void storeGlobal(Object value, int offset) {
-        this.stack[offset] = value;
+    public void storeGlobal(T value, int offset) {
+        this.stack.set(offset, value);
     }
 
     public void enterFunction() {

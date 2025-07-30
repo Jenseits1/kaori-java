@@ -1,4 +1,4 @@
-package com.kaori.slowinterpreter;
+package com.kaori.runtime;
 
 import java.util.List;
 
