@@ -550,7 +550,7 @@ public class Parser {
         TypeAST type = switch (lexeme) {
             case "str" -> TypeAST.Primitive.STRING;
             case "bool" -> TypeAST.Primitive.BOOLEAN;
-            case "f64" -> TypeAST.Primitive.NUMBER;
+            case "number" -> TypeAST.Primitive.NUMBER;
             case "void" -> TypeAST.Primitive.VOID;
             default ->
                 throw KaoriError.SyntaxError(this.tokens.getCurrent() + " is not a valid type", this.tokens.getLine());

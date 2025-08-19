@@ -34,7 +34,16 @@ public class Kaori {
 
             Interpreter interpreter = new Interpreter(declarations);
 
+            long startTime = System.nanoTime();
+
             interpreter.run();
+
+            long endTime = System.nanoTime();
+
+            long durationNs = endTime - startTime;
+            double durationMs = durationNs / 1_000_000.0;
+
+            System.out.printf("Ast walker executed in %.3f ms%n", durationMs);
 
         } catch (KaoriError error) {
             System.out.println(error);

@@ -1,18 +1,41 @@
-a: f64 = 5;
-b: str = "hello";
-c: bool = true;
-d: f64 = 10;
-count: f64 = 0;
 
-for i: f64 = 0; i < 10000; i++ {
-    for j: f64 = 0; j < 1000; j++ {
-        count = count + a * d % 7;
-        if c {
-            count = count + 1;
+iterations: number = 100000;
+
+for i: number = 0; i < iterations; i = i + 1 {
+    a: number = 0;
+    b: number = 1;
+    max_fib: number = 100;
+
+    for j: number = 0; j < max_fib; j = j + 1 {
+        temp: number = a + b;
+        a = b;
+
+        if temp < b {
+            b = temp * 1.0001 + (a % 3);
+        } else if temp == b {
+            b = temp / 1.0001 - (a % 5);
+        } else if temp > b {
+            b = temp * temp - (a * b) / (temp + 1);
+        }
+
+
+        c: number = (a * 3.1415) + (b / 2.718);
+        d: number = (c * c) - (b * a) + (temp % 7);
+
+ 
+        e: number = 0;
+        for k: number = 0; k < 10; k = k + 1 {
+            e = e + (d % (k + 1)) + (c / (k + 2));
+        }
+
+
+        if e > 1000 {
+            a = a + 1;
         } else {
-            count = count - 1;
+            b = b - 1;
         }
     }
+
 }
 
-print(count);
+
