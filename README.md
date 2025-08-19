@@ -1,7 +1,7 @@
 # 🎻 Kaori - Programming Language
 
 ⚠️ **Note:** This Java implementation is **discontinued**.  
-The new version is being rewritten in Rust: [Kaori Rust Repository](https://github.com/Jenseits1/kaori)
+The new version is being rewritten in Rust: [Kaori](https://github.com/Jenseits1/kaori)
 
 ## Technologies Used
 
