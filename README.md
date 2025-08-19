@@ -1,7 +1,7 @@
 # 🎻 Kaori - Programming Language
 
-Kaori is a statically typed programming language originally built with Java 17.
-This Java implementation version is now discontinued. Kaori is currently being rewritten in Rust
+⚠️ **Note:** This Java implementation is **discontinued**.  
+The new version is being rewritten in Rust: [Kaori Rust Repository](https://github.com/Jenseits1/kaori)
 
 ## Technologies Used
 
